@@ -9,8 +9,9 @@ const cam = pjs.camera;
 const brush = pjs.brush;
 const OOP = pjs.OOP;
 const math = pjs.math;
-const mouse = pjs.mouseControl.initMouseControl();
+// const mouse = pjs.mouseControl.initMouseControl();
 const key = pjs.keyControl.initKeyControl();
+// key.initKeyControl();
 
 const width = game.getWH().w;
 const height = game.getWH().h;
@@ -18,37 +19,24 @@ const r = game.getResolution();
 
 pjs.system.setTitle('My mega game');
 
-// key.initKeyControl();
 
-let arr = [];
-
-let createRect = function () {
-    let tmp = game.newRectObject({
-        positionC: mouse.getPosition(),
-        w: 10,
-        h: 10,
-        fillColor: 'red',
-    });
-    arr.push(tmp);
-};
-
-game.newLoopFromConstructor('game_one', function () {
-    let back = game.newImageObject({
+// *** Objects like a man or zombie ***
+const backgr = game.newImageObject({
         file: 'img/bg2_wide.jpg',
         scale: 1.4,
     });
 
-    const man = game.newAnimationObject({
+ const man = game.newAnimationObject({
         animation: pjs.tiles.newAnimation('img/sprites/human_114_8.png', 114, 114, 8),
         w: 114,
         h: 114,
         x: 120,
-        y: 220,
+        y: 240,
         delay: 10,
-        scale: 1.2,
-        onload: function () {
-            console.log('hello i am a onload')
-        }
+        scale: 1,
+        // onload: function () {
+        //     console.log('hello i am a onload');
+        // },
     });
 
     man.name = "Charlie";
@@ -65,63 +53,144 @@ game.newLoopFromConstructor('game_one', function () {
 
     const zombies = [];
 
-    let timer = OOP.newTimer(3000, function () {
+    let zombieSpawner = OOP.newTimer(3000, function () {
         zombies.push(game.newAnimationObject({
             animation: pjs.tiles.newAnimation('img/sprites/zombie_75_115_10.png', 73.72, 115, 10),
             w: 73.65,
             h: 115,
             x: math.random(320, 1280),
-            y: 220,
+            y: 240,
             delay: 10,
-            scale: 1.2,
+            scale: 1,
         }));
     });
 
+// *** ***
 
-    this.update = function () {
+const Game = function() {
+    let hello = "Hello friend!";
+    
+    this.update = function() {
         game.clear();
-        back.draw();
+        backgr.draw();
         man.draw();
         man.drawName();
-        timer.restart();
+        zombieSpawner.restart();
         OOP.forArr(zombies, function (el) {
             el.draw();
             el.move(point(-1,0));
         });
-
-
         if (key.isDown('RIGHT')) {
             cam.move(point(.5, 0));
             man.move(point(.5, 0));
 
-        }
+        };
     };
-
-    this.entry = function () {
-        log('lets start!');
-        timer.start();
+    this.entry = function() {
+        log(man);
+        log('start!');
     };
-
-
-
-    pjs.OOP.drawArr(arr);
-
-    if (mouse.isDown('LEFT')) {
-        createRect()
+    this.exit = function() {
+        log('End!');
     }
+};
+
+game.newLoopFromClassObject('1', new Game());
+game.startLoop('1');
 
 
 
-    if (mouse.isInObject(man)) {
-        man.drawStaticBox('red');
-    }
 
-    if (man.isIntersect(zombies)) {
-        man.drawStaticBox('blue');
-    }
-});
+// game.newLoopFromConstructor('game_one', function () {
+//     let back = game.newImageObject({
+//         file: 'img/bg2_wide.jpg',
+//         scale: 1.4,
+//     });
 
-game.startLoop('game_one');
+//     const man = game.newAnimationObject({
+//         animation: pjs.tiles.newAnimation('img/sprites/human_114_8.png', 114, 114, 8),
+//         w: 114,
+//         h: 114,
+//         x: 120,
+//         y: 220,
+//         delay: 10,
+//         scale: 1.2,
+//         onload: function () {
+//             console.log('hello i am a onload')
+//         }
+//     });
+
+    
+//     man.drawName = function () {
+//         brush.drawText({
+//             x: this.x + this.w / 2 + 10,
+//             y: this.y - 20,
+//             text: this.name,
+//             color: '#FFF',
+//             size: '20',
+//             align: 'center',
+//         });
+//     };
+
+//     const zombies = [];
+
+//     let timer = OOP.newTimer(3000, function () {
+//         zombies.push(game.newAnimationObject({
+//             animation: pjs.tiles.newAnimation('img/sprites/zombie_75_115_10.png', 73.72, 115, 10),
+//             w: 73.65,
+//             h: 115,
+//             x: math.random(320, 1280),
+//             y: 220,
+//             delay: 10,
+//             scale: 1.2,
+//         }));
+//     });
+
+
+//     this.update = function () {
+//         game.clear();
+//         back.draw();
+//         man.draw();
+//         man.drawName();
+//         timer.restart();
+//         OOP.forArr(zombies, function (el) {
+//             el.draw();
+//             el.move(point(-1,0));
+//         });
+
+
+//         if (key.isDown('RIGHT')) {
+//             cam.move(point(.5, 0));
+//             man.move(point(.5, 0));
+
+//         }
+//     };
+
+//     this.entry = function () {
+//         log('lets start!');
+//         timer.start();
+//     };
+
+
+
+//     pjs.OOP.drawArr(arr);
+
+    // if (mouse.isDown('LEFT')) {
+    //     createRect()
+    // }
+
+
+
+    // if (mouse.isInObject(man)) {
+    //     man.drawStaticBox('red');
+    // }
+
+    // if (man.isIntersect(zombies)) {
+    //     man.drawStaticBox('blue');
+    // }
+// });
+
+// game.startLoop('game_one');
 
 // const rect = game.newRectObject( {
 //     positionC: point(100,100),
