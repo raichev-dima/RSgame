@@ -1,6 +1,13 @@
+'use strict';
+
+const app = require('./app');
+const testMan = require('./man.module');
+console.log(testMan);
+
 const pjs = new PointJS('2D', 1280, 720, {
     backgroundColor: 'yellow',
 });
+
 //pjs.system.initFullScreen();
 const log = pjs.system.log;
 const game = pjs.game;
@@ -68,7 +75,6 @@ const backgr = game.newImageObject({
 // *** ***
 
 const Game = function() {
-    let hello = "Hello friend!";
     
     this.update = function() {
         game.clear();
@@ -213,3 +219,8 @@ game.startLoop('1');
 //     }
 // };
 // console.log(key.getKeyList());
+
+
+
+
+exports.app = app;

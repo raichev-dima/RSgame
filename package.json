@@ -1,0 +1,23 @@
+{
+  "name": "zombie-game",
+  "version": "0.0.1",
+  "description": "\"PKGOD Gamedev Team\" Co. ltd.",
+  "main": "app.js",
+  "dependencies": {
+
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rolling-scopes-school/PKGOD-game-team.git"
+  },
+  "author": "PKGOD",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/rolling-scopes-school/PKGOD-game-team/issues"
+  },
+  "homepage": "https://github.com/rolling-scopes-school/PKGOD-game-team#readme"
+}
