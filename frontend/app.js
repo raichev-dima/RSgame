@@ -2,6 +2,8 @@
 
 const app = require('./app');
 const man = require('./man.module').man;
+
+const zombies = require('./zombie.module').zombies;
 const constObj = require('./game').constObj;
 const PointJS = require('./point').PointJS;
 
@@ -32,34 +34,6 @@ const backgr = constObj.game.newImageObject({
     scale: 1.4,
 });
 
-man.name = "Charlie";
-man.drawName = function () {
-    brush.drawText({
-        x: this.x + this.w / 2 + 10,
-        y: this.y - 20,
-        text: this.name,
-        color: '#FFF',
-        size: '20',
-        align: 'center',
-    });
-};
-
-const zombies = [];
-
-let zombieSpawner = OOP.newTimer(1000, function () {
-    zombies.push(constObj.game.newAnimationObject({
-        animation: constObj.pjs.tiles.newAnimation('img/sprites/zombie_75_115_10.png', 73.72, 115, 10),
-        w: 73.65,
-        h: 115,
-        x: math.random(320, 400), // x 1280
-        y: 240,
-        delay: 10,
-        scale: 1,
-    }));
-});
-
-let zombieDead = constObj.pjs.tiles.newAnimation('img/sprites/zombie_75_115_1_dead.png', 184, 115, 1);
-
 // *** ***
 
 const Game = function () {
@@ -67,27 +41,10 @@ const Game = function () {
     this.update = function () {
         constObj.game.clear();
         backgr.draw();
-        man.draw();
-        man.drawName();
+        man.drawManElements(); 
         man.drawStaticBox();
-        zombieSpawner.restart();
-        OOP.forArr(zombies, function (zombie) {
-            if (!zombie.flag) {
-                zombie.draw();
-                zombie.move(point(-1, 0));
-            } else {
-                zombie.setAnimation(zombieDead);
-                zombie.move(point(0, 0));
-                zombie.y = 285;
-                zombie.draw();
-                
-            }
-            zombie.drawStaticBox();
-            if (man.isStaticIntersect(zombie.getStaticBox())) {
-                zombie.flag = true;
-            }
-
-        });
+        zombies.spawner.restart();
+        zombies.logic();
 
         if (key.isDown('RIGHT')) {
             cam.move(point(.5, 0));

@@ -15,4 +15,30 @@ const man = constObj.game.newAnimationObject({
     // },
 });
 
+man.name = "Charlie";
+man.drawName = function () {
+    constObj.pjs.brush.drawText({
+        x: this.x + this.w / 2 + 10,
+        y: this.y - 20,
+        text: this.name,
+        color: '#FFF',
+        size: '20',
+        align: 'center',
+    });
+};
+
+man.drawGun = function () {
+    constObj.pjs.brush.drawImage({
+        file: "img/gun1.png",
+        x: this.x + this.w / 2 + 40,
+        y: this.y + 45,
+    });
+};
+
+man.drawManElements = function() {
+    man.draw();
+    man.drawName();
+    man.drawGun();
+}
+
 exports.man = man;
