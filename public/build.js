@@ -238,6 +238,8 @@ module.exports.PointJS = PointJS;
 
 const app = __webpack_require__(1);
 const man = __webpack_require__(3).man;
+
+const zombies = __webpack_require__(4).zombies;
 const constObj = __webpack_require__(2).constObj;
 const PointJS = __webpack_require__(0).PointJS;
 
@@ -268,34 +270,6 @@ const backgr = constObj.game.newImageObject({
     scale: 1.4,
 });
 
-man.name = "Charlie";
-man.drawName = function () {
-    brush.drawText({
-        x: this.x + this.w / 2 + 10,
-        y: this.y - 20,
-        text: this.name,
-        color: '#FFF',
-        size: '20',
-        align: 'center',
-    });
-};
-
-const zombies = [];
-
-let zombieSpawner = OOP.newTimer(1000, function () {
-    zombies.push(constObj.game.newAnimationObject({
-        animation: constObj.pjs.tiles.newAnimation('img/sprites/zombie_75_115_10.png', 73.72, 115, 10),
-        w: 73.65,
-        h: 115,
-        x: math.random(320, 400), // x 1280
-        y: 240,
-        delay: 10,
-        scale: 1,
-    }));
-});
-
-let zombieDead = constObj.pjs.tiles.newAnimation('img/sprites/zombie_75_115_1_dead.png', 184, 115, 1);
-
 // *** ***
 
 const Game = function () {
@@ -303,27 +277,10 @@ const Game = function () {
     this.update = function () {
         constObj.game.clear();
         backgr.draw();
-        man.draw();
-        man.drawName();
+        man.drawManElements(); 
         man.drawStaticBox();
-        zombieSpawner.restart();
-        OOP.forArr(zombies, function (zombie) {
-            if (!zombie.flag) {
-                zombie.draw();
-                zombie.move(point(-1, 0));
-            } else {
-                zombie.setAnimation(zombieDead);
-                zombie.move(point(0, 0));
-                zombie.y = 285;
-                zombie.draw();
-                
-            }
-            zombie.drawStaticBox();
-            if (man.isStaticIntersect(zombie.getStaticBox())) {
-                zombie.flag = true;
-            }
-
-        });
+        zombies.spawner.restart();
+        zombies.logic();
 
         if (key.isDown('RIGHT')) {
             cam.move(point(.5, 0));
@@ -517,7 +474,84 @@ const man = constObj.game.newAnimationObject({
     // },
 });
 
+man.name = "Charlie";
+man.drawName = function () {
+    constObj.pjs.brush.drawText({
+        x: this.x + this.w / 2 + 10,
+        y: this.y - 20,
+        text: this.name,
+        color: '#FFF',
+        size: '20',
+        align: 'center',
+    });
+};
+
+man.drawGun = function () {
+    constObj.pjs.brush.drawImage({
+        file: "img/gun1.png",
+        x: this.x + this.w / 2 + 40,
+        y: this.y + 45,
+    });
+};
+
+man.drawManElements = function() {
+    man.draw();
+    man.drawName();
+    man.drawGun();
+}
+
 exports.man = man;
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+const PointJS = __webpack_require__(0).PointJS;
+const constObj = __webpack_require__(2).constObj;
+const man = __webpack_require__(3).man;
+
+const point = constObj.pjs.vector.point;
+
+const zombieDead = constObj.pjs.tiles.newAnimation('img/sprites/zombie_75_115_1_dead.png', 184, 115, 1);
+
+const zombies = [];
+zombies.spawner = constObj.pjs.OOP.newTimer(1000, function () {
+    zombies.push(constObj.game.newAnimationObject({
+        animation: constObj.pjs.tiles.newAnimation('img/sprites/zombie_75_115_10.png', 73.72, 115, 10),
+        w: 73.65,
+        h: 115,
+        x: constObj.pjs.math.random(man.getPosition().x + 320, man.getPosition().x + 850), // x 1280
+        y: 240,
+        delay: 10,
+        scale: 1,
+    }));
+});
+
+
+zombies.logic = function() { return constObj.pjs.OOP.forArr(zombies, function (zombie) {
+            
+            if (!zombie.flag) {
+                zombie.draw();
+                zombie.move(point(-1, 0));
+            } else {
+                zombie.setAnimation(zombieDead);
+                zombie.setFlip(1,0);
+                zombie.move(point(0, 0));
+                zombie.y = 285;
+                zombie.draw();
+            }
+            zombie.drawStaticBox();
+            if (man.isStaticIntersect(zombie.getStaticBox())) {
+                zombie.flag = true;
+            }
+
+        });
+};
+
+exports.zombies = zombies;
 
 
 /***/ })
