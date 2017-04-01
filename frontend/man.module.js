@@ -1,7 +1,7 @@
 'use strict';
 const PointJS = require('./point').PointJS;
-
 const constObj = require('./game').constObj;
+
 const man = constObj.game.newAnimationObject({
     animation: constObj.pjs.tiles.newAnimation('img/sprites/human_114_8.png', 114, 114, 8),
     w: 114,

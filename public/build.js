@@ -243,7 +243,6 @@ const PointJS = __webpack_require__(0).PointJS;
 
 
 
-
 //pjs.system.initFullScreen();
 const log = constObj.pjs.system.log;
 
@@ -265,61 +264,78 @@ constObj.pjs.system.setTitle('My mega game');
 
 // *** Objects like a man or zombie ***
 const backgr = constObj.game.newImageObject({
-        file: 'img/bg2_wide.jpg',
-        scale: 1.4,
+    file: 'img/bg2_wide.jpg',
+    scale: 1.4,
+});
+
+man.name = "Charlie";
+man.drawName = function () {
+    brush.drawText({
+        x: this.x + this.w / 2 + 10,
+        y: this.y - 20,
+        text: this.name,
+        color: '#FFF',
+        size: '20',
+        align: 'center',
     });
+};
 
-    man.name = "Charlie";
-    man.drawName = function () {
-        brush.drawText({
-            x: this.x + this.w / 2 + 10,
-            y: this.y - 20,
-            text: this.name,
-            color: '#FFF',
-            size: '20',
-            align: 'center',
-        });
-    };
+const zombies = [];
 
-    const zombies = [];
+let zombieSpawner = OOP.newTimer(1000, function () {
+    zombies.push(constObj.game.newAnimationObject({
+        animation: constObj.pjs.tiles.newAnimation('img/sprites/zombie_75_115_10.png', 73.72, 115, 10),
+        w: 73.65,
+        h: 115,
+        x: math.random(320, 400), // x 1280
+        y: 240,
+        delay: 10,
+        scale: 1,
+    }));
+});
 
-    let zombieSpawner = OOP.newTimer(3000, function () {
-        zombies.push(constObj.game.newAnimationObject({
-            animation: constObj.pjs.tiles.newAnimation('img/sprites/zombie_75_115_10.png', 73.72, 115, 10),
-            w: 73.65,
-            h: 115,
-            x: math.random(320, 1280),
-            y: 240,
-            delay: 10,
-            scale: 1,
-        }));
-    });
+let zombieDead = constObj.pjs.tiles.newAnimation('img/sprites/zombie_75_115_1_dead.png', 184, 115, 1);
 
 // *** ***
 
-const Game = function() {
-    
-    this.update = function() {
+const Game = function () {
+
+    this.update = function () {
         constObj.game.clear();
         backgr.draw();
         man.draw();
         man.drawName();
+        man.drawStaticBox();
         zombieSpawner.restart();
-        OOP.forArr(zombies, function (el) {
-            el.draw();
-            el.move(point(-1,0));
+        OOP.forArr(zombies, function (zombie) {
+            if (!zombie.flag) {
+                zombie.draw();
+                zombie.move(point(-1, 0));
+            } else {
+                zombie.setAnimation(zombieDead);
+                zombie.move(point(0, 0));
+                zombie.y = 285;
+                zombie.draw();
+                
+            }
+            zombie.drawStaticBox();
+            if (man.isStaticIntersect(zombie.getStaticBox())) {
+                zombie.flag = true;
+            }
+
         });
+
         if (key.isDown('RIGHT')) {
             cam.move(point(.5, 0));
             man.move(point(.5, 0));
 
         };
     };
-    this.entry = function() {
+    this.entry = function () {
         log(man);
         log('start!');
     };
-    this.exit = function() {
+    this.exit = function () {
         log('End!');
     }
 };
@@ -349,7 +365,7 @@ constObj.game.startLoop('1');
 //         }
 //     });
 
-    
+
 //     man.drawName = function () {
 //         brush.drawText({
 //             x: this.x + this.w / 2 + 10,
@@ -404,19 +420,19 @@ constObj.game.startLoop('1');
 
 //     pjs.OOP.drawArr(arr);
 
-    // if (mouse.isDown('LEFT')) {
-    //     createRect()
-    // }
+// if (mouse.isDown('LEFT')) {
+//     createRect()
+// }
 
 
 
-    // if (mouse.isInObject(man)) {
-    //     man.drawStaticBox('red');
-    // }
+// if (mouse.isInObject(man)) {
+//     man.drawStaticBox('red');
+// }
 
-    // if (man.isIntersect(zombies)) {
-    //     man.drawStaticBox('blue');
-    // }
+// if (man.isIntersect(zombies)) {
+//     man.drawStaticBox('blue');
+// }
 // });
 
 // game.startLoop('game_one');
@@ -476,17 +492,7 @@ const r = game.getResolution();
 
 exports.constObj = {
     pjs: pjs,
-    game: game /*,
-    log: log,
-    point: point,
-    cam: cam,
-    brush: brush,
-    OOP: OOP,
-    math: math,
-    key: key,
-    width: width,
-    height: height,
-    r:r*/
+    game: game
 }
 
 /***/ }),
@@ -496,8 +502,8 @@ exports.constObj = {
 "use strict";
 
 const PointJS = __webpack_require__(0).PointJS;
-
 const constObj = __webpack_require__(2).constObj;
+
 const man = constObj.game.newAnimationObject({
     animation: constObj.pjs.tiles.newAnimation('img/sprites/human_114_8.png', 114, 114, 8),
     w: 114,
@@ -516,3 +522,4 @@ exports.man = man;
 
 /***/ })
 /******/ ]);
+//# sourceMappingURL=build.js.map
