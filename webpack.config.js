@@ -14,4 +14,10 @@ module.exports = {
     },
 
     devtool: "source-map",
+
+    devServer: {
+        host: 'localhost',
+        port: 8080,
+        contentBase: __dirname + '/public'
+    }
 }
