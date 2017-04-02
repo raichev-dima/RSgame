@@ -1,5 +1,5 @@
 const PointJS = require('./point').PointJS;
-const pjs = new PointJS('2D', 1280, 720, {
+const pjs = new PointJS('2D', 900, 390, {
     backgroundColor: 'yellow',
 });
 const game = pjs.game;
