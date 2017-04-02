@@ -53,15 +53,16 @@ man.shooting = function () {
             fillColor: "#FBFE6F",
         });
         bullets.push(bullet);
-        setTimeout( () => this.shootFlag = false, 1000);
+        setTimeout( () => this.shootFlag = false, 300);
     };
 };
 
 man.bulletFly = function () {
-    return constObj.pjs.OOP.forArr(bullets, function (bullet) {
+    for (let i=0; i<bullets.length; i++) {
+        let bullet = bullets[i];
         bullet.draw();
         bullet.move(point(1, 0));
-    });
+    };
 }
 
 man.drawManElements = function () {

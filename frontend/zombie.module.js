@@ -23,25 +23,33 @@ zombies.spawner = constObj.pjs.OOP.newTimer(1000, function () {
 
 
 zombies.logic = function () {
-    return constObj.pjs.OOP.forArr(zombies, function (zombie) {
+    constObj.pjs.OOP.forArr(zombies, function (zombie) {
 
-        if (!zombie.flag) {
+        if (!zombie.dead) {
             zombie.draw();
             zombie.move(point(-1, 0));
         } else {
             zombie.setAnimation(zombieDead);
             zombie.setFlip(1, 0);
             zombie.move(point(0, 0));
-            zombie.y = 285;
+            zombie.y = 300;
             zombie.draw();
         }
+       
         //zombie.drawStaticBox();
-
         if (zombie.isArrIntersect(bullets)) {
-            zombie.flag = true;
+            zombie.dead = true;
+            for (let i = 0; i < bullets.length; i++) {
+                let bullet = bullets[i];
+                if (bullet.isArrIntersect(zombies)) {
+                    bullets.splice(i, 1);
+                };
+            }
         };
+
+
         if (man.isStaticIntersect(zombie.getStaticBox())) {
-            zombie.flag = true;
+            zombie.dead = true;
         };
 
     });
