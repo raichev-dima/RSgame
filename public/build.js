@@ -64,7 +64,7 @@ var app =
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 1);
+/******/ 	return __webpack_require__(__webpack_require__.s = 2);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -233,14 +233,44 @@ module.exports.PointJS = PointJS;
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
+const PointJS = __webpack_require__(0).PointJS;
+const pjs = new PointJS('2D', 900, 390, {
+    backgroundColor: 'yellow',
+});
+const game = pjs.game;
+//pjs.system.initFullScreen();
+const log = pjs.system.log;
+const point = pjs.vector.point;
+const cam = pjs.camera;
+const brush = pjs.brush;
+const OOP = pjs.OOP;
+const math = pjs.math;
+// const mouse = pjs.mouseControl.initMouseControl();
+const key = pjs.keyControl.initKeyControl();
+// key.initKeyControl();
+const width = game.getWH().w;
+const height = game.getWH().h;
+const r = game.getResolution();
+
+
+
+exports.constObj = {
+    pjs: pjs,
+    game: game
+}
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
 "use strict";
 
 
-const app = __webpack_require__(1);
+const app = __webpack_require__(2);
 const man = __webpack_require__(3).man;
 
 const zombies = __webpack_require__(4).zombies;
-const constObj = __webpack_require__(2).constObj;
+const constObj = __webpack_require__(1).constObj;
 const PointJS = __webpack_require__(0).PointJS;
 
 
@@ -277,7 +307,7 @@ const Game = function () {
     this.update = function () {
         constObj.game.clear();
         backgr.draw();
-        man.drawManElements(); 
+        man.drawManElements();
         man.drawStaticBox();
         zombies.spawner.restart();
         zombies.logic();
@@ -286,6 +316,9 @@ const Game = function () {
             cam.move(point(.5, 0));
             man.move(point(.5, 0));
 
+        };
+        if (key.isDown('SPACE')) {
+            man.shooting();
         };
     };
     this.entry = function () {
@@ -423,43 +456,13 @@ constObj.game.startLoop('1');
 
 
 /***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-const PointJS = __webpack_require__(0).PointJS;
-const pjs = new PointJS('2D', 1280, 720, {
-    backgroundColor: 'yellow',
-});
-const game = pjs.game;
-//pjs.system.initFullScreen();
-const log = pjs.system.log;
-const point = pjs.vector.point;
-const cam = pjs.camera;
-const brush = pjs.brush;
-const OOP = pjs.OOP;
-const math = pjs.math;
-// const mouse = pjs.mouseControl.initMouseControl();
-const key = pjs.keyControl.initKeyControl();
-// key.initKeyControl();
-const width = game.getWH().w;
-const height = game.getWH().h;
-const r = game.getResolution();
-
-
-
-exports.constObj = {
-    pjs: pjs,
-    game: game
-}
-
-/***/ }),
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 const PointJS = __webpack_require__(0).PointJS;
-const constObj = __webpack_require__(2).constObj;
+const constObj = __webpack_require__(1).constObj;
 
 const man = constObj.game.newAnimationObject({
     animation: constObj.pjs.tiles.newAnimation('img/sprites/human_114_8.png', 114, 114, 8),
@@ -494,7 +497,20 @@ man.drawGun = function () {
     });
 };
 
-man.drawManElements = function() {
+const bullets = [];
+
+man.shooting = function () {
+    console.log('shooting');
+    constObj.pjs.brush.drawRect({
+        x: 200,
+        y: 200,
+        w: 240,
+        h: 200,
+        color: "black"
+    });
+};
+
+man.drawManElements = function () {
     man.draw();
     man.drawName();
     man.drawGun();
@@ -510,7 +526,7 @@ exports.man = man;
 "use strict";
 
 const PointJS = __webpack_require__(0).PointJS;
-const constObj = __webpack_require__(2).constObj;
+const constObj = __webpack_require__(1).constObj;
 const man = __webpack_require__(3).man;
 
 const point = constObj.pjs.vector.point;
@@ -531,24 +547,25 @@ zombies.spawner = constObj.pjs.OOP.newTimer(1000, function () {
 });
 
 
-zombies.logic = function() { return constObj.pjs.OOP.forArr(zombies, function (zombie) {
-            
-            if (!zombie.flag) {
-                zombie.draw();
-                zombie.move(point(-1, 0));
-            } else {
-                zombie.setAnimation(zombieDead);
-                zombie.setFlip(1,0);
-                zombie.move(point(0, 0));
-                zombie.y = 285;
-                zombie.draw();
-            }
-            zombie.drawStaticBox();
-            if (man.isStaticIntersect(zombie.getStaticBox())) {
-                zombie.flag = true;
-            }
+zombies.logic = function () {
+    return constObj.pjs.OOP.forArr(zombies, function (zombie) {
 
-        });
+        if (!zombie.flag) {
+            zombie.draw();
+            zombie.move(point(-1, 0));
+        } else {
+            zombie.setAnimation(zombieDead);
+            zombie.setFlip(1, 0);
+            zombie.move(point(0, 0));
+            zombie.y = 285;
+            zombie.draw();
+        }
+        zombie.drawStaticBox();
+        if (man.isStaticIntersect(zombie.getStaticBox())) {
+            zombie.flag = true;
+        }
+
+    });
 };
 
 exports.zombies = zombies;

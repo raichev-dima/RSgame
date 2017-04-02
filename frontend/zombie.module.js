@@ -2,6 +2,7 @@
 const PointJS = require('./point').PointJS;
 const constObj = require('./game').constObj;
 const man = require('./man.module').man;
+const bullets = require('./man.module').bullets;
 
 const point = constObj.pjs.vector.point;
 
@@ -21,24 +22,29 @@ zombies.spawner = constObj.pjs.OOP.newTimer(1000, function () {
 });
 
 
-zombies.logic = function() { return constObj.pjs.OOP.forArr(zombies, function (zombie) {
-            
-            if (!zombie.flag) {
-                zombie.draw();
-                zombie.move(point(-1, 0));
-            } else {
-                zombie.setAnimation(zombieDead);
-                zombie.setFlip(1,0);
-                zombie.move(point(0, 0));
-                zombie.y = 285;
-                zombie.draw();
-            }
-            zombie.drawStaticBox();
-            if (man.isStaticIntersect(zombie.getStaticBox())) {
-                zombie.flag = true;
-            }
+zombies.logic = function () {
+    return constObj.pjs.OOP.forArr(zombies, function (zombie) {
 
-        });
+        if (!zombie.flag) {
+            zombie.draw();
+            zombie.move(point(-1, 0));
+        } else {
+            zombie.setAnimation(zombieDead);
+            zombie.setFlip(1, 0);
+            zombie.move(point(0, 0));
+            zombie.y = 285;
+            zombie.draw();
+        }
+        //zombie.drawStaticBox();
+
+        if (zombie.isArrIntersect(bullets)) {
+            zombie.flag = true;
+        };
+        if (man.isStaticIntersect(zombie.getStaticBox())) {
+            zombie.flag = true;
+        };
+
+    });
 };
 
 exports.zombies = zombies;
