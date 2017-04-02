@@ -30,10 +30,34 @@ constObj.pjs.system.setTitle('My mega game');
 
 
 // *** Objects like a man or zombie ***
-const backgr = constObj.game.newImageObject({
+const backgr1 = constObj.game.newImageObject({
+    x: 0, y:0,
     file: 'img/bg2_wide.jpg',
     scale: 1.4,
+    onload : function (){
+        backgr2.x = backgr1.x + backgr1.w;
+    }
+    
 });
+    
+const backgr2 = constObj.game.newImageObject({
+    x : backgr1.x+backgr1.w, y : 0,
+    file: 'img/bg2_wide.jpg',
+    scale: 1.4,
+
+});
+    
+const endlessBackGround = function () { // аргумент s — это скорость движения фона
+
+ if (backgr1.x + backgr1.w < man.getPosition().x-320) { // если ушел
+  backgr1.x = backgr2.x+backgr2.w; // перемещаем его сразу за вторым
+ }
+ // аналогично для второго
+ if (backgr2.x + backgr2.w < man.getPosition().x-320) {
+  backgr2.x = backgr1.x+backgr1.w; // позиционируем за первым
+ }
+
+};
 
 
 // *** ***
@@ -42,15 +66,17 @@ const Game = function () {
 
     this.update = function () {
         constObj.game.clear();
-        backgr.draw();
+        backgr1.draw();
+        backgr2.draw();
+        endlessBackGround();
         man.drawManElements();
         //man.drawStaticBox();
         zombies.spawner.restart();
         zombies.logic();
 
         if (key.isDown('RIGHT')) {
-            cam.move(point(.5, 0));
-            man.move(point(.5, 0));
+            cam.move(point(.9, 0));
+            man.move(point(.9, 0));
 
         };
         if (key.isDown('LEFT')) {
