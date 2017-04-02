@@ -6,6 +6,7 @@ const man = require('./man.module').man;
 const zombies = require('./zombie.module').zombies;
 const constObj = require('./game').constObj;
 const PointJS = require('./point').PointJS;
+const bullets = require('./man.module').bullets;
 
 
 
@@ -60,6 +61,7 @@ const Game = function () {
         if (key.isDown('SPACE')) {
             man.shooting();
         };
+       
     };
     this.entry = function () {
         log(man);
