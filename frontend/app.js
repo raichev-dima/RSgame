@@ -34,6 +34,7 @@ const backgr = constObj.game.newImageObject({
     scale: 1.4,
 });
 
+
 // *** ***
 
 const Game = function () {
@@ -41,8 +42,8 @@ const Game = function () {
     this.update = function () {
         constObj.game.clear();
         backgr.draw();
-        man.drawManElements(); 
-        man.drawStaticBox();
+        man.drawManElements();
+        //man.drawStaticBox();
         zombies.spawner.restart();
         zombies.logic();
 
@@ -50,6 +51,14 @@ const Game = function () {
             cam.move(point(.5, 0));
             man.move(point(.5, 0));
 
+        };
+        if (key.isDown('LEFT')) {
+            cam.move(point(-.5, 0));
+            man.move(point(-.5, 0));
+
+        };
+        if (key.isDown('SPACE')) {
+            man.shooting();
         };
     };
     this.entry = function () {
