@@ -37,16 +37,16 @@ const backgr1 = constObj.game.newImageObject({
     onload : function (){
         backgr2.x = backgr1.x + backgr1.w;
     }
-    
+
 });
-    
+
 const backgr2 = constObj.game.newImageObject({
     x : backgr1.x+backgr1.w, y : 0,
     file: 'img/bg2_wide.jpg',
     scale: 1.4,
 
 });
-    
+
 const endlessBackGround = function () { // аргумент s — это скорость движения фона
 
  if (backgr1.x + backgr1.w < man.getPosition().x-320) { // если ушел
@@ -69,14 +69,14 @@ const Game = function () {
         backgr1.draw();
         backgr2.draw();
         endlessBackGround();
-        man.drawManElements();
         //man.drawStaticBox();
         zombies.spawner.restart();
         zombies.logic();
+        man.drawManElements();
 
         if (key.isDown('RIGHT')) {
-            cam.move(point(.9, 0));
-            man.move(point(.9, 0));
+            cam.move(point(.5, 0));
+            man.move(point(.5, 0));
 
         };
         if (key.isDown('LEFT')) {
@@ -87,7 +87,7 @@ const Game = function () {
         if (key.isDown('SPACE')) {
             man.shooting();
         };
-       
+
     };
     this.entry = function () {
         log(man);
