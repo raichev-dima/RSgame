@@ -6,13 +6,13 @@ const bullets = require('./man.module').bullets;
 
 const point = constObj.pjs.vector.point;
 
-const zombieDead = constObj.pjs.tiles.newAnimation('img/sprites/zombie_75_115_1_dead.png', 184, 115, 1);
+const zombieDead = constObj.pjs.tiles.newAnimation('img/sprites/zombie_75_115_1_dead.png', 123, 75, 1);
 
 const zombies = [];
 zombies.spawner = constObj.pjs.OOP.newTimer(1000, function () {
     zombies.push(constObj.game.newAnimationObject({
-        animation: constObj.pjs.tiles.newAnimation('img/sprites/zombie_75_115_10.png', 73.72, 115, 10),
-        w: 73.65,
+        animation: constObj.pjs.tiles.newAnimation('img/sprites/zombie_75_115_10.png', 74, 115, 10),
+        w: 74,
         h: 115,
         x: constObj.pjs.math.random(man.getPosition().x + 320, man.getPosition().x + 850), // x 1280
         y: 240,
@@ -30,13 +30,14 @@ zombies.logic = function () {
             zombie.move(point(-1, 0));
         } else {
             zombie.setAnimation(zombieDead);
-            zombie.setFlip(1, 0);
             zombie.move(point(0, 0));
-            zombie.y = 300;
+            zombie.y = 330;
+            zombie.w = 123;
+            zombie.h = 75;
             zombie.draw();
         }
-       
-        //zombie.drawStaticBox();
+
+        // zombie.drawStaticBox();
         if (zombie.isArrIntersect(bullets)) {
             zombie.dead = true;
             for (let i = 0; i < bullets.length; i++) {

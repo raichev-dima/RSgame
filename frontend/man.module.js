@@ -5,9 +5,9 @@ const constObj = require('./game').constObj;
 const point = constObj.pjs.vector.point;
 
 const man = constObj.game.newAnimationObject({
-    animation: constObj.pjs.tiles.newAnimation('img/sprites/human_114_8.png', 114, 114, 8),
-    w: 114,
-    h: 114,
+    animation: constObj.pjs.tiles.newAnimation('img/sprites/human_114_8.png', 90, 110, 8),
+    w: 90,
+    h: 110,
     x: 120,
     y: 240,
     delay: 10,
@@ -29,14 +29,6 @@ man.drawName = function () {
     });
 };
 
-man.drawGun = function () {
-    constObj.pjs.brush.drawImage({
-        file: "img/gun1.png",
-        x: this.x + this.w / 2 + 40,
-        y: this.y + 45,
-    });
-};
-
 const bullets = [];
 
 man.shooting = function () {
@@ -45,8 +37,8 @@ man.shooting = function () {
         this.shootFlag = true;
         console.log('shooting');
         let bullet = constObj.game.newRoundRectObject({
-            x: this.x + this.w / 2 + 110,
-            y: this.y + 45,
+            x: this.x + this.w / 2 + 32,
+            y: this.y + 64,
             w: 3,
             h: 3,
             radius: 1,
@@ -66,10 +58,9 @@ man.bulletFly = function () {
 }
 
 man.drawManElements = function () {
+    man.bulletFly();
     man.draw();
     man.drawName();
-    man.drawGun();
-    man.bulletFly();
 }
 
 exports.man = man;
