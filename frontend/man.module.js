@@ -12,9 +12,6 @@ const man = constObj.game.newAnimationObject({
     y: 240,
     delay: 10,
     scale: 1,
-    // onload: function () {
-    //     console.log('hello i am a onload');
-    // },
 });
 
 man.name = "Charlie";
@@ -45,22 +42,45 @@ man.shooting = function () {
             fillColor: "#FBFE6F",
         });
         bullets.push(bullet);
-        setTimeout( () => this.shootFlag = false, 300);
+        setTimeout(() => this.shootFlag = false, 1500);
     };
 };
 
 man.bulletFly = function () {
-    for (let i=0; i<bullets.length; i++) {
+    for (let i = 0; i < bullets.length; i++) {
         let bullet = bullets[i];
         bullet.draw();
-        bullet.move(point(1, 0));
+        bullet.move(point(10, 0));
     };
+}
+
+man.jumping = function () {
+    let position = this.getPosition(1);
+    man.jumpFlag = true;
+}
+
+man.newtonLaw = function (zeroOrOneOrTwo) {
+    let position = this.getPosition(zeroOrOneOrTwo);
+    if (man.jumpFlag === true) {
+        console.log(man.jumpFlag, position);
+        man.move(point(0, -8.8));
+    }
+
+    if (position.y < 160) {
+        man.jumpFlag = false;
+    }
+
+    if (position.y < 295 && man.jumpFlag === false) {
+        this.move(point(0, 3.9));
+    }
+    //console.log(position);
 }
 
 man.drawManElements = function () {
     man.bulletFly();
     man.draw();
     man.drawName();
+    man.newtonLaw(1);
 }
 
 exports.man = man;
