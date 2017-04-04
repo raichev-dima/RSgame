@@ -3,7 +3,6 @@ const pjs = new PointJS('2D', 900, 390, {
     backgroundColor: 'yellow',
 });
 const game = pjs.game;
-//pjs.system.initFullScreen();
 const log = pjs.system.log;
 const point = pjs.vector.point;
 const cam = pjs.camera;
@@ -17,9 +16,17 @@ const width = game.getWH().w;
 const height = game.getWH().h;
 const r = game.getResolution();
 
-
-
 exports.constObj = {
     pjs: pjs,
-    game: game
+    game: game,
+    key: key,
+    log:log,
+    point:point,
+    cam:cam,
+    brush:brush,
+    OOP:OOP,
+    math:math,
+    width:width,
+    height:height,
+    r:r
 }

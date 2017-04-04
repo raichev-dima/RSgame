@@ -61,8 +61,19 @@ const endlessBackGround = function () { // аргумент s — это ско�
 
 
 // *** ***
+var stayingHero = constObj.game.newImageObject( {
+    file : "img/sprites/staying.png",
+    x: 120,
+    y:220,
+    w:100,
+    h:140,
+
+});
 
 const Game = function () {
+    let dx = 2;
+    let dy = 0;
+
 
     this.update = function () {
         constObj.game.clear();
@@ -72,23 +83,33 @@ const Game = function () {
         //man.drawStaticBox();
         zombies.spawner.restart();
         zombies.logic();
-        man.drawManElements();
+        cam.move(point(dx, dy));
+        man.move(point(dx, dy));
+        stayingHero.move(point(dx, dy));
 
         if (key.isDown('RIGHT')) {
-            cam.move(point(0.9, 0));
-            man.move(point(0.9, 0));
+            dx = 1;
+            man.setFlip(0,0);
+            man.draw();
 
-        };
-        if (key.isDown('LEFT')) {
-            cam.move(point(-0.9, 0));
-            man.move(point(-0.9, 0));
+        }
+        else if (key.isDown('LEFT')) {
+            dx = -1;
+            man.setFlip(1,0);
+            man.draw();
+        }
 
-        };
+        else {
+            dx = 0;
+            stayingHero.draw();
 
+        }
+        man.drawManElements();
+        man.newtonLaw.call(stayingHero,1);
         if (key.isPress('UP')) {
             man.jumpFlag = true;
             man.jumping();
-           
+
         };
 
         if (key.isDown('SPACE')) {
@@ -104,6 +125,7 @@ const Game = function () {
         log('End!');
     }
 };
+
 
 constObj.game.newLoopFromClassObject('1', new Game());
 constObj.game.startLoop('1');
