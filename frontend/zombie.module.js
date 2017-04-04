@@ -9,6 +9,8 @@ const point = constObj.pjs.vector.point;
 const zombieDead = constObj.pjs.tiles.newAnimation('img/sprites/zombie_75_115_1_dead.png', 123, 75, 1);
 
 const zombies = [];
+const stackToRemove = [];
+
 zombies.spawner = constObj.pjs.OOP.newTimer(1000, function () {
     zombies.push(constObj.game.newAnimationObject({
         animation: constObj.pjs.tiles.newAnimation('img/sprites/zombie_75_115_10.png', 74, 115, 10),
@@ -23,8 +25,7 @@ zombies.spawner = constObj.pjs.OOP.newTimer(1000, function () {
 
 
 zombies.logic = function () {
-    constObj.pjs.OOP.forArr(zombies, function (zombie) {
-
+    constObj.pjs.OOP.forArr(zombies, function (zombie, index) {
         if (!zombie.dead) {
             zombie.draw();
             zombie.move(point(-1, 0));
@@ -34,24 +35,31 @@ zombies.logic = function () {
             zombie.y = 330;
             zombie.w = 123;
             zombie.h = 75;
+            zombie.dead++;
             zombie.draw();
         }
 
         // zombie.drawStaticBox();
         if (zombie.isArrIntersect(bullets)) {
-            zombie.dead = true;
+            zombie.dead = 1;
+
             for (let i = 0; i < bullets.length; i++) {
                 let bullet = bullets[i];
                 if (bullet.isArrIntersect(zombies)) {
                     bullets.splice(i, 1);
                 };
             }
+
         };
 
 
         if (man.isStaticIntersect(zombie.getStaticBox())) {
-            zombie.dead = true;
+            zombie.dead = 1;
         };
+
+        if (zombie.dead > 300) {
+            zombies.splice(index,1);
+        }
 
     });
 };

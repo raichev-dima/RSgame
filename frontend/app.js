@@ -75,15 +75,22 @@ const Game = function () {
         man.drawManElements();
 
         if (key.isDown('RIGHT')) {
-            cam.move(point(.5, 0));
-            man.move(point(.5, 0));
+            cam.move(point(0.9, 0));
+            man.move(point(0.9, 0));
 
         };
         if (key.isDown('LEFT')) {
-            cam.move(point(-.5, 0));
-            man.move(point(-.5, 0));
+            cam.move(point(-0.9, 0));
+            man.move(point(-0.9, 0));
 
         };
+
+        if (key.isPress('UP')) {
+            man.jumpFlag = true;
+            man.jumping();
+           
+        };
+
         if (key.isDown('SPACE')) {
             man.shooting();
         };
