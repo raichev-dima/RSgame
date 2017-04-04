@@ -85,7 +85,7 @@ const Game = function () {
         zombies.logic();
         cam.move(point(dx, dy));
         man.move(point(dx, dy));
-
+        stayingHero.move(point(dx, dy));
 
         if (key.isDown('RIGHT')) {
             dx = 1;
