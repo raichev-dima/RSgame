@@ -5,11 +5,11 @@ const constObj = require('./game').constObj;
 const point = constObj.pjs.vector.point;
 
 const man = constObj.game.newAnimationObject({
-    animation: constObj.pjs.tiles.newAnimation('img/sprites/human_114_8.png', 90, 110, 8),
-    w: 90,
-    h: 110,
+    animation: constObj.pjs.tiles.newAnimation('img/sprites/run-rigth.png', 190, 377, 5),
+    w: 100,
+    h: 140,
     x: 120,
-    y: 240,
+    y: 220,
     delay: 10,
     scale: 1,
 });
@@ -78,7 +78,6 @@ man.newtonLaw = function (zeroOrOneOrTwo) {
 
 man.drawManElements = function () {
     man.bulletFly();
-    man.draw();
     man.drawName();
     man.newtonLaw(1);
 }
