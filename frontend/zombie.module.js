@@ -3,6 +3,8 @@ const PointJS = require('./point').PointJS;
 const constObj = require('./game').constObj;
 const man = require('./man.module').man;
 const bullets = require('./man.module').bullets;
+const stayingHero = require('./man.module').stayingHero;
+const runningHero = require('./man.module').runningHero;
 
 const point = constObj.pjs.vector.point;
 
@@ -16,7 +18,7 @@ zombies.spawner = constObj.pjs.OOP.newTimer(1000, function () {
         animation: constObj.pjs.tiles.newAnimation('img/sprites/zombie_75_115_10.png', 74, 115, 10),
         w: 74,
         h: 115,
-        x: constObj.pjs.math.random(man.getPosition().x + 320, man.getPosition().x + 850), // x 1280
+        x: constObj.pjs.math.random(stayingHero.content.getPosition().x + 320, stayingHero.content.getPosition().x + 850), // x 1280
         y: 240,
         delay: 10,
         scale: 1,
@@ -53,7 +55,7 @@ zombies.logic = function () {
         };
 
 
-        if (man.isStaticIntersect(zombie.getStaticBox())) {
+        if (stayingHero.content.isStaticIntersect(zombie.getStaticBox())) {
             zombie.dead = 1;
         };
 
