@@ -14,6 +14,15 @@ const man = constObj.game.newAnimationObject({
     scale: 1,
 });
 
+const stayingMan = constObj.game.newImageObject({
+    file: "img/sprites/staying.png",
+    x: 120,
+    y: 220,
+    w: 100,
+    h: 140,
+
+});
+
 man.name = "Charlie";
 man.drawName = function () {
     constObj.pjs.brush.drawText({
@@ -84,3 +93,4 @@ man.drawManElements = function () {
 
 exports.man = man;
 exports.bullets = bullets;
+exports.stayingMan = stayingMan;
