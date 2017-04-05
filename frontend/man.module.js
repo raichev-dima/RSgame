@@ -8,7 +8,7 @@ function Man(path, width, height, count, name){
     this.name = name || "Where is my Name?";
     this.content = constObj.game.newAnimationObject({
         animation: constObj.pjs.tiles.newAnimation(path, width, height, count),
-        w: 75,
+        w: 100,
         h: 140,
         x: 120,
         y: 220,
@@ -49,7 +49,7 @@ Man.prototype.shooting = function () {
             fillColor: "#FBFE6F",
         });
         bullets.push(bullet);
-        setTimeout(() => this.shootFlag = false, 1500);
+        setTimeout(() => this.shootFlag = false, 300);
     };
 };
 
@@ -81,7 +81,7 @@ Man.prototype.newtonLaw = function (zeroOrOneOrTwo) {
         this.content.move(constObj.point(0, -8.8));
     }
 
-    if (position.y < 160) {
+    if (position.y < 100) {
         this.jumpFlag = false;
     }
 
@@ -106,7 +106,7 @@ Man.prototype.drawManElements = function () {
 }
 
 let stayingHero = new Man("img/sprites/staying_by_Egor.png", 180, 377, 1);
-let runningHero = new Man("img/sprites/run-right.png", 180, 377, 5);
+let runningHero = new Man("img/sprites/run-right.png", 192, 358, 5);
 
 exports.Man = Man;
 exports.bullets = bullets;

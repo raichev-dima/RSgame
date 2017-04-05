@@ -6,6 +6,7 @@ const startButtons = require('./preLoad.module').startButtons;
 const background = require('./background').background;
 const zombies = require('./zombie.module').zombies;
 const constObj = require('./const').constObj;
+const girls = require('./girl.module').girls;
 const bullets = require('./man.module').bullets;
 const stayingHero = require('./man.module').stayingHero;
 const runningHero = require('./man.module').runningHero;
@@ -31,7 +32,9 @@ const Game = function () {
         background.counter.draw();
         //man.drawStaticBox();
         zombies.spawner.restart();
+        girls.spawner.restart();
         zombies.logic();
+        girls.logic();
         constObj.cam.move(constObj.point(dx, dy));
 
         runningHero.content.move(constObj.point(dx, dy));
@@ -45,7 +48,6 @@ const Game = function () {
 
         } else if (constObj.key.isDown('LEFT')) {
             dx = -1;
-
             runningHero.content.setFlip(1, 0);
             runningHero.content.draw();
         } else {
