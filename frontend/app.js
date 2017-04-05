@@ -1,33 +1,15 @@
 'use strict';
 
-const app = require('./app');
+
+const Man = require('./man.module').Man;
 const startButton = require('./preLoad.module').startButton;
-const man = require('./man.module').man;
-
 const zombies = require('./zombie.module').zombies;
-const constObj = require('./game').constObj;
-const PointJS = require('./point').PointJS;
+const constObj = require('./const').constObj;
 const bullets = require('./man.module').bullets;
-const stayingMan = require('./man.module').stayingMan;
-
-//pjs.system.initFullScreen();
-const log = constObj.pjs.system.log;
-
-const point = constObj.pjs.vector.point;
-const cam = constObj.pjs.camera;
-const brush = constObj.pjs.brush;
-const OOP = constObj.pjs.OOP;
-const math = constObj.pjs.math;
-// const mouse = pjs.mouseControl.initMouseControl();
-const key = constObj.pjs.keyControl.initKeyControl();
-// key.initKeyControl();
-
-const width = constObj.game.getWH().w;
-const height = constObj.game.getWH().h;
-const r = constObj.game.getResolution();
+const stayingHero = require('./man.module').stayingHero;
+const runningHero = require('./man.module').runningHero;
 
 constObj.pjs.system.setTitle('My mega game');
-
 
 // *** Objects like a man or zombie ***
 const backgr1 = constObj.game.newImageObject({
@@ -49,20 +31,30 @@ const backgr2 = constObj.game.newImageObject({
 
 });
 
+
+
 const endlessBackGround = function () { // аргумент s — это скорость движения фона
 
-    if (backgr1.x + backgr1.w < man.getPosition().x - 320) { // если ушел
+ if (backgr1.x + backgr1.w < runningHero.content.getPosition().x-320) { // если ушел
+  backgr1.x = backgr2.x+backgr2.w; // перемещаем его сразу за вторым
+ }
+ // аналогично для второго
+ if (backgr2.x + backgr2.w < runningHero.content.getPosition().x-320) {
+  backgr2.x = backgr1.x+backgr1.w; // позиционируем за первым
+ }
+
+    if (backgr1.x + backgr1.w < runningHero.content.getPosition().x - 320) { // если ушел
         backgr1.x = backgr2.x + backgr2.w; // перемещаем его сразу за вторым
     }
     // аналогично для второго
-    if (backgr2.x + backgr2.w < man.getPosition().x - 320) {
+    if (backgr2.x + backgr2.w < runningHero.content.getPosition().x - 320) {
         backgr2.x = backgr1.x + backgr1.w; // позиционируем за первым
     }
+
 
 };
 
 // *** ***
-
 
 const Game = function () {
     let dx = 2;
@@ -76,46 +68,51 @@ const Game = function () {
         //man.drawStaticBox();
         zombies.spawner.restart();
         zombies.logic();
-        cam.move(point(dx, dy));
-        man.move(point(dx, dy));
-        stayingMan.move(point(dx, dy));
+        constObj.cam.move(constObj.point(dx, dy));
 
-        if (key.isDown('RIGHT')) {
+        runningHero.content.move(constObj.point(dx, dy));
+        stayingHero.content.move(constObj.point(dx, dy));
+
+        if (constObj.key.isDown('RIGHT')) {
             dx = 1;
-            man.setFlip(0, 0);
-            man.draw();
+            runningHero.content.setFlip(0,0);
+            runningHero.content.draw();
 
-        } else if (key.isDown('LEFT')) {
+
+        } else if (constObj.key.isDown('LEFT')) {
             dx = -1;
-            man.setFlip(1, 0);
-            man.draw();
-        } else {
+
+            runningHero.content.setFlip(1,0);
+            runningHero.content.draw();
+        }
+
+        else {
             dx = 0;
-            stayingMan.draw();
+            stayingHero.content.draw();
 
         }
-        man.drawManElements();
-        man.newtonLaw.call(stayingMan, 1);
-        if (key.isPress('UP')) {
-            man.jumpFlag = true;
-            man.jumping();
+        runningHero.drawManElements();
+        runningHero.newtonLaw(1);
+
+        if (constObj.key.isPress('UP')) {
+            runningHero.jumpFlag = true;
+            runningHero.jumping();
 
         };
 
-        if (key.isDown('SPACE')) {
-            man.shooting();
+        if (constObj.key.isDown('SPACE')) {
+            runningHero.shooting();
         };
 
     };
     this.entry = function () {
-        log(man);
-        log('start!');
+        constObj.log(Man);
+        constObj.log('start!');
     };
     this.exit = function () {
-        log('End!');
+        constObj.log('End!');
     }
 };
 
-
 constObj.game.newLoopFromClassObject('1', new Game());
-//constObj.game.startLoop('1');
+constObj.game.startLoop('1');

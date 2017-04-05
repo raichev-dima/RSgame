@@ -1,6 +1,6 @@
 'use strict';
 const PointJS = require('./point').PointJS;
-const constObj = require('./game').constObj;
+const constObj = require('./const').constObj;
 
 const width = constObj.game.getWH().w;
 const height = constObj.game.getWH().h;
