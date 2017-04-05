@@ -1,6 +1,6 @@
 'use strict';
 const PointJS = require('./point').PointJS;
-const constObj = require('./game').constObj;
+const constObj = require('./const').constObj;
 const man = require('./man.module').man;
 const bullets = require('./man.module').bullets;
 const stayingHero = require('./man.module').stayingHero;
@@ -11,7 +11,6 @@ const point = constObj.pjs.vector.point;
 const zombieDead = constObj.pjs.tiles.newAnimation('img/sprites/zombie_75_115_1_dead.png', 123, 75, 1);
 
 const zombies = [];
-const stackToRemove = [];
 
 zombies.spawner = constObj.pjs.OOP.newTimer(1000, function () {
     zombies.push(constObj.game.newAnimationObject({
