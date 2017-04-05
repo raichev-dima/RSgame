@@ -115,4 +115,4 @@ const Game = function () {
 };
 
 constObj.game.newLoopFromClassObject('1', new Game());
-constObj.game.startLoop('1');
+//constObj.game.startLoop('1');
