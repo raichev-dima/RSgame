@@ -2,7 +2,7 @@
 
 
 const Man = require('./man.module').Man;
-const startButton = require('./preLoad.module').startButton;
+const startButtons = require('./preLoad.module').startButtons;
 const zombies = require('./zombie.module').zombies;
 const constObj = require('./const').constObj;
 const bullets = require('./man.module').bullets;
@@ -35,13 +35,13 @@ const backgr2 = constObj.game.newImageObject({
 
 const endlessBackGround = function () { // аргумент s — это скорость движения фона
 
- if (backgr1.x + backgr1.w < runningHero.content.getPosition().x-320) { // если ушел
-  backgr1.x = backgr2.x+backgr2.w; // перемещаем его сразу за вторым
- }
- // аналогично для второго
- if (backgr2.x + backgr2.w < runningHero.content.getPosition().x-320) {
-  backgr2.x = backgr1.x+backgr1.w; // позиционируем за первым
- }
+    if (backgr1.x + backgr1.w < runningHero.content.getPosition().x - 320) { // если ушел
+        backgr1.x = backgr2.x + backgr2.w; // перемещаем его сразу за вторым
+    }
+    // аналогично для второго
+    if (backgr2.x + backgr2.w < runningHero.content.getPosition().x - 320) {
+        backgr2.x = backgr1.x + backgr1.w; // позиционируем за первым
+    }
 
     if (backgr1.x + backgr1.w < runningHero.content.getPosition().x - 320) { // если ушел
         backgr1.x = backgr2.x + backgr2.w; // перемещаем его сразу за вторым
@@ -57,6 +57,7 @@ const endlessBackGround = function () { // аргумент s — это ско�
 // *** ***
 
 const Game = function () {
+    constObj.log('pls push start!');
     let dx = 2;
     let dy = 0;
 
@@ -75,18 +76,16 @@ const Game = function () {
 
         if (constObj.key.isDown('RIGHT')) {
             dx = 1;
-            runningHero.content.setFlip(0,0);
+            runningHero.content.setFlip(0, 0);
             runningHero.content.draw();
 
 
         } else if (constObj.key.isDown('LEFT')) {
             dx = -1;
 
-            runningHero.content.setFlip(1,0);
+            runningHero.content.setFlip(1, 0);
             runningHero.content.draw();
-        }
-
-        else {
+        } else {
             dx = 0;
             stayingHero.content.draw();
 
@@ -116,3 +115,21 @@ const Game = function () {
 
 constObj.game.newLoopFromClassObject('1', new Game());
 //constObj.game.startLoop('1');
+
+const preLoadScreen = function () {
+    this.update = function () {
+        constObj.game.clear();
+        backgr1.draw();
+        //runningHero.preLoadContent();
+        runningHero.content.draw();
+    };
+    this.entry = function () {
+        constObj.log('PreloadScreen loaded');
+    };
+    this.exit = function () {
+        constObj.log('preloadScreen End!');
+    }
+};
+
+constObj.game.newLoopFromClassObject('preLoad', new preLoadScreen());
+constObj.game.startLoop('preLoad');

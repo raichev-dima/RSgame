@@ -3,8 +3,8 @@ const PointJS = require('./point').PointJS;
 const constObj = require('./const').constObj;
 
 
-function Man(path, width, height, count){
-    this.name = "Charlie";
+function Man(path, width, height, count, name){
+    this.name = name || "Where is my Name?";
     this.content = constObj.game.newAnimationObject({
         animation: constObj.pjs.tiles.newAnimation(path, width, height, count),
         w: 75,
@@ -13,9 +13,13 @@ function Man(path, width, height, count){
         y: 220,
         delay: 10,
         scale: 1,
-    })
+    });
 }
-
+Man.prototype.changeSkin = function (path, width, height, count, name) {
+    let skin = constObj.pjs.tiles.newAnimation(path, width, height, count);
+    this.content.setAnimation(skin);
+    this.name = name;
+};
 
 Man.prototype.drawName = function () {
     constObj.pjs.brush.drawText({
