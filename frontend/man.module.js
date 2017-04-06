@@ -3,6 +3,7 @@ const PointJS = require('./point').PointJS;
 const constObj = require('./const').constObj;
 
 
+
 function Man(path, width, height, count, name){
     this.name = name || "Where is my Name?";
     this.content = constObj.game.newAnimationObject({
@@ -69,6 +70,14 @@ Man.prototype.newtonLaw = function (zeroOrOneOrTwo) {
     let position = this.content.getPosition(zeroOrOneOrTwo);
     if (this.jumpFlag === true) {
         console.log(this.jumpFlag, position);
+        if (constObj.key.isDown('RIGHT')) {
+            runningHero.content.move(constObj.point(3, 0));
+            stayingHero.content.move(constObj.point(3, 0));
+        }
+        if (constObj.key.isDown('LEFT')) {
+            runningHero.content.move(constObj.point(-3, 0));
+            stayingHero.content.move(constObj.point(-3, 0));
+        }
         this.content.move(constObj.point(0, -8.8));
     }
 
@@ -78,6 +87,14 @@ Man.prototype.newtonLaw = function (zeroOrOneOrTwo) {
 
     if (position.y < 295 && this.jumpFlag === false) {
         this.content.move(constObj.point(0, 3.9));
+        if (constObj.key.isDown('RIGHT')) {
+            runningHero.content.move(constObj.point(3, 0));
+            stayingHero.content.move(constObj.point(3, 0));
+        }
+        if (constObj.key.isDown('LEFT')) {
+            runningHero.content.move(constObj.point(-3, 0));
+            stayingHero.content.move(constObj.point(-3, 0));
+        }
     }
     //console.log(position);
 }
@@ -95,4 +112,5 @@ exports.Man = Man;
 exports.bullets = bullets;
 exports.stayingHero = stayingHero;
 exports.runningHero = runningHero;
+
 
