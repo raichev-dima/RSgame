@@ -5,6 +5,7 @@ const man = require('./man.module').man;
 const bullets = require('./man.module').bullets;
 const stayingHero = require('./man.module').stayingHero;
 const runningHero = require('./man.module').runningHero;
+const background = require('./background').background;
 
 const point = constObj.pjs.vector.point;
 
@@ -43,6 +44,8 @@ zombies.logic = function () {
         // zombie.drawStaticBox();
         if (zombie.isArrIntersect(bullets)) {
             zombie.dead = 1;
+            background.countOfZombee++
+            console.log(background.countOfZombee);
 
             for (let i = 0; i < bullets.length; i++) {
                 let bullet = bullets[i];

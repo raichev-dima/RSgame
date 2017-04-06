@@ -3,6 +3,7 @@
 
 const Man = require('./man.module').Man;
 const startButtons = require('./preLoad.module').startButtons;
+const background = require('./background').background;
 const zombies = require('./zombie.module').zombies;
 const constObj = require('./const').constObj;
 const bullets = require('./man.module').bullets;
@@ -11,50 +12,7 @@ const runningHero = require('./man.module').runningHero;
 
 constObj.pjs.system.setTitle('My mega game');
 
-// *** Objects like a man or zombie ***
-const backgr1 = constObj.game.newImageObject({
-    x: 0,
-    y: 0,
-    file: 'img/bg2_wide.jpg',
-    scale: 1.4,
-    onload: function () {
-        backgr2.x = backgr1.x + backgr1.w;
-    }
 
-});
-
-const backgr2 = constObj.game.newImageObject({
-    x: backgr1.x + backgr1.w,
-    y: 0,
-    file: 'img/bg2_wide.jpg',
-    scale: 1.4,
-
-});
-
-
-
-const endlessBackGround = function () { // аргумент s — это скорость движения фона
-
-    if (backgr1.x + backgr1.w < runningHero.content.getPosition().x - 320) { // если ушел
-        backgr1.x = backgr2.x + backgr2.w; // перемещаем его сразу за вторым
-    }
-    // аналогично для второго
-    if (backgr2.x + backgr2.w < runningHero.content.getPosition().x - 320) {
-        backgr2.x = backgr1.x + backgr1.w; // позиционируем за первым
-    }
-
-    if (backgr1.x + backgr1.w < runningHero.content.getPosition().x - 320) { // если ушел
-        backgr1.x = backgr2.x + backgr2.w; // перемещаем его сразу за вторым
-    }
-    // аналогично для второго
-    if (backgr2.x + backgr2.w < runningHero.content.getPosition().x - 320) {
-        backgr2.x = backgr1.x + backgr1.w; // позиционируем за первым
-    }
-
-
-};
-
-// *** ***
 
 const Game = function () {
     constObj.log('pls push start!');
@@ -63,9 +21,14 @@ const Game = function () {
 
     this.update = function () {
         constObj.game.clear();
-        backgr1.draw();
-        backgr2.draw();
-        endlessBackGround();
+        background.first.draw();
+        background.second.draw();
+        background.endlessBackGround();
+        background.counter.setPositionCS( constObj.point(100, 50));
+        background.counter.reStyle({
+            text: "Убито зомби: " + background.countOfZombee
+        })
+        background.counter.draw();
         //man.drawStaticBox();
         zombies.spawner.restart();
         zombies.logic();
@@ -97,6 +60,7 @@ const Game = function () {
             runningHero.jumpFlag = true;
             runningHero.jumping();
 
+
         };
 
         if (constObj.key.isDown('SPACE')) {
@@ -119,7 +83,7 @@ constObj.game.newLoopFromClassObject('1', new Game());
 const preLoadScreen = function () {
     this.update = function () {
         constObj.game.clear();
-        backgr1.draw();
+        background.first.draw();
         //runningHero.preLoadContent();
         runningHero.content.draw();
     };
