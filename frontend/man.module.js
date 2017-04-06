@@ -3,11 +3,11 @@ const PointJS = require('./point').PointJS;
 const constObj = require('./const').constObj;
 
 
-function Man(path, width, heigth, count){
+function Man(path, width, height, count){
     this.name = "Charlie";
     this.content = constObj.game.newAnimationObject({
-        animation: constObj.pjs.tiles.newAnimation('img/sprites/run-rigth.png', 190, 377, 5),
-        w: 100,
+        animation: constObj.pjs.tiles.newAnimation(path, width, height, count),
+        w: 75,
         h: 140,
         x: 120,
         y: 220,
@@ -84,8 +84,8 @@ Man.prototype.drawManElements = function () {
     this.newtonLaw(1);
 }
 
-let stayingHero = new Man("img/sprites/staying.png", 190, 377, 1);
-let runningHero = new Man("img/sprites/staying.png", 190, 377, 5);
+let stayingHero = new Man("img/sprites/staying_by_Egor.png", 180, 377, 1);
+let runningHero = new Man("img/sprites/run-right.png", 180, 377, 5);
 
 exports.Man = Man;
 exports.bullets = bullets;
