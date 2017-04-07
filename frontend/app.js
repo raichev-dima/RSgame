@@ -43,6 +43,7 @@ const Game = function () {
         girls.logic();
         runningHero.drawManElements();
         runningHero.newtonLaw(1);
+       
         constObj.cam.move(constObj.point(dx, dy));
 
         runningHero.content.move(constObj.point(dx, dy));
@@ -69,10 +70,7 @@ const Game = function () {
         }
 
         if (constObj.key.isPress('UP')) {
-            runningHero.jumpFlag = true;
             runningHero.jumping();
-
-
         };
 
         if (constObj.key.isDown('SPACE')) {

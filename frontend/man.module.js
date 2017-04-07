@@ -70,41 +70,26 @@ Man.prototype.bulletFly = function () {
 }
 
 Man.prototype.jumping = function () {
-    let position = this.content.getPosition(1);
-    this.jumpFlag = true;
+    this.jumpFlag = 'UP';
 }
 
 Man.prototype.newtonLaw = function (zeroOrOneOrTwo) {
     let position = this.content.getPosition(zeroOrOneOrTwo);
-    if (this.jumpFlag === true) {
-        console.log(this.jumpFlag, position);
-        if (constObj.key.isDown('RIGHT')) {
-            runningHero.content.move(constObj.point(2, 0));
-            stayingHero.content.move(constObj.point(2, 0));
-        }
-        if (constObj.key.isDown('LEFT')) {
-            runningHero.content.move(constObj.point(-2, 0));
-            stayingHero.content.move(constObj.point(-2, 0));
-        }
-        this.content.move(constObj.point(0, -8.8));
+    if (this.jumpFlag === 'UP') {
+        console.log(this.jumpFlag, position, this.content);
+        this.content.move(constObj.point(0, -3.9));
+        this.content.draw();
+        console.log(position.y);
     }
 
-    if (position.y < 80) {
-        this.jumpFlag = false;
-    }
-
-    if (position.y < 287 && this.jumpFlag === false) {
+    if (position.y < 12 || this.jumpFlag === 'DOWN') {
+        this.jumpFlag = 'DOWN';
         this.content.move(constObj.point(0, 3.9));
-        if (constObj.key.isDown('RIGHT')) {
-            runningHero.content.move(constObj.point(2, 0));
-            stayingHero.content.move(constObj.point(2, 0));
-        }
-        if (constObj.key.isDown('LEFT')) {
-            runningHero.content.move(constObj.point(-2, 0));
-            stayingHero.content.move(constObj.point(-2, 0));
+        this.content.draw();
+        if (position.y > 287) {
+            this.jumpFlag = 'STOP';
         }
     }
-    //console.log(position);
 }
 
 Man.prototype.drawManElements = function () {
