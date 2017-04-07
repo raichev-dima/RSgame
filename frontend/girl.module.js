@@ -12,7 +12,7 @@ const point = constObj.pjs.vector.point;
 const girlDead = constObj.pjs.tiles.newAnimation('img/sprites/girl_dead_120_110_15.png', 120, 110, 15);
 
 const girls = [];
-girls.spawner = constObj.pjs.OOP.newTimer(5000, function () {
+girls.spawner = constObj.pjs.OOP.newTimer(1000, function () {
     girls.push(constObj.game.newAnimationObject({
         animation: constObj.pjs.tiles.newAnimation('img/sprites/girl_70_110_12.png', 70, 110, 12),
         w: 70,
@@ -36,12 +36,13 @@ girls.logic = function () {
             girl.w = 120;
             girl.h = 110;
             girl.dead++;
-            girl.draw();
+            girl.drawFrames(0, 14);
         }
 
-        // girl.drawStaticBox();
-        if (girl.isArrIntersect(bullets)) {
+        girl.drawStaticBox();
+        if (girl.isArrIntersect(bullets) && !girl.dead) {
             girl.dead = 1;
+            girl.frame = 0;
             background.countOfGirl++
             console.log('герлы = ' + background.countOfGirl);
 
