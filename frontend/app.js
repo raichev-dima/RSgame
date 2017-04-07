@@ -43,7 +43,11 @@ const Game = function () {
         girls.logic();
         runningHero.drawManElements();
         runningHero.newtonLaw(1);
-       
+        background.counterLife.reduce(function(prevResult, item) {
+            item.setPositionCS( constObj.point(50 + prevResult, 30));
+            return 50+prevResult;
+        },600);
+        constObj.pjs.OOP.drawArr(background.counterLife);
         constObj.cam.move(constObj.point(dx, dy));
 
         runningHero.content.move(constObj.point(dx, dy));

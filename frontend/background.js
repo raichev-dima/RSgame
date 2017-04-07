@@ -16,6 +16,27 @@ let counterG = constObj.game.newTextObject( {
     color : "#000000",
 });
 
+function createCounterLife() {
+    let x = 0;
+    let life = [];
+    for (let i = 0; i < 5; i++) {
+        x += 50;
+        life.push(addPartOfLife(x));
+    }
+    function addPartOfLife(x) {
+        let partOfLife =  constObj.game.newRectObject( {
+            x : x,
+            y : 60,
+            w : 50,
+            h : 20,
+            fillColor : "green",
+        });
+        return partOfLife;
+    }
+    return life;
+}
+let counterLife = createCounterLife();
+
 const backgr1 = constObj.game.newImageObject({
     x: 0,
     y: 0,
@@ -59,5 +80,6 @@ exports.background = {'first': backgr1,
     'counterZ': counterZ,
     'counterG': counterG,
     'countOfZombee':countOfZombee,
-    'countOfGirl':countOfGirl
+    'countOfGirl':countOfGirl,
+    'counterLife':counterLife
 }
