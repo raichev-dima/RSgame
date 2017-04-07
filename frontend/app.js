@@ -50,12 +50,29 @@ const Game = function () {
 
         if (constObj.key.isDown('RIGHT')) {
             dx = 1.3;
+             if (runningHero.content.getPosition().x  <= 125) {
+                constObj.cam.move(constObj.point(-dx, -dy));
+             }
+             if (runningHero.content.getPosition().x  >= constObj.cam.getPosition().x+125) {
+                 constObj.cam.move(constObj.point(dx*2, dy*2));
+                }
             runningHero.content.setFlip(0, 0);
             runningHero.content.draw();
 
 
         } else if (constObj.key.isDown('LEFT')) {
-            dx = -1.3;
+            if (runningHero.content.getPosition().x  >= 0) {
+                 dx = -1.3;
+                 if (runningHero.content.getPosition().x -125 <= 0) {
+                     constObj.cam.move(constObj.point(-dx, -dy));
+                 }
+               else if (runningHero.content.getPosition().x  <= constObj.cam.getPosition().x+125){ 
+                 constObj.cam.move(constObj.point(dx*2, dy*2));
+                }
+            }
+             else if (runningHero.content.getPosition().x < 0){
+                  dx = 0;
+                 }
             runningHero.content.setFlip(1, 0);
             stayingHero.content.y = 0;
             stayingHero.content.h = 0;
