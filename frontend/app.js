@@ -25,38 +25,48 @@ const Game = function () {
         background.first.draw();
         background.second.draw();
         background.endlessBackGround();
-        background.counter.setPositionCS( constObj.point(100, 50));
-        background.counter.reStyle({
+        background.counterZ.setPositionCS( constObj.point(100, 30));
+        background.counterG.setPositionCS( constObj.point(100, 50));
+        background.counterZ.reStyle({
             text: "Убито зомби: " + background.countOfZombee
         })
-        background.counter.draw();
-        //man.drawStaticBox();
+        background.counterZ.draw();
+        background.counterG.reStyle({
+            text: "Убито герлов: " + background.countOfGirl
+        })
+        background.counterG.draw();
+        // runningHero.content.drawStaticBox();
+        // stayingHero.content.drawStaticBox();
         zombies.spawner.restart();
         girls.spawner.restart();
         zombies.logic();
         girls.logic();
+        runningHero.drawManElements();
+        runningHero.newtonLaw(1);
         constObj.cam.move(constObj.point(dx, dy));
 
         runningHero.content.move(constObj.point(dx, dy));
         stayingHero.content.move(constObj.point(dx, dy));
 
         if (constObj.key.isDown('RIGHT')) {
-            dx = 1;
+            dx = 1.3;
             runningHero.content.setFlip(0, 0);
             runningHero.content.draw();
 
 
         } else if (constObj.key.isDown('LEFT')) {
-            dx = -1;
+            dx = -1.3;
             runningHero.content.setFlip(1, 0);
+            stayingHero.content.y = 0;
+            stayingHero.content.h = 0;
             runningHero.content.draw();
         } else {
             dx = 0;
+            stayingHero.content.y = 220;
+            stayingHero.content.h = 140;
             stayingHero.content.draw();
 
         }
-        runningHero.drawManElements();
-        runningHero.newtonLaw(1);
 
         if (constObj.key.isPress('UP')) {
             runningHero.jumpFlag = true;

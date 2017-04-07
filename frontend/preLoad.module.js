@@ -9,8 +9,8 @@ const stayingHero = require('./man.module').stayingHero;
 const runningHero = require('./man.module').runningHero;
 
 let skins = [{
-    run: ["img/sprites/run-right.png", 180, 377, 5, 'Tvoi-glaza-aa'],
-    stay: ["img/sprites/staying_by_Egor.png", 180, 377, 1,'Tvoi-glaza-aa']
+    run: ["img/sprites/run-right.png", 192, 358, 5, 'Tvoi-glaza-aa'],
+    stay: ["img/sprites/staying_by_Egor.png", 192, 358, 1,'Tvoi-glaza-aa']
 },
 {
     run: ["img/sprites/human_114_8.png", 90, 110, 8,'Charlie'],

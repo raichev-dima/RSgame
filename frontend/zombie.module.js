@@ -13,7 +13,7 @@ const zombieDead = constObj.pjs.tiles.newAnimation('img/sprites/zombie_75_115_1_
 
 const zombies = [];
 
-zombies.spawner = constObj.pjs.OOP.newTimer(1000, function () {
+zombies.spawner = constObj.pjs.OOP.newTimer(2000, function () {
     zombies.push(constObj.game.newAnimationObject({
         animation: constObj.pjs.tiles.newAnimation('img/sprites/zombie_75_115_10.png', 74, 115, 10),
         w: 74,
@@ -45,7 +45,7 @@ zombies.logic = function () {
         if (zombie.isArrIntersect(bullets)) {
             zombie.dead = 1;
             background.countOfZombee++
-            console.log(background.countOfZombee);
+            console.log('зомби = ' + background.countOfZombee);
 
             for (let i = 0; i < bullets.length; i++) {
                 let bullet = bullets[i];
@@ -57,7 +57,7 @@ zombies.logic = function () {
         };
 
 
-        if (stayingHero.content.isStaticIntersect(zombie.getStaticBox())) {
+        if (runningHero.content.isStaticIntersect(zombie.getStaticBox())) {
             zombie.dead = 1;
         };
 

@@ -2,12 +2,18 @@ const constObj = require('./const').constObj;
 const runningHero = require('./man.module').runningHero;
 
 let countOfZombee = 0;
-let counter = constObj.game.newTextObject( {
+let countOfGirl = 0;
+let counterZ = constObj.game.newTextObject( {
     text : '',
     size : 20,
     padding : 10,
     color : "#000000",
-    strokeWidth : 2,
+});
+let counterG = constObj.game.newTextObject( {
+    text : '',
+    size : 20,
+    padding : 10,
+    color : "#000000",
 });
 
 const backgr1 = constObj.game.newImageObject({
@@ -50,6 +56,8 @@ const endlessBackGround = function () { // аргумент s — это ско�
 exports.background = {'first': backgr1,
     'second':backgr2,
     'endlessBackGround':endlessBackGround,
-    'counter': counter,
-    'countOfZombee':countOfZombee
+    'counterZ': counterZ,
+    'counterG': counterG,
+    'countOfZombee':countOfZombee,
+    'countOfGirl':countOfGirl
 }
