@@ -1,6 +1,8 @@
 'use strict';
 const PointJS = require('./point').PointJS;
 const constObj = require('./const').constObj;
+const manH = 140;
+const heroPos = constObj.height - (manH + constObj.persPos);
 
 function Man(path, width, height, count, name){
     this.jumpFlag = 'STOP';
@@ -8,9 +10,9 @@ function Man(path, width, height, count, name){
     this.content = constObj.game.newAnimationObject({
         animation: constObj.pjs.tiles.newAnimation(path, width, height, count),
         w: 100,
-        h: 140,
+        h: manH,
         x: 120,
-        y: 220,
+        y: heroPos,
         delay: 10,
         scale: 1,
     });
@@ -102,5 +104,6 @@ let hero = new Man("img/sprites/girl-hero.png", 220, 236, 14);
 exports.Man = Man;
 exports.bullets = bullets;
 exports.hero = hero;
+exports.heroPos = heroPos;
 
 

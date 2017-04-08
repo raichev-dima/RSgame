@@ -1,5 +1,7 @@
 const constObj = require('./const').constObj;
 const hero = require('./man.module').hero;
+const bgHeight = 280;
+const bgPos = constObj.height - bgHeight;
 
 let countOfZombee = 0;
 let countOfGirl = 0;
@@ -39,9 +41,9 @@ let counterLife = createCounterLife();
 
 const backgr1 = constObj.game.newImageObject({
     x: 0,
-    y: 0,
-    file: 'img/bg2_wide.jpg',
-    scale: 1.4,
+    y: bgPos,
+    file: 'img/main-bg.png',
+    scale: 1,
     onload: function () {
         backgr2.x = backgr1.x + backgr1.w;
     }
@@ -49,9 +51,9 @@ const backgr1 = constObj.game.newImageObject({
 });
 const backgr2 = constObj.game.newImageObject({
     x: backgr1.x + backgr1.w,
-    y: 0,
-    file: 'img/bg2_wide.jpg',
-    scale: 1.4,
+    y: bgPos,
+    file: 'img/main-bg.png',
+    scale: 1,
 
 });
 const endlessBackGround = function () { // аргумент s — это скорость движения фона
@@ -74,7 +76,9 @@ const endlessBackGround = function () { // аргумент s — это ско�
 };
 
 
-exports.background = {'first': backgr1,
+exports.background = {
+    'bgPos': bgPos,
+    'first': backgr1,
     'second':backgr2,
     'endlessBackGround':endlessBackGround,
     'counterZ': counterZ,

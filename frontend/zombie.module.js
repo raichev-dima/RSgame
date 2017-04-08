@@ -5,20 +5,22 @@ const man = require('./man.module').man;
 const bullets = require('./man.module').bullets;
 const hero = require('./man.module').hero;
 const background = require('./background').background;
+const zombieH = 115;
+const zombiePos = constObj.height - (zombieH + constObj.persPos);
 
 const point = constObj.pjs.vector.point;
 
-const zombieDead = constObj.pjs.tiles.newAnimation('img/sprites/zombie_75_115_1_dead.png', 123, 75, 1);
+const zombieDead = constObj.pjs.tiles.newAnimation('img/sprites/zombie_75_115_1_dead.png', 123, zombieH, 1);
 
 const zombies = [];
 
 zombies.spawner = constObj.pjs.OOP.newTimer(2000, function () {
     zombies.push(constObj.game.newAnimationObject({
-        animation: constObj.pjs.tiles.newAnimation('img/sprites/zombie_75_115_10.png', 74, 115, 10),
+        animation: constObj.pjs.tiles.newAnimation('img/sprites/zombie_75_115_10.png', 74, zombieH, 10),
         w: 74,
-        h: 115,
-        x: constObj.pjs.math.random(hero.content.getPosition().x + 320, hero.content.getPosition().x + 850), // x 1280
-        y: 240,
+        h: zombieH,
+        x: constObj.pjs.math.random(hero.content.getPosition().x + 900, hero.content.getPosition().x + 1100), // x 1280
+        y: zombiePos,
         delay: 10,
         scale: 1,
     }));
@@ -34,9 +36,7 @@ zombies.logic = function () {
         } else {
             zombie.setAnimation(zombieDead);
             zombie.move(point(0, 0));
-            zombie.y = 330;
             zombie.w = 123;
-            zombie.h = 75;
             zombie.dead++;
             zombie.draw();
         }

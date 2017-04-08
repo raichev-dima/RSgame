@@ -9,6 +9,7 @@ const constObj = require('./const').constObj;
 const girls = require('./girl.module').girls;
 const bullets = require('./man.module').bullets;
 const hero = require('./man.module').hero;
+const heroPos = require('./man.module').heroPos;
 
 constObj.pjs.system.setTitle('My mega game');
 
@@ -79,7 +80,7 @@ const Game = function () {
             //}
         } else {
             dx = 0;
-            hero.content.y = 220;
+            hero.content.y = heroPos;
             hero.content.h = 140;
            // if (this.jumpFlag == 'STOP') {
                 console.log(this.jumpFlag);

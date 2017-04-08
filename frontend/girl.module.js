@@ -5,19 +5,21 @@ const man = require('./man.module').man;
 const bullets = require('./man.module').bullets;
 const hero = require('./man.module').hero;
 const background = require('./background').background;
+const pennyH = 110;
+const pennyPos = constObj.height - (pennyH + constObj.persPos);
 
 const point = constObj.pjs.vector.point;
 
-const girlDead = constObj.pjs.tiles.newAnimation('img/sprites/girl_dead_120_110_15.png', 120, 110, 15);
+const girlDead = constObj.pjs.tiles.newAnimation('img/sprites/girl_dead_120_110_15.png', 120, pennyH, 15);
 
 const girls = [];
-girls.spawner = constObj.pjs.OOP.newTimer(1000, function () {
+girls.spawner = constObj.pjs.OOP.newTimer(5000, function () {
     girls.push(constObj.game.newAnimationObject({
-        animation: constObj.pjs.tiles.newAnimation('img/sprites/girl_70_110_12.png', 70, 110, 12),
+        animation: constObj.pjs.tiles.newAnimation('img/sprites/girl_70_110_12.png', 70, pennyH, 12),
         w: 70,
-        h: 110,
+        h: pennyH,
         x: constObj.pjs.math.random(hero.content.getPosition().x + 900, hero.content.getPosition().x + 1100), // x 1280
-        y: 240,
+        y: pennyPos,
         delay: 3,
         scale: 1,
     }));
@@ -31,19 +33,17 @@ girls.logic = function () {
         } else {
             girl.setAnimation(girlDead);
             girl.move(point(0, 0));
-            girl.y = 270;
             girl.w = 120;
-            girl.h = 110;
             girl.dead++;
             girl.drawFrames(0, 14);
         }
 
-        girl.drawStaticBox();
+        // girl.drawStaticBox();
         if (girl.isArrIntersect(bullets) && !girl.dead) {
             girl.dead = 1;
             girl.frame = 0;
             background.countOfGirl++
-            console.log('герлы = ' + background.countOfGirl);
+            console.log('они убили Penny = ' + background.countOfGirl);
 
             for (let i = 0; i < bullets.length; i++) {
                 let bullet = bullets[i];
@@ -54,7 +54,7 @@ girls.logic = function () {
 
         };
 
-        if (girl.dead > 30) {
+        if (girl.dead > 70) {
             girls.splice(index,1);
         }
 

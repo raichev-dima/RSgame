@@ -1,6 +1,6 @@
 const PointJS = require('./point').PointJS;
-const pjs = new PointJS('2D', 900, 390, {
-    backgroundColor: 'yellow',
+const pjs = new PointJS('2D', 900, 500, {
+    backgroundColor: '#85a5cc',
 });
 const game = pjs.game;
 const log = pjs.system.log;
@@ -15,6 +15,8 @@ const key = pjs.keyControl.initKeyControl();
 const width = game.getWH().w;
 const height = game.getWH().h;
 const r = game.getResolution();
+const persPos = 20;
+const bulletPos = 100;
 
 exports.constObj = {
     pjs: pjs,
@@ -28,5 +30,7 @@ exports.constObj = {
     math:math,
     width:width,
     height:height,
-    r:r
+    r:r,
+    persPos: persPos,
+    bulletPos: bulletPos,
 }
