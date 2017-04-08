@@ -13,6 +13,7 @@ const point = constObj.pjs.vector.point;
 const girlDead = constObj.pjs.tiles.newAnimation('img/sprites/girl_dead_120_110_15.png', 120, pennyH, 15);
 
 const girls = [];
+
 girls.spawner = constObj.pjs.OOP.newTimer(5000, function () {
     girls.push(constObj.game.newAnimationObject({
         animation: constObj.pjs.tiles.newAnimation('img/sprites/girl_70_110_12.png', 70, pennyH, 12),
@@ -42,18 +43,14 @@ girls.logic = function () {
         if (girl.isArrIntersect(bullets) && !girl.dead) {
             girl.dead = 1;
             girl.frame = 0;
-            background.countOfGirl++
-            console.log('они убили Penny = ' + background.countOfGirl);
-
+            background.countOfGirl++;
             for (let i = 0; i < bullets.length; i++) {
                 let bullet = bullets[i];
                 if (bullet.isArrIntersect(girls)) {
                     bullets.splice(i, 1);
                 };
             }
-
-        };
-
+        }
         if (girl.dead > 70) {
             girls.splice(index,1);
         }

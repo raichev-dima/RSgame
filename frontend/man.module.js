@@ -83,11 +83,11 @@ Man.prototype.newtonLaw = function (zeroOrOneOrTwo) {
         //console.log(position.y);
     }
 
-    if (position.y < 12 || this.jumpFlag === 'DOWN') {
+    if (position.y < (heroPos - manH*2 + 20) || this.jumpFlag === 'DOWN') {
         this.jumpFlag = 'DOWN';
         this.content.move(constObj.point(0, 3.9));
         this.content.drawFrames(10);
-        if (position.y > 287) {
+        if (position.y > (heroPos + manH/2)) {
             this.jumpFlag = 'STOP';
         }
     }

@@ -75,15 +75,35 @@ const endlessBackGround = function () { // аргумент s — это ско�
     }
 };
 
+let drawBackground = function() {
+    backgr1.draw();
+    backgr2.draw();
+    endlessBackGround();
+    counterZ.setPositionCS( constObj.point(100, 30));
+    counterG.setPositionCS( constObj.point(100, 50));
+    counterZ.reStyle({
+        text: "Убито зомби: " + countOfZombee
+    })
+    counterZ.draw();
+    counterG.reStyle({
+        text: "Убито герлов: " + countOfGirl
+    })
+    counterG.draw();
+    counterLife.reduce(function(prevResult, item) {
+        item.setPositionCS( constObj.point(50 + prevResult, 30));
+        return 50+prevResult;
+    },600);
+    constObj.pjs.OOP.drawArr(counterLife);
+}
 
-exports.background = {
+exports.background = {'first': backgr1,
     'bgPos': bgPos,
-    'first': backgr1,
-    'second':backgr2,
-    'endlessBackGround':endlessBackGround,
+    //'second':backgr2,
+    //'endlessBackGround':endlessBackGround,
     'counterZ': counterZ,
     'counterG': counterG,
     'countOfZombee':countOfZombee,
     'countOfGirl':countOfGirl,
-    'counterLife':counterLife
+    'counterLife':counterLife,
+    'drawBackground':drawBackground
 }
