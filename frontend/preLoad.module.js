@@ -5,8 +5,7 @@ const constObj = require('./const').constObj;
 const width = constObj.game.getWH().w;
 const height = constObj.game.getWH().h;
 
-const stayingHero = require('./man.module').stayingHero;
-const runningHero = require('./man.module').runningHero;
+const hero = require('./man.module').hero;
 
 let skins = [{
     run: ["img/sprites/run-right.png", 192, 358, 5, 'Tvoi-glaza-aa'],
@@ -67,12 +66,10 @@ let changeHeroButton = constObj.pjs.GUI.newButton({
         click: function () {
             if (!skins.flag) {
                 skins.flag = true;
-                stayingHero.changeSkin(...skins[1].stay);
-                runningHero.changeSkin(...skins[1].run);
+                hero.changeSkin(...skins[1].stay);
             } else {
                 skins.flag = false;
-                stayingHero.changeSkin(...skins[0].stay);
-                runningHero.changeSkin(...skins[0].run);
+                hero.changeSkin(...skins[0].stay);
             }
         }
     }

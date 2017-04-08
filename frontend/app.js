@@ -8,8 +8,7 @@ const zombies = require('./zombie.module').zombies;
 const constObj = require('./const').constObj;
 const girls = require('./girl.module').girls;
 const bullets = require('./man.module').bullets;
-const stayingHero = require('./man.module').stayingHero;
-const runningHero = require('./man.module').runningHero;
+const hero = require('./man.module').hero;
 
 constObj.pjs.system.setTitle('My mega game');
 
@@ -35,67 +34,66 @@ const Game = function () {
             text: "Убито герлов: " + background.countOfGirl
         })
         background.counterG.draw();
-        // runningHero.content.drawStaticBox();
-        // stayingHero.content.drawStaticBox();
         zombies.spawner.restart();
         girls.spawner.restart();
         zombies.logic();
         girls.logic();
-        runningHero.drawManElements();
-        runningHero.newtonLaw(1);
+        hero.drawManElements();
+        hero.newtonLaw(1);
         background.counterLife.reduce(function(prevResult, item) {
             item.setPositionCS( constObj.point(50 + prevResult, 30));
             return 50+prevResult;
         },600);
         constObj.pjs.OOP.drawArr(background.counterLife);
         constObj.cam.move(constObj.point(dx, dy));
-
-        runningHero.content.move(constObj.point(dx, dy));
-        stayingHero.content.move(constObj.point(dx, dy));
+        hero.content.move(constObj.point(dx, dy));
 
         if (constObj.key.isDown('RIGHT')) {
             dx = 1.3;
-             if (runningHero.content.getPosition().x  <= 125) {
+             if (hero.content.getPosition().x  <= 125) {
                 constObj.cam.move(constObj.point(-dx, -dy));
              }
-             if (runningHero.content.getPosition().x  >= constObj.cam.getPosition().x+125) {
+             if (hero.content.getPosition().x  >= constObj.cam.getPosition().x+125) {
                  constObj.cam.move(constObj.point(dx*2, dy*2));
                 }
-            runningHero.content.setFlip(0, 0);
-            runningHero.content.draw();
-
-
+            hero.content.setFlip(0, 0);
+            //if (this.jumpFlag == 'STOP') {
+                hero.content.drawFrames(0, 5);
+            //}
         } else if (constObj.key.isDown('LEFT')) {
-            if (runningHero.content.getPosition().x  >= 0) {
+            if (hero.content.getPosition().x  >= 0) {
                  dx = -1.3;
-                 if (runningHero.content.getPosition().x -125 <= 0) {
+                 if (hero.content.getPosition().x -125 <= 0) {
                      constObj.cam.move(constObj.point(-dx, -dy));
                  }
-               else if (runningHero.content.getPosition().x  <= constObj.cam.getPosition().x+125){ 
+               else if (hero.content.getPosition().x  <= constObj.cam.getPosition().x+125){
                  constObj.cam.move(constObj.point(dx*2, dy*2));
                 }
             }
-             else if (runningHero.content.getPosition().x < 0){
+             else if (hero.content.getPosition().x < 0){
                   dx = 0;
                  }
-            runningHero.content.setFlip(1, 0);
-            stayingHero.content.y = 0;
-            stayingHero.content.h = 0;
-            runningHero.content.draw();
+            hero.content.setFlip(1, 0);
+            //if (this.jumpFlag == 'STOP') {
+                hero.content.drawFrames(0, 5);
+            //}
         } else {
             dx = 0;
-            stayingHero.content.y = 220;
-            stayingHero.content.h = 140;
-            stayingHero.content.draw();
+            hero.content.y = 220;
+            hero.content.h = 140;
+           // if (this.jumpFlag == 'STOP') {
+                console.log(this.jumpFlag);
+                hero.content.drawFrames(6, 8);
+            //}
 
         }
 
         if (constObj.key.isPress('UP')) {
-            runningHero.jumping();
+            hero.jumping();
         };
 
         if (constObj.key.isDown('SPACE')) {
-            runningHero.shooting();
+            hero.shooting();
         };
 
     };
@@ -115,8 +113,7 @@ const preLoadScreen = function () {
     this.update = function () {
         constObj.game.clear();
         background.first.draw();
-        //runningHero.preLoadContent();
-        runningHero.content.draw();
+        hero.content.draw();
     };
     this.entry = function () {
         constObj.log('PreloadScreen loaded');

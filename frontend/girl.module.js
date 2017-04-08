@@ -3,8 +3,7 @@ const PointJS = require('./point').PointJS;
 const constObj = require('./const').constObj;
 const man = require('./man.module').man;
 const bullets = require('./man.module').bullets;
-const stayingHero = require('./man.module').stayingHero;
-const runningHero = require('./man.module').runningHero;
+const hero = require('./man.module').hero;
 const background = require('./background').background;
 
 const point = constObj.pjs.vector.point;
@@ -17,7 +16,7 @@ girls.spawner = constObj.pjs.OOP.newTimer(5000, function () {
         animation: constObj.pjs.tiles.newAnimation('img/sprites/girl_70_110_12.png', 70, 110, 12),
         w: 70,
         h: 110,
-        x: constObj.pjs.math.random(stayingHero.content.getPosition().x + 900, stayingHero.content.getPosition().x + 1100), // x 1280
+        x: constObj.pjs.math.random(hero.content.getPosition().x + 900, hero.content.getPosition().x + 1100), // x 1280
         y: 240,
         delay: 3,
         scale: 1,

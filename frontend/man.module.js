@@ -2,9 +2,8 @@
 const PointJS = require('./point').PointJS;
 const constObj = require('./const').constObj;
 
-
-
 function Man(path, width, height, count, name){
+    this.jumpFlag = 'STOP';
     this.name = name || "Where is my Name?";
     this.content = constObj.game.newAnimationObject({
         animation: constObj.pjs.tiles.newAnimation(path, width, height, count),
@@ -63,7 +62,7 @@ Man.prototype.bulletFly = function () {
         } else {
             bullet.x = bullet.x + 10;
         }
-        if (bullet.x >= stayingHero.content.getPosition().x + 780 || bullet.x <= stayingHero.content.getPosition().x - 780) {
+        if (bullet.x >= hero.content.getPosition().x + 780 || bullet.x <= hero.content.getPosition().x - 780) {
             bullets.splice(i, 1);
         }
     };
@@ -76,16 +75,16 @@ Man.prototype.jumping = function () {
 Man.prototype.newtonLaw = function (zeroOrOneOrTwo) {
     let position = this.content.getPosition(zeroOrOneOrTwo);
     if (this.jumpFlag === 'UP') {
-        console.log(this.jumpFlag, position, this.content);
+        //console.log(this.jumpFlag, position, this.content);
         this.content.move(constObj.point(0, -3.9));
-        this.content.draw();
-        console.log(position.y);
+        this.content.drawFrames(9);
+        //console.log(position.y);
     }
 
     if (position.y < 12 || this.jumpFlag === 'DOWN') {
         this.jumpFlag = 'DOWN';
         this.content.move(constObj.point(0, 3.9));
-        this.content.draw();
+        this.content.drawFrames(10);
         if (position.y > 287) {
             this.jumpFlag = 'STOP';
         }
@@ -98,12 +97,10 @@ Man.prototype.drawManElements = function () {
     this.newtonLaw(1);
 }
 
-let stayingHero = new Man("img/sprites/staying_by_Egor.png", 192, 358, 1);
-let runningHero = new Man("img/sprites/run-right.png", 192, 358, 5);
+let hero = new Man("img/sprites/girl-hero.png", 220, 236, 14);
 
 exports.Man = Man;
 exports.bullets = bullets;
-exports.stayingHero = stayingHero;
-exports.runningHero = runningHero;
+exports.hero = hero;
 
 
