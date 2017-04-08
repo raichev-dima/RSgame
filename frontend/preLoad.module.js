@@ -8,11 +8,9 @@ const height = constObj.game.getWH().h;
 const hero = require('./man.module').hero;
 
 let skins = [{
-    run: ["img/sprites/run-right.png", 192, 358, 5, 'Tvoi-glaza-aa'],
     stay: ["img/sprites/staying_by_Egor.png", 192, 358, 1,'Tvoi-glaza-aa']
 },
 {
-    run: ["img/sprites/human_114_8.png", 90, 110, 8,'Charlie'],
     stay: ["img/sprites/human_90_110_8_staying.png", 90, 110, 8,'Charlie']
 }];
 
@@ -74,9 +72,6 @@ let changeHeroButton = constObj.pjs.GUI.newButton({
         }
     }
 });
-
-
-
 
 exports.startButtons = {
     startButton: startButton,

@@ -24,8 +24,7 @@ zombies.spawner = constObj.pjs.OOP.newTimer(2000, function () {
     }));
 });
 
-let timer = 0;
-let i = 0;
+
 zombies.logic = function () {
     constObj.pjs.OOP.forArr(zombies, function (zombie, index) {
         if (!zombie.dead) {
@@ -49,30 +48,9 @@ zombies.logic = function () {
                 let bullet = bullets[i];
                 if (bullet.isArrIntersect(zombies)) {
                     bullets.splice(i, 1);
-                };
-            }
-
-        };
-
-        if (hero.content.isArrIntersect(zombies.filter(function(item) {
-                return (item.dead) ?  false :  true;
-            }))) {
-            timer++;
-            if (timer >= 500) {;
-                timer = 0;
-                if (i < 5) {
-                    background.counterLife[i].visible = false;
-                    i++;
-                }
-                else {
-                    hero.died = true;
                 }
             }
         }
-        if (!hero.content.isArrIntersect(zombies)) {
-            timer = 0;
-        }
-
         if (zombie.dead > 300) {
             zombies.splice(index,1);
         }
