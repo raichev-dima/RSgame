@@ -16,7 +16,7 @@ const zombies = [];
 
 zombies.spawner = constObj.pjs.OOP.newTimer(2000, function () {
     zombies.push(constObj.game.newAnimationObject({
-        animation: constObj.pjs.tiles.newAnimation('img/sprites/zombie_71_110_10.png', 71, zombieH, 10),
+        animation: constObj.pjs.tiles.newAnimation('img/sprites/zombie_71_110_13.png', 71, zombieH, 10),
         w: 71,
         h: zombieH,
         x: constObj.pjs.math.random(hero.content.getPosition().x + 900, hero.content.getPosition().x + 1100), // x 1280
@@ -27,10 +27,30 @@ zombies.spawner = constObj.pjs.OOP.newTimer(2000, function () {
 });
 
 zombies.logic = function () {
+
     constObj.pjs.OOP.forArr(zombies, function (zombie, index) {
+        zombie.drawStaticBox();
         if (!zombie.dead) {
-            zombie.draw();
-            zombie.move(point(-1, 0));
+            let heroPos = hero.content.getPosition().x;
+            let zombiePos = zombie.getPosition().x;
+            if (heroPos - zombiePos > 0) {
+                zombie.setFlip(true, false);
+                zombie.goTo = 'right';
+            } else {
+                if (zombie.goTo === 'right') {
+                    zombie.goTo = 'left';
+                    zombie.setFlip(false, false);
+                }
+            }
+            if (zombie.isIntersect(hero.content)) {
+                  console.log('hit!'); // зомби жрет героя
+                zombie.move(point(0, 0));
+                zombie.setDelay(20);
+                zombie.drawFrames(10,12); 
+            } else {
+                zombie.moveTo(point(hero.content.getPosition().x, constObj.height - zombie.h - 20), .35);
+                zombie.draw();
+            }
         } else {
             zombie.setAnimation(zombieDead);
             zombie.move(point(0, 0));
@@ -52,8 +72,9 @@ zombies.logic = function () {
                 }
             }
         }
+
         if (zombie.dead > 70) {
-            zombies.splice(index,1);
+            zombies.splice(index, 1);
         }
     });
 };
