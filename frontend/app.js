@@ -16,32 +16,17 @@ const Game = function () {
     constObj.log('pls push start!');
     let dx = 2;
     let dy = 0;
+    let timer = 0;
+    let i = 0;
     this.update = function () {
         constObj.game.clear();
-        background.first.draw();
-        background.second.draw();
-        background.endlessBackGround();
-        background.counterZ.setPositionCS( constObj.point(100, 30));
-        background.counterG.setPositionCS( constObj.point(100, 50));
-        background.counterZ.reStyle({
-            text: "Убито зомби: " + background.countOfZombee
-        })
-        background.counterZ.draw();
-        background.counterG.reStyle({
-            text: "Убито герлов: " + background.countOfGirl
-        })
-        background.counterG.draw();
+        background.drawBackground();
         zombies.spawner.restart();
         girls.spawner.restart();
-        zombies.logic();
-        girls.logic();
+        //zombies.logic();
+        //girls.logic();
         hero.drawManElements();
         hero.newtonLaw(1);
-        background.counterLife.reduce(function(prevResult, item) {
-            item.setPositionCS( constObj.point(50 + prevResult, 30));
-            return 50+prevResult;
-        },600);
-        constObj.pjs.OOP.drawArr(background.counterLife);
         if (hero.died) {
             hero.content.drawFrame(13);
             hero.content.drawFrame(14);
@@ -58,7 +43,10 @@ const Game = function () {
                     constObj.cam.move(constObj.point(dx*2, dy*2));
                 }
                 hero.content.setFlip(0, 0);
-                hero.content.drawFrames(0, 5);
+                if (hero.jumpFlag == 'STOP' ) {
+                    hero.content.drawFrames(0, 5);
+                }
+
 
             } else if (constObj.key.isDown('LEFT')) {
                 if (hero.content.getPosition().x  >= 0) {
@@ -74,13 +62,18 @@ const Game = function () {
                     dx = 0;
                 }
                 hero.content.setFlip(1, 0);
-                hero.content.drawFrames(0, 5);
+                if (hero.jumpFlag == 'STOP' ) {
+                    hero.content.drawFrames(0, 5);
+                }
 
             } else {
                 dx = 0;
-                hero.content.y = 220;
-                hero.content.h = 140;
-                hero.content.drawFrames(6, 8);
+                //hero.content.y = 220;
+                //hero.content.h = 140;
+                if (hero.jumpFlag == 'STOP' ) {
+                    hero.content.drawFrames(6, 8);
+                }
+
             }
 
             if (constObj.key.isPress('UP')) {
@@ -89,6 +82,25 @@ const Game = function () {
 
             if (constObj.key.isDown('SPACE')) {
                 hero.shooting();
+            }
+            if (hero.content.isArrIntersect(zombies.filter(function(item) {
+                    return (item.dead) ?  false :  true;
+                }))) {
+                timer++;
+                if (timer >= 50) {
+                    timer = 0;
+                    if (i < 5) {
+                        background.counterLife[i].visible = false;
+                        i++;
+                    }
+                    else {
+                        hero.died = true;
+                        constObj.game.setLoop('gameOver');
+                    }
+                }
+            }
+            if (!hero.content.isArrIntersect(zombies)) {
+                timer = 0;
             }
         }
     }
@@ -116,7 +128,24 @@ const preLoadScreen = function () {
     this.exit = function () {
         constObj.log('preloadScreen End!');
     }
-};
+}
+
+const gameOverScreen = function () {
+    this.update = function () {
+        startButtons.startButton.setStyle({
+            display: 'block'
+        });
+    };
+    this.entry = function () {
+        constObj.log('GameOverScreen loaded');
+    };
+    this.exit = function () {
+        constObj.log('preloadScreen End!');
+    }
+}
+
+
 
 constObj.game.newLoopFromClassObject('preLoad', new preLoadScreen());
+constObj.game.newLoopFromClassObject('gameOver', new gameOverScreen());
 constObj.game.startLoop('preLoad');
