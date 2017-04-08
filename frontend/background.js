@@ -1,5 +1,5 @@
 const constObj = require('./const').constObj;
-const runningHero = require('./man.module').runningHero;
+const hero = require('./man.module').hero;
 
 let countOfZombee = 0;
 let countOfGirl = 0;
@@ -17,7 +17,7 @@ let counterG = constObj.game.newTextObject( {
 });
 
 function createCounterLife() {
-    let x = 0;
+    let x = 5;
     let life = [];
     for (let i = 0; i < 5; i++) {
         x += 50;
@@ -56,19 +56,19 @@ const backgr2 = constObj.game.newImageObject({
 });
 const endlessBackGround = function () { // аргумент s — это скорость движения фона
 
-    if (backgr1.x + backgr1.w < runningHero.content.getPosition().x - 320) { // если ушел
+    if (backgr1.x + backgr1.w < hero.content.getPosition().x - 320) { // если ушел
         backgr1.x = backgr2.x + backgr2.w; // перемещаем его сразу за вторым
     }
     // аналогично для второго
-    if (backgr2.x + backgr2.w < runningHero.content.getPosition().x - 320) {
+    if (backgr2.x + backgr2.w < hero.content.getPosition().x - 320) {
         backgr2.x = backgr1.x + backgr1.w; // позиционируем за первым
     }
 
-    if (backgr1.x + backgr1.w < runningHero.content.getPosition().x - 320) { // если ушел
+    if (backgr1.x + backgr1.w < hero.content.getPosition().x - 320) { // если ушел
         backgr1.x = backgr2.x + backgr2.w; // перемещаем его сразу за вторым
     }
     // аналогично для второго
-    if (backgr2.x + backgr2.w < runningHero.content.getPosition().x - 320) {
+    if (backgr2.x + backgr2.w < hero.content.getPosition().x - 320) {
         backgr2.x = backgr1.x + backgr1.w; // позиционируем за первым
     }
 };

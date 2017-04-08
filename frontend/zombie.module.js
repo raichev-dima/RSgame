@@ -3,8 +3,7 @@ const PointJS = require('./point').PointJS;
 const constObj = require('./const').constObj;
 const man = require('./man.module').man;
 const bullets = require('./man.module').bullets;
-const stayingHero = require('./man.module').stayingHero;
-const runningHero = require('./man.module').runningHero;
+const hero = require('./man.module').hero;
 const background = require('./background').background;
 
 const point = constObj.pjs.vector.point;
@@ -18,7 +17,7 @@ zombies.spawner = constObj.pjs.OOP.newTimer(2000, function () {
         animation: constObj.pjs.tiles.newAnimation('img/sprites/zombie_75_115_10.png', 74, 115, 10),
         w: 74,
         h: 115,
-        x: constObj.pjs.math.random(stayingHero.content.getPosition().x + 320, stayingHero.content.getPosition().x + 850), // x 1280
+        x: constObj.pjs.math.random(hero.content.getPosition().x + 320, hero.content.getPosition().x + 850), // x 1280
         y: 240,
         delay: 10,
         scale: 1,
@@ -58,7 +57,7 @@ zombies.logic = function () {
         };
 
 
-        if (runningHero.content.isArrIntersect(zombies.filter(function(item) {
+        if (hero.content.isArrIntersect(zombies.filter(function(item) {
                 return (item.dead) ?  false :  true;
             }))) {
             timer++;
@@ -70,7 +69,7 @@ zombies.logic = function () {
                 }
             }
         }
-        if (!runningHero.content.isArrIntersect(zombies)) {
+        if (!hero.content.isArrIntersect(zombies)) {
             timer = 0;
         }
 
