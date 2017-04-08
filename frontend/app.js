@@ -1,6 +1,5 @@
 'use strict';
 
-
 const Man = require('./man.module').Man;
 const startButtons = require('./preLoad.module').startButtons;
 const background = require('./background').background;
@@ -23,8 +22,8 @@ const Game = function () {
         background.drawBackground();
         zombies.spawner.restart();
         girls.spawner.restart();
-        //zombies.logic();
-        //girls.logic();
+        zombies.logic();
+        girls.logic();
         hero.drawManElements();
         hero.newtonLaw(1);
         if (hero.died) {
@@ -68,8 +67,6 @@ const Game = function () {
 
             } else {
                 dx = 0;
-                //hero.content.y = 220;
-                //hero.content.h = 140;
                 if (hero.jumpFlag == 'STOP' ) {
                     hero.content.drawFrames(6, 8);
                 }

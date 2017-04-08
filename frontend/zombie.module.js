@@ -26,10 +26,13 @@ zombies.spawner = constObj.pjs.OOP.newTimer(2000, function () {
 
 
 zombies.logic = function () {
+    
     constObj.pjs.OOP.forArr(zombies, function (zombie, index) {
+        zombie.drawStaticBox();
         if (!zombie.dead) {
             zombie.draw();
-            zombie.move(point(-1, 0));
+            zombie.moveTo( point(hero.content.getPosition().x, 228), .65 );
+            //zombie.move(point(-1, 0));
         } else {
             zombie.setAnimation(zombieDead);
             zombie.move(point(0, 0));
@@ -39,8 +42,10 @@ zombies.logic = function () {
             zombie.dead++;
             zombie.draw();
         }
-
-        // zombie.drawStaticBox();
+        // if (zombie.isIntersect(hero.content)) {
+        //     console.log('hey');
+        //     zombie.move(point(1, 0));
+        // }
         if (zombie.isArrIntersect(bullets)) {
             zombie.dead = 1;
             background.countOfZombee++;
@@ -52,7 +57,7 @@ zombies.logic = function () {
             }
         }
         if (zombie.dead > 300) {
-            zombies.splice(index,1);
+            zombies.splice(index, 1);
         }
     });
 };
