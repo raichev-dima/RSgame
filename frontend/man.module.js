@@ -3,6 +3,7 @@ const PointJS = require('./point').PointJS;
 const constObj = require('./const').constObj;
 
 function Man(path, width, height, count, name){
+    this.died = false;
     this.jumpFlag = 'STOP';
     this.name = name || "Where is my Name?";
     this.content = constObj.game.newAnimationObject({
@@ -38,7 +39,7 @@ Man.prototype.shooting = function () {
 
     if (!this.shootFlag) {
         this.shootFlag = true;
-        console.log('shooting');
+        //console.log('shooting');
         let bullet = constObj.game.newRoundRectObject({
             x: this.content.x + this.content.w / 2 + 32,
             y: this.content.y + 82,

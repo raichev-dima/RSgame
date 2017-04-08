@@ -44,9 +44,7 @@ zombies.logic = function () {
         // zombie.drawStaticBox();
         if (zombie.isArrIntersect(bullets)) {
             zombie.dead = 1;
-            background.countOfZombee++
-            console.log('зомби = ' + background.countOfZombee);
-
+            background.countOfZombee++;
             for (let i = 0; i < bullets.length; i++) {
                 let bullet = bullets[i];
                 if (bullet.isArrIntersect(zombies)) {
@@ -55,7 +53,6 @@ zombies.logic = function () {
             }
 
         };
-
 
         if (hero.content.isArrIntersect(zombies.filter(function(item) {
                 return (item.dead) ?  false :  true;
@@ -67,6 +64,9 @@ zombies.logic = function () {
                     background.counterLife[i].visible = false;
                     i++;
                 }
+                else {
+                    hero.died = true;
+                }
             }
         }
         if (!hero.content.isArrIntersect(zombies)) {
@@ -76,7 +76,6 @@ zombies.logic = function () {
         if (zombie.dead > 300) {
             zombies.splice(index,1);
         }
-
     });
 };
 
