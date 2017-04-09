@@ -5,17 +5,17 @@ const bgPos = constObj.height - bgHeight;
 
 let countOfZombee = 0;
 let countOfGirl = 0;
-let counterZ = constObj.game.newTextObject( {
-    text : '',
-    size : 20,
-    padding : 10,
-    color : "#000000",
+let counterZ = constObj.game.newTextObject({
+    text: '',
+    size: 20,
+    padding: 10,
+    color: "#000000",
 });
-let counterG = constObj.game.newTextObject( {
-    text : '',
-    size : 20,
-    padding : 10,
-    color : "#000000",
+let counterG = constObj.game.newTextObject({
+    text: '',
+    size: 20,
+    padding: 10,
+    color: "#000000",
 });
 
 function createCounterLife() {
@@ -25,13 +25,14 @@ function createCounterLife() {
         x += 50;
         life.push(addPartOfLife(x));
     }
+
     function addPartOfLife(x) {
-        let partOfLife =  constObj.game.newRectObject( {
-            x : x,
-            y : 60,
-            w : 50,
-            h : 20,
-            fillColor : "green",
+        let partOfLife = constObj.game.newRectObject({
+            x: x,
+            y: 60,
+            w: 50,
+            h: 20,
+            fillColor: "green",
         });
         return partOfLife;
     }
@@ -75,29 +76,34 @@ const endlessBackGround = function () { // аргумент s — это ско�
     }
 };
 
-let drawBackground = function() {
+let drawBackground = function () {
     backgr1.draw();
     backgr2.draw();
     endlessBackGround();
-    counterZ.setPositionCS( constObj.point(100, 30));
-    counterG.setPositionCS( constObj.point(100, 50));
+    counterZ.setPositionCS(constObj.point(100, 30));
+    counterG.setPositionCS(constObj.point(100, 50));
     counterZ.draw();
     counterG.draw();
-    counterLife.reduce(function(prevResult, item) {
-        item.setPositionCS( constObj.point(50 + prevResult, 30));
-        return 50+prevResult;
-    },600);
+    counterLife.reduce(function (prevResult, item) {
+        item.setPositionCS(constObj.point(50 + prevResult, 30));
+        return 50 + prevResult;
+    }, 600);
     constObj.pjs.OOP.drawArr(counterLife);
 }
 
-exports.background = {'first': backgr1,
+exports.background = {
+    'first': backgr1,
     'bgPos': bgPos,
     //'second':backgr2,
     //'endlessBackGround':endlessBackGround,
     'counterZ': counterZ,
     'counterG': counterG,
-    'countOfZombee':countOfZombee,
-    'countOfGirl':countOfGirl,
-    'counterLife':counterLife,
-    'drawBackground':drawBackground
+    'countOfZombee': countOfZombee,
+    'countOfGirl': countOfGirl,
+    'counterLife': counterLife,
+    'drawBackground': drawBackground,
+    resetBG: function () {
+        backgr1.x = 0;
+        backgr2.x = backgr1.x + backgr1.w;
+    }
 }

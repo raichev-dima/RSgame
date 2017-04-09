@@ -186,6 +186,7 @@ const gameOverScreen = function () {
         hero.reset();
         zombies.length = 0;
         girls.length = 0;
+        background.resetBG();
         startButtons.turnOnGameOverButton();
     };
     this.exit = function () {
