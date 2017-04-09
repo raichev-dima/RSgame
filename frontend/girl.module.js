@@ -13,8 +13,6 @@ const point = constObj.pjs.vector.point;
 const loadAudio = require('./audio');
 const girlDeathCry = loadAudio(['audio/girl_death_cry.mp3'], 1, false);
 
-const girlDead = constObj.pjs.tiles.newAnimation('img/sprites/girl_dead_120_110_15.png', 120, pennyH, 15);
-
 const girlDead = constObj.pjs.tiles.newAnimation('img/sprites/penny_dead_120_110_15.png', 120, pennyH, 15);
 
 
