@@ -81,13 +81,7 @@ let drawBackground = function() {
     endlessBackGround();
     counterZ.setPositionCS( constObj.point(100, 30));
     counterG.setPositionCS( constObj.point(100, 50));
-    counterZ.reStyle({
-        text: "Убито зомби: " + countOfZombee
-    })
     counterZ.draw();
-    counterG.reStyle({
-        text: "Убито герлов: " + countOfGirl
-    })
     counterG.draw();
     counterLife.reduce(function(prevResult, item) {
         item.setPositionCS( constObj.point(50 + prevResult, 30));

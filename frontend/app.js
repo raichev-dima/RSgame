@@ -67,6 +67,12 @@ const Game = function () {
 
         constObj.game.clear();
         background.drawBackground();
+        background.counterZ.reStyle({
+            text: "Убито зомби: " + background.countOfZombee
+        });
+        background.counterG.reStyle({
+            text: "Убито герлов: " + background.countOfGirl
+        });
         zombies.spawner.restart();
         zombies.logic();
         girls.spawner.restart();
@@ -76,6 +82,7 @@ const Game = function () {
         if (hero.died) {
             hero.content.drawFrame(13);
             hero.content.drawFrame(14);
+            constObj.game.setLoop('gameOver');
         }
         else {
             constObj.cam.move(constObj.point(dx, dy));
@@ -137,7 +144,6 @@ const Game = function () {
                     }
                     else {
                         hero.died = true;
-                        constObj.game.setLoop('gameOver');
                     }
                 }
             }
@@ -157,11 +163,11 @@ const Game = function () {
     }
 };
 
-constObj.game.newLoopFromClassObject('1', new Game());
-//constObj.game.startLoop('1');
-
 const preLoadScreen = function () {
     this.update = function () {
+        restartButton.setStyle({
+            display: 'none'
+        });
         constObj.game.clear();
         background.first.draw();
         hero.content.draw();
@@ -178,15 +184,17 @@ const preLoadScreen = function () {
 
 const gameOverScreen = function () {
     this.update = function () {
-        startButtons.startButton.setStyle({
+        restartButton.setStyle({
             display: 'block'
         });
+        gameOverText.draw();
+
     };
     this.entry = function () {
         constObj.log('GameOverScreen loaded');
     };
     this.exit = function () {
-        constObj.log('preloadScreen End!');
+        constObj.log('GameOverScreen End!');
     }
 
 }
@@ -195,4 +203,39 @@ const gameOverScreen = function () {
 
 constObj.game.newLoopFromClassObject('preLoad', new preLoadScreen());
 constObj.game.newLoopFromClassObject('gameOver', new gameOverScreen());
+constObj.game.newLoopFromClassObject('1', new Game());
 constObj.game.startLoop('preLoad');
+
+let restartButton = constObj.pjs.GUI.newButton({
+    x: 10,
+    y: 10,
+    w: 100,
+    h: 30,
+    text: "PLAY AGAIN",
+    style: {
+        backgroundColor: 'rgba(76, 175, 80, 0.59)',
+        top: '350px',
+        left: '350px',
+        width: '200px',
+        height: '50px',
+        borderRadius: '20px',
+        fontSize: '18px',
+        cursor: 'pointer'
+    },
+    events: {
+        click: function () {
+            constObj.game.newLoopFromClassObject('1', new Game());
+            constObj.game.setLoop('1');
+        }
+    }
+});
+
+var gameOverText = constObj.game.newTextObject( {
+    x : 300,
+    y : 100,
+    text : "GAME OVER",
+    size : 50,
+    padding: 10,
+    color : "#000000",
+    strokeWidth : 6,
+});
