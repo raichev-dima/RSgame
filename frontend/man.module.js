@@ -4,7 +4,7 @@ const constObj = require('./const').constObj;
 const manH = 140;
 const heroPos = constObj.height - (manH + constObj.persPos);
 
-function Man(path, width, height, count, name){
+function Man(path, width, height, count, name) {
     this.jumpFlag = 'STOP';
     this.name = name || "Where is my Name?";
     this.content = constObj.game.newAnimationObject({
@@ -83,11 +83,11 @@ Man.prototype.newtonLaw = function (zeroOrOneOrTwo) {
         //console.log(position.y);
     }
 
-    if (position.y < (heroPos - manH*2 + 20) || this.jumpFlag === 'DOWN') {
+    if (position.y < (heroPos - manH * 2 + 20) || this.jumpFlag === 'DOWN') {
         this.jumpFlag = 'DOWN';
         this.content.move(constObj.point(0, 3.9));
         this.content.drawFrames(10);
-        if (position.y > (heroPos + manH/2)) {
+        if (position.y > (heroPos + manH / 2)) {
             this.jumpFlag = 'STOP';
         }
     }
@@ -99,11 +99,20 @@ Man.prototype.drawManElements = function () {
     this.newtonLaw(1);
 }
 
+Man.prototype.reset = function () {
+    this.content.drawStaticBox();
+    this.content.w = 100;
+    this.content.h = manH;
+    this.content.x = 120;
+    this.content.y = heroPos;
+    this.content.delay = 10;
+    this.content.scale = 1;
+    this.died = false;
+};
+
 let hero = new Man("img/sprites/bernadett.png", 205, 236, 14);
 
 exports.Man = Man;
 exports.bullets = bullets;
 exports.hero = hero;
 exports.heroPos = heroPos;
-
-
