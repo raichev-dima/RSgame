@@ -190,6 +190,7 @@ const gameOverScreen = function () {
         background.counterLife.forEach(function(item) {
             item.visible = true;
         })
+        background.resetBG();
         startButtons.turnOnGameOverButton();
     };
     this.exit = function () {
