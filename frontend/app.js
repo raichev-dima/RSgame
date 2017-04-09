@@ -1,5 +1,6 @@
 'use strict';
-
+require("./css/landing-page.css");
+require("./css/reset.css");
 const Man = require('./man.module').Man;
 const startButtons = require('./preLoad.module').startButtons;
 let gameOverText = require('./preLoad.module').gameOverText;
@@ -66,11 +67,8 @@ const Game = function () {
 
         constObj.game.clear();
         background.drawBackground();
-        background.counterZ.reStyle({
-            text: "Убито зомби: " + background.countOfZombee
-        });
-        background.counterG.reStyle({
-            text: "Убито герлов: " + background.countOfGirl
+        background.counter.reStyle({
+            text: "Score: " + background.score
         });
         zombies.spawner.restart();
         zombies.logic();

@@ -75,7 +75,7 @@ zombies.logic = function () {
 
             zombie.dead = 1;
             zombie.frame = 0;
-            background.countOfZombee++;
+            background.score++;
 
             zombieDeathCry.play();//zombie death sound
 
