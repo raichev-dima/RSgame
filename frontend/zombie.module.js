@@ -19,7 +19,7 @@ const point = constObj.pjs.vector.point;
 
 const zombieDead = constObj.pjs.tiles.newAnimation('img/sprites/zombie_dead_120_110_15.png', 120, zombieH, 15);
 
-const zombies = [];
+let zombies = [];
 
 zombies.spawner = constObj.pjs.OOP.newTimer(2000, function () {
     zombies.push(constObj.game.newAnimationObject({
