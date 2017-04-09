@@ -10,13 +10,13 @@ const pennyPos = constObj.height - (pennyH + constObj.persPos);
 
 const point = constObj.pjs.vector.point;
 
-const girlDead = constObj.pjs.tiles.newAnimation('img/sprites/girl_dead_120_110_15.png', 120, pennyH, 15);
+const girlDead = constObj.pjs.tiles.newAnimation('img/sprites/penny_dead_120_110_15.png', 120, pennyH, 15);
 
 const girls = [];
 
 girls.spawner = constObj.pjs.OOP.newTimer(5000, function () {
     girls.push(constObj.game.newAnimationObject({
-        animation: constObj.pjs.tiles.newAnimation('img/sprites/girl_70_110_12.png', 70, pennyH, 12),
+        animation: constObj.pjs.tiles.newAnimation('img/sprites/penny_70_110_12.png', 70, pennyH, 12),
         w: 70,
         h: pennyH,
         x: constObj.pjs.math.random(hero.content.getPosition().x + 900, hero.content.getPosition().x + 1100), // x 1280

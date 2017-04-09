@@ -99,7 +99,7 @@ Man.prototype.drawManElements = function () {
     this.newtonLaw(1);
 }
 
-let hero = new Man("img/sprites/girl-hero.png", 220, 236, 14);
+let hero = new Man("img/sprites/bernadett.png", 205, 236, 14);
 
 exports.Man = Man;
 exports.bullets = bullets;

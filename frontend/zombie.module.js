@@ -16,8 +16,8 @@ const zombies = [];
 
 zombies.spawner = constObj.pjs.OOP.newTimer(2000, function () {
     zombies.push(constObj.game.newAnimationObject({
-        animation: constObj.pjs.tiles.newAnimation('img/sprites/zombie_71_110_13.png', 71, zombieH, 10),
-        w: 71,
+        animation: constObj.pjs.tiles.newAnimation('img/sprites/zombie_70_110_13.png', 70, zombieH, 10),
+        w: 70,
         h: zombieH,
         x: constObj.pjs.math.random(hero.content.getPosition().x + 900, hero.content.getPosition().x + 1100), // x 1280
         y: zombiePos,
@@ -29,7 +29,7 @@ zombies.spawner = constObj.pjs.OOP.newTimer(2000, function () {
 zombies.logic = function () {
 
     constObj.pjs.OOP.forArr(zombies, function (zombie, index) {
-        zombie.drawStaticBox();
+        // zombie.drawStaticBox();
         if (!zombie.dead) {
             let heroPos = hero.content.getPosition().x;
             let zombiePos = zombie.getPosition().x;
@@ -46,16 +46,16 @@ zombies.logic = function () {
                   console.log('hit!'); // зомби жрет героя
                 zombie.move(point(0, 0));
                 zombie.setDelay(20);
-                zombie.drawFrames(10,12); 
+                zombie.drawFrames(10,12);
             } else {
-                zombie.moveTo(point(hero.content.getPosition().x, constObj.height - zombie.h - 20), .35);
+                zombie.moveTo(point(hero.content.getPosition().x, constObj.height - zombie.h - 20), .5);
                 zombie.draw();
             }
         } else {
             zombie.setAnimation(zombieDead);
             zombie.move(point(0, 0));
             zombie.w = 120;
-            zombie.delay = 3;
+            zombie.setDelay(3);
             zombie.dead++;
             zombie.drawFrames(0, 14);
         }
