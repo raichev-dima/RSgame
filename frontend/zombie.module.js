@@ -8,6 +8,13 @@ const background = require('./background').background;
 const zombieH = 110;
 const zombiePos = constObj.height - (zombieH + constObj.persPos);
 
+
+////////////////    AUDIO    /////////////////////////////////////////
+const loadAudio = require('./audio');
+const zombieAttack = loadAudio(['audio/zombie_attack.mp3'], 1, false);
+const zombieDeathCry = loadAudio(['audio/zombie_death_cry.mp3'], 1, false);
+//////////////////////////////////////////////////////////////////////
+
 const point = constObj.pjs.vector.point;
 
 const zombieDead = constObj.pjs.tiles.newAnimation('img/sprites/zombie_dead_120_110_15.png', 120, zombieH, 15);
@@ -44,6 +51,9 @@ zombies.logic = function () {
             }
             if (zombie.isIntersect(hero.content)) {
                   console.log('hit!'); // зомби жрет героя
+
+                  zombieAttack.play();//zombie attack sound
+
                 zombie.move(point(0, 0));
                 zombie.setDelay(20);
                 zombie.drawFrames(10,12);
@@ -62,9 +72,14 @@ zombies.logic = function () {
 
         // zombie.drawStaticBox();
         if (zombie.isArrIntersect(bullets) && !zombie.dead) {
+
             zombie.dead = 1;
             zombie.frame = 0;
             background.countOfZombee++;
+
+            zombieDeathCry.play();//zombie death sound
+
+
             for (let i = 0; i < bullets.length; i++) {
                 let bullet = bullets[i];
                 if (bullet.isArrIntersect(zombies)) {

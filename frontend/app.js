@@ -9,6 +9,15 @@ const girls = require('./girl.module').girls;
 const bullets = require('./man.module').bullets;
 const hero = require('./man.module').hero;
 const heroPos = require('./man.module').heroPos;
+const loadAudio = require('./audio');
+
+//////////////////////      AUDIO      /////////////////////////////////////////
+const jumpSound = loadAudio(['audio/smb_jump-small.wav'], 1);
+const mainTheme = loadAudio(['audio/make_them_suffer.mp3'], 0.05, true);
+const intro = loadAudio(['audio/hellraiser.mp3'], 0.1, true);
+const shot = loadAudio(['audio/shot.mp3'], 1);
+
+///////////////////////////////////////////////////////////////////////////////
 
 constObj.pjs.system.setTitle('My mega game');
 
@@ -18,7 +27,44 @@ const Game = function () {
     let dy = 0;
     let timer = 0;
     let i = 0;
+
+    intro.play();
+
+    (function loop() {
+        fn();
+        requestAnimationFrame(loop);
+    })();
+
+    function fn() {
+        if (constObj.key.isUp('ESC')) {
+            intro.stop();
+        }
+    }
+
+
+
+
     this.update = function () {
+
+                //    SOUNDS     //
+////////////////////////////////////////////////////////////////
+
+    if (constObj.key.isPress('ESC')) {
+        mainTheme.stop();
+    }
+
+    if (constObj.key.isPress('UP')) {
+        jumpSound.play();
+    }
+
+    if (constObj.key.isPress('SPACE')) {
+        shot.play();
+    }
+
+////////////////////////////////////////////////////////////////
+
+
+
         constObj.game.clear();
         background.drawBackground();
         background.counterZ.reStyle({
@@ -109,6 +155,8 @@ const Game = function () {
     this.entry = function () {
         constObj.log(Man);
         constObj.log('start!');
+        intro.stop();
+        mainTheme.play();
     }
     this.exit = function () {
         constObj.log('End!');
@@ -126,6 +174,8 @@ const preLoadScreen = function () {
     };
     this.entry = function () {
         constObj.log('PreloadScreen loaded');
+
+
     };
     this.exit = function () {
         constObj.log('preloadScreen End!');
@@ -146,6 +196,7 @@ const gameOverScreen = function () {
     this.exit = function () {
         constObj.log('GameOverScreen End!');
     }
+
 }
 
 

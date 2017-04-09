@@ -10,7 +10,13 @@ const pennyPos = constObj.height - (pennyH + constObj.persPos);
 
 const point = constObj.pjs.vector.point;
 
+const loadAudio = require('./audio');
+const girlDeathCry = loadAudio(['audio/girl_death_cry.mp3'], 1, false);
+
+const girlDead = constObj.pjs.tiles.newAnimation('img/sprites/girl_dead_120_110_15.png', 120, pennyH, 15);
+
 const girlDead = constObj.pjs.tiles.newAnimation('img/sprites/penny_dead_120_110_15.png', 120, pennyH, 15);
+
 
 const girls = [];
 
@@ -44,6 +50,9 @@ girls.logic = function () {
             girl.dead = 1;
             girl.frame = 0;
             background.countOfGirl++;
+
+            girlDeathCry.play();
+
             for (let i = 0; i < bullets.length; i++) {
                 let bullet = bullets[i];
                 if (bullet.isArrIntersect(girls)) {
