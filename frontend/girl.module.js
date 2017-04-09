@@ -47,8 +47,10 @@ girls.logic = function () {
         if (girl.isArrIntersect(bullets) && !girl.dead) {
             girl.dead = 1;
             girl.frame = 0;
-            background.countOfGirl++;
-
+            background.score -= 10;
+            if (background.score < 0) {
+                background.score = 0;
+            }
             girlDeathCry.play();
 
             for (let i = 0; i < bullets.length; i++) {
