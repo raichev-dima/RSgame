@@ -143,6 +143,7 @@ const Game = function () {
                     }
                     else {
                         hero.died = true;
+                        i = 0;
                     }
                 }
             }
@@ -186,6 +187,9 @@ const gameOverScreen = function () {
         hero.reset();
         zombies.length = 0;
         girls.length = 0;
+        background.counterLife.forEach(function(item) {
+            item.visible = true;
+        })
         startButtons.turnOnGameOverButton();
     };
     this.exit = function () {

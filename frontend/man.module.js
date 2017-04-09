@@ -108,6 +108,8 @@ Man.prototype.reset = function () {
     this.content.delay = 10;
     this.content.scale = 1;
     this.died = false;
+
+
 };
 
 let hero = new Man("img/sprites/bernadett.png", 205, 236, 14);
