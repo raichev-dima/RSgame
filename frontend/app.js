@@ -4,6 +4,7 @@ require("./css/reset.css");
 const Man = require('./man.module').Man;
 const startButtons = require('./preLoad.module').startButtons;
 let gameOverText = require('./preLoad.module').gameOverText;
+let nextLevelText = require('./preLoad.module').nextLevelText;
 const background = require('./background').background;
 let zombies = require('./zombie.module').zombies;
 const constObj = require('./const').constObj;
@@ -15,7 +16,7 @@ const loadAudio = require('./audio');
 
 //////////////////////      AUDIO      /////////////////////////////////////////
 const jumpSound = loadAudio(['audio/smb_jump-small.wav'], 1);
-const mainTheme = loadAudio(['audio/make_them_suffer.mp3'], 0.05, true);
+const mainTheme = loadAudio(['audio/hellraiser.mp3'], 0.05, true);
 const intro = loadAudio(['audio/hellraiser.mp3'], 0.1, true);
 const shot = loadAudio(['audio/shot.mp3'], 1);
 
@@ -45,30 +46,19 @@ const Game = function () {
 
 
     this.update = function () {
-
-        //    SOUNDS     //
-        ////////////////////////////////////////////////////////////////
-
-        if (constObj.key.isPress('ESC')) {
-            mainTheme.stop();
-        }
-
-        if (constObj.key.isPress('UP')) {
-            jumpSound.play();
-        }
-
-        if (constObj.key.isPress('SPACE')) {
-            shot.play();
-        }
-
-        ////////////////////////////////////////////////////////////////
-
-
-
         constObj.game.clear();
         background.drawBackground();
+        if (hero.getLevel()) {
+            hero.timer = constObj.pjs.game.getTime();
+        }
+        if (constObj.pjs.game.getTime() < hero.timer + 1000) {
+            nextLevelText.draw();
+        }
+        else {
+            hero.timer = 0;
+        }
         background.counter.reStyle({
-            text: "Score: " + background.score
+            text: "Level" + hero.level + "     Score: " + background.score
         });
         zombies.spawner.restart();
         zombies.logic();
@@ -123,15 +113,22 @@ const Game = function () {
                 }
 
                 if (constObj.key.isPress('UP')) {
+                    jumpSound.play();
                     hero.jumping();
                 }
 
                 if (constObj.key.isDown('SPACE')) {
+                    shot.play();
                     hero.shooting();
                 }
+
+                if (constObj.key.isPress('ESC')) {
+                    mainTheme.stop();
+                }
+
                 if (hero.content.isArrIntersect(girls)) {
                     hero.banned(1.5); // на сколько секунд обездвиживаем hero
-                };
+                }
             } else {
                 hero.content.drawFrames(0, 5);
             }

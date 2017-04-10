@@ -113,6 +113,16 @@ let gameOverText = constObj.game.newTextObject({
     strokeWidth: 6,
 });
 
+let nextLevelText = constObj.game.newTextObject({
+    x: 300,
+    y: 100,
+    text: "You have reached the next level!",
+    size: 50,
+    padding: 10,
+    color: "#000000",
+    strokeWidth: 6,
+});
+
 exports.startButtons = {
     startButton: startButton,
     changeHeroButton: changeHeroButton,
@@ -133,3 +143,4 @@ exports.startButtons = {
 };
 
 exports.gameOverText = gameOverText;
+exports.nextLevelText = nextLevelText;
