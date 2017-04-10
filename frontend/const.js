@@ -5,6 +5,7 @@ const pjs = new PointJS('2D', 900, 500, {
 const game = pjs.game;
 const log = pjs.system.log;
 const point = pjs.vector.point;
+const size = pjs.vector.size;
 const cam = pjs.camera;
 const brush = pjs.brush;
 const OOP = pjs.OOP;
@@ -24,6 +25,7 @@ exports.constObj = {
     key: key,
     log:log,
     point:point,
+    size:size,
     cam:cam,
     brush:brush,
     OOP:OOP,

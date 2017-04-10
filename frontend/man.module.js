@@ -71,7 +71,9 @@ Man.prototype.bulletFly = function () {
 }
 
 Man.prototype.jumping = function () {
-    this.jumpFlag = 'UP';
+    if (this.jumpFlag !== 'UP' && this.jumpFlag !== 'DOWN') {
+        this.jumpFlag = 'UP';
+    }
 }
 
 Man.prototype.newtonLaw = function (zeroOrOneOrTwo) {
@@ -93,6 +95,14 @@ Man.prototype.newtonLaw = function (zeroOrOneOrTwo) {
     }
 }
 
+Man.prototype.banned = function (timerInSeconds) {
+    if (timerInSeconds) {
+        Man.prototype.bannedTime = Date.now();
+        Man.prototype.bannedForTime = timerInSeconds;
+    }
+    return (Date.now() - Man.prototype.bannedTime < Man.prototype.bannedForTime*1000);
+}
+
 Man.prototype.drawManElements = function () {
     this.bulletFly();
     this.drawName();
@@ -108,8 +118,6 @@ Man.prototype.reset = function () {
     this.content.delay = 10;
     this.content.scale = 1;
     this.died = false;
-
-
 };
 
 let hero = new Man("img/sprites/bernadett.png", 205, 236, 14);

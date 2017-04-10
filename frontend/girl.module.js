@@ -9,6 +9,7 @@ const pennyH = 110;
 const pennyPos = constObj.height - (pennyH + constObj.persPos);
 
 const point = constObj.pjs.vector.point;
+const size = constObj.pjs.vector.size;
 
 const loadAudio = require('./audio');
 const girlDeathCry = loadAudio(['audio/girl_death_cry.mp3'], 1, false);
@@ -33,9 +34,17 @@ girls.spawner = constObj.pjs.OOP.newTimer(5000, function () {
 girls.logic = function () {
     constObj.pjs.OOP.forArr(girls, function (girl, index) {
         if (!girl.dead) {
+            // decrease the girl's box
+            girl.setBox({
+                offset: point(30, 50),
+                size: size(-60, -40)
+            });
             girl.draw();
             girl.move(point(-1.3, 0));
         } else {
+            girl.setBox({
+                offset: point(0, 150),
+            });
             girl.setAnimation(girlDead);
             girl.move(point(0, 0));
             girl.w = 120;
@@ -43,7 +52,8 @@ girls.logic = function () {
             girl.drawFrames(0, 14);
         }
 
-        // girl.drawStaticBox();
+        //girl.drawStaticBox();
+
         if (girl.isArrIntersect(bullets) && !girl.dead) {
             girl.dead = 1;
             girl.frame = 0;
@@ -61,7 +71,7 @@ girls.logic = function () {
             }
         }
         if (girl.dead > 70) {
-            girls.splice(index,1);
+            girls.splice(index, 1);
         }
 
     });
