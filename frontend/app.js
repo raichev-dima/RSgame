@@ -46,22 +46,22 @@ const Game = function () {
 
     this.update = function () {
 
-                //    SOUNDS     //
-////////////////////////////////////////////////////////////////
+        //    SOUNDS     //
+        ////////////////////////////////////////////////////////////////
 
-    if (constObj.key.isPress('ESC')) {
-        mainTheme.stop();
-    }
+        if (constObj.key.isPress('ESC')) {
+            mainTheme.stop();
+        }
 
-    if (constObj.key.isPress('UP')) {
-        jumpSound.play();
-    }
+        if (constObj.key.isPress('UP')) {
+            jumpSound.play();
+        }
 
-    if (constObj.key.isPress('SPACE')) {
-        shot.play();
-    }
+        if (constObj.key.isPress('SPACE')) {
+            shot.play();
+        }
 
-////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////
 
 
 
@@ -80,57 +80,64 @@ const Game = function () {
             hero.content.drawFrame(13);
             hero.content.drawFrame(14);
             constObj.game.setLoop('gameOver');
-        }
-        else {
-            constObj.cam.move(constObj.point(dx, dy));
-            hero.content.move(constObj.point(dx, dy));
-            if (constObj.key.isDown('RIGHT')) {
-                dx = 1.3;
-                if (hero.content.getPosition().x  <= 125) {
-                    constObj.cam.move(constObj.point(-dx, -dy));
-                }
-                if (hero.content.getPosition().x  >= constObj.cam.getPosition().x+125) {
-                    constObj.cam.move(constObj.point(dx*2, dy*2));
-                }
-                hero.content.setFlip(0, 0);
-                if (hero.jumpFlag == 'STOP' ) {
-                    hero.content.drawFrames(0, 5);
-                }
-            } else if (constObj.key.isDown('LEFT')) {
-                if (hero.content.getPosition().x  >= 0) {
-                    dx = -1.3;
-                    if (hero.content.getPosition().x -125 <= 0) {
+        } else {
+            if (!hero.banned()) {
+
+                constObj.cam.move(constObj.point(dx, dy));
+                hero.content.move(constObj.point(dx, dy));
+
+                if (constObj.key.isDown('RIGHT')) {
+                    dx = 1.3;
+                    if (hero.content.getPosition().x <= 125) {
                         constObj.cam.move(constObj.point(-dx, -dy));
                     }
-                    else if (hero.content.getPosition().x  <= constObj.cam.getPosition().x+125){
-                        constObj.cam.move(constObj.point(dx*2, dy*2));
+                    if (hero.content.getPosition().x >= constObj.cam.getPosition().x + 125) {
+                        constObj.cam.move(constObj.point(dx * 2, dy * 2));
                     }
-                }
-                else if (hero.content.getPosition().x < 0){
+                    hero.content.setFlip(0, 0);
+                    if (hero.jumpFlag == 'STOP') {
+                        hero.content.drawFrames(0, 5);
+                    }
+                } else if (constObj.key.isDown('LEFT')) {
+                    if (hero.content.getPosition().x >= 0) {
+                        dx = -1.3;
+                        if (hero.content.getPosition().x - 125 <= 0) {
+                            constObj.cam.move(constObj.point(-dx, -dy));
+                        } else if (hero.content.getPosition().x <= constObj.cam.getPosition().x + 125) {
+                            constObj.cam.move(constObj.point(dx * 2, dy * 2));
+                        }
+                    } else if (hero.content.getPosition().x < 0) {
+                        dx = 0;
+                    }
+                    hero.content.setFlip(1, 0);
+                    if (hero.jumpFlag == 'STOP') {
+                        hero.content.drawFrames(0, 5);
+                    }
+
+                } else {
                     dx = 0;
-                }
-                hero.content.setFlip(1, 0);
-                if (hero.jumpFlag == 'STOP' ) {
-                    hero.content.drawFrames(0, 5);
+                    if (hero.jumpFlag == 'STOP') {
+                        hero.content.drawFrames(6, 8);
+                    }
+
                 }
 
+                if (constObj.key.isPress('UP')) {
+                    hero.jumping();
+                }
+
+                if (constObj.key.isDown('SPACE')) {
+                    hero.shooting();
+                }
+                if (hero.content.isArrIntersect(girls)) {
+                    hero.banned(1.5); // на сколько секунд обездвиживаем hero
+                };
             } else {
-                dx = 0;
-                if (hero.jumpFlag == 'STOP' ) {
-                    hero.content.drawFrames(6, 8);
-                }
-
+                hero.content.drawFrames(0, 5);
             }
 
-            if (constObj.key.isPress('UP')) {
-                hero.jumping();
-            }
-
-            if (constObj.key.isDown('SPACE')) {
-                hero.shooting();
-            }
-            if (hero.content.isArrIntersect(zombies.filter(function(item) {
-                    return (item.dead) ?  false :  true;
+            if (hero.content.isArrIntersect(zombies.filter(function (item) {
+                    return (item.dead) ? false : true;
                 }))) {
                 timer++;
                 if (timer >= 50) {
@@ -138,8 +145,7 @@ const Game = function () {
                     if (i < 5) {
                         background.counterLife[i].visible = false;
                         i++;
-                    }
-                    else {
+                    } else {
                         hero.died = true;
                         i = 0;
                     }
@@ -185,7 +191,7 @@ const gameOverScreen = function () {
         hero.reset();
         zombies.length = 0;
         girls.length = 0;
-        background.counterLife.forEach(function(item) {
+        background.counterLife.forEach(function (item) {
             item.visible = true;
         })
         background.resetBG();

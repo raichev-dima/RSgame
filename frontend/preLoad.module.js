@@ -7,15 +7,13 @@ const height = constObj.game.getWH().h;
 
 const hero = require('./man.module').hero;
 
-let skins = [{
-        stay: ["img/sprites/staying_by_Egor.png", 192, 358, 1, 'Tvoi-glaza-aa']
-    },
-    {
-        stay: ["img/sprites/human_90_110_8_staying.png", 90, 110, 8, 'Charlie']
-    }
+let skins = [
+    ["img/sprites/staying_by_Egor.png", 192, 358, 1, 'Tvoi-glaza-aa'],
+    ["img/sprites/human_90_110_8_staying.png", 90, 110, 8, 'Charlie'],
+    ["img/sprites/bernadett.png", 205, 236, 14, 'Bernadett'],
 ];
 
-skins.flag = false;
+skins.count = skins.length;
 
 let startButton = constObj.pjs.GUI.newButton({
     x: 10,
@@ -64,12 +62,13 @@ let changeHeroButton = constObj.pjs.GUI.newButton({
     },
     events: {
         click: function () {
-            if (!skins.flag) {
-                skins.flag = true;
-                hero.changeSkin(...skins[1].stay);
+            if (skins.count === skins.length) {
+                skins.count = 0;
+                skins.count++;
+                hero.changeSkin(...skins[0]);
             } else {
-                skins.flag = false;
-                hero.changeSkin(...skins[0].stay);
+                skins.count++;
+                hero.changeSkin(...skins[skins.count - 1]);
             }
         }
     }
@@ -104,14 +103,14 @@ let restartButton = constObj.pjs.GUI.newButton({
     }
 });
 
-let gameOverText = constObj.game.newTextObject( {
-    x : 300,
-    y : 100,
-    text : "GAME OVER",
-    size : 50,
+let gameOverText = constObj.game.newTextObject({
+    x: 300,
+    y: 100,
+    text: "GAME OVER",
+    size: 50,
     padding: 10,
-    color : "#000000",
-    strokeWidth : 6,
+    color: "#000000",
+    strokeWidth: 6,
 });
 
 exports.startButtons = {
@@ -123,7 +122,7 @@ exports.startButtons = {
             display: 'block'
         });
     },
-    turnOnStartButton: function() {
+    turnOnStartButton: function () {
         startButton.setStyle({
             display: 'block'
         });
