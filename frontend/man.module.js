@@ -6,7 +6,7 @@ const heroPos = constObj.height - (manH + constObj.persPos);
 
 function Man(path, width, height, count, name) {
     this.jumpFlag = 'STOP';
-    this.name = name || "Where is my Name?";
+    this.name = name || "Bernadett";
     this.content = constObj.game.newAnimationObject({
         animation: constObj.pjs.tiles.newAnimation(path, width, height, count),
         w: 100,
