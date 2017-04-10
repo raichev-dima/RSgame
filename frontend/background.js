@@ -1,5 +1,6 @@
 const constObj = require('./const').constObj;
 const hero = require('./man.module').hero;
+let nextLevelText = require('./preLoad.module').nextLevelText;
 const bgHeight = 280;
 const bgPos = constObj.height - bgHeight;
 
@@ -74,10 +75,11 @@ let drawBackground = function () {
     backgr1.draw();
     backgr2.draw();
     endlessBackGround();
-    counter.setPositionCS(constObj.point(100, 30));
+    counter.setPositionCS(constObj.point(150, 50));
+    nextLevelText.setPositionCS(constObj.point(450, 100));
     counter.draw();
     counterLife.reduce(function (prevResult, item) {
-        item.setPositionCS(constObj.point(50 + prevResult, 30));
+        item.setPositionCS(constObj.point(50 + prevResult, 50));
         return 50 + prevResult;
     }, 600);
     constObj.pjs.OOP.drawArr(counterLife);

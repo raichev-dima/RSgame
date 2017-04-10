@@ -7,6 +7,9 @@ const heroPos = constObj.height - (manH + constObj.persPos);
 function Man(path, width, height, count, name) {
     this.jumpFlag = 'STOP';
     this.name = name || "Bernadett";
+    this.levelIsChanged = false;
+    this.level = 1;
+    this.timer = 0;
     this.content = constObj.game.newAnimationObject({
         animation: constObj.pjs.tiles.newAnimation(path, width, height, count),
         w: 100,
@@ -119,6 +122,29 @@ Man.prototype.reset = function () {
     this.content.scale = 1;
     this.died = false;
 };
+
+Man.prototype.getLevel = function() {
+    this.levelIsChange = false;
+    if (this.content.getPosition().x < 1000 && this.level == 1 ) {
+        this.level = 1;
+    }
+    if ((this.content.getPosition().x < 2000 && this.content.getPosition().x > 1000) && this.level != 3) {
+        if (this.level != 2) {
+            this.level = 2;
+            this.levelIsChange = true;
+        }
+    }
+    if ((this.content.getPosition().x < 3000 && this.content.getPosition().x > 2000) || this.level == 3) {
+        if (this.level != 3) {
+            this.level = 3;
+            this.levelIsChange = true;
+        }
+    }
+    if (this.content.getPosition().x > 4000) {
+        console.log('FINAL PAGE');
+    }
+    return this.levelIsChange;
+}
 
 let hero = new Man("img/sprites/bernadett.png", 205, 236, 14);
 
