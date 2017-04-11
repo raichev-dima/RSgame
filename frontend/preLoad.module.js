@@ -10,7 +10,7 @@ const hero = require('./man.module').hero;
 let skins = [
     ["img/sprites/staying_by_Egor.png", 192, 358, 1, 'Tvoi-glaza-aa'],
     ["img/sprites/human_90_110_8_staying.png", 90, 110, 8, 'Charlie'],
-    ["img/sprites/bernadett.png", 205, 236, 14, 'Bernadett'],
+    ["img/sprites/bernadett_test.png", 205, 236, 15, 'Bernadett'],
 ];
 
 skins.count = skins.length;

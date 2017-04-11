@@ -155,7 +155,7 @@ Man.prototype.getLevel = function() {
     return this.levelIsChange;
 }
 
-let hero = new Man("img/sprites/bernadett.png", 205, 236, 14);
+let hero = new Man("img/sprites/bernadett_test.png", 205, 236, 15);
 
 exports.Man = Man;
 exports.bullets = bullets;
