@@ -1,6 +1,7 @@
 function loadAudio(arr, vol, loop) {
 
     var audio = window.document.createElement('audio');
+    audio.style.zIndex = -1000;
     audio.controls = true;
     for (var i = 0, len = arr.length; i < len; i++) {
         var source = document.createElement('source');

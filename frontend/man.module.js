@@ -4,11 +4,10 @@ const constObj = require('./const').constObj;
 const manH = 140;
 const heroPos = constObj.height - (manH + constObj.persPos);
 
-/////////////////////////////////////////////////////////////////
+////////////////       AUDIO       ///////////////////////////////
 const loadAudio = require('./audio');
 const jumpSound = loadAudio(['audio/smb_jump-small.wav'], 1);
 const shotSound = loadAudio(['audio/shot.mp3'], 1);
-
 //////////////////////////////////////////////////////////////////
 
 function Man(path, width, height, count, name) {
@@ -45,40 +44,49 @@ Man.prototype.drawName = function () {
 };
 
 const bullets = [];
+var bullet;
+
 
 Man.prototype.shooting = function () {
 
-    if (!this.shootFlag) {
-        this.shootFlag = true;
+    // if (!this.shootFlag) {
+        //this.shootFlag = true;
         shotSound.play();
         console.log('shooting');
-        let bullet = constObj.game.newRoundRectObject({
-            x: this.content.x + this.content.w / 2 + 32,
+        bullet = constObj.game.newRoundRectObject ({
+            x: this.content.x + this.content.w / 2,
             y: this.content.y + 82,
             w: 3,
             h: 3,
             radius: 1,
             fillColor: "#FBFE6F",
+            userData : {
+                direction: hero.content.flip.x == 0 ? 1 : -1,
+                life: 1
+            }
         });
         bullets.push(bullet);
-        setTimeout(() => this.shootFlag = false, 300);
-    };
+    // }
+    // setTimeout(() => this.shootFlag = false, 50);
 };
 
-Man.prototype.bulletFly = function () {
-    for (let i = 0; i < bullets.length; i++) {
-        let bullet = bullets[i];
-        bullet.draw();
 
-        if (constObj.key.isDown('LEFT')) {
-            bullet.x = bullet.x - 10;
-        } else {
-            bullet.x = bullet.x + 10;
+
+Man.prototype.bulletFly = function () {
+
+    constObj.OOP.forArr(bullets, function (el) {
+        if(el) {
+            if (el.direction == 1) {
+                el.draw();
+                el.move(constObj.point(7, 0));
+            }
+            if (el.direction == -1) {
+                el.draw();
+                el.move(constObj.point(-7, 0));
+            }
         }
-        if (bullet.x >= hero.content.getPosition().x + 780 || bullet.x <= hero.content.getPosition().x - 780) {
-            bullets.splice(i, 1);
-        }
-    };
+    });
+
 }
 
 Man.prototype.jumping = function () {

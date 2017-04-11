@@ -31,10 +31,14 @@ const Game = function () {
     let timer = 0;
     let i = 0;
 
+
     this.update = function () {
+
 
         constObj.game.clear();
         background.drawBackground();
+
+
         if (hero.getLevel()) {
             hero.timer = constObj.pjs.game.getTime();
         }
@@ -51,8 +55,12 @@ const Game = function () {
         zombies.logic();
         girls.spawner.restart([5000 - 1000*hero.level]);
         girls.logic();
+
+
         hero.drawManElements();
         hero.newtonLaw(1);
+
+
         if (hero.died) {
             hero.content.drawFrame(13);
             hero.content.drawFrame(14);
@@ -104,9 +112,10 @@ const Game = function () {
                     hero.jumping();
                 }
 
-                if (constObj.key.isDown('SPACE')) {
+                if (constObj.key.isPress('SPACE')) {
                     hero.shooting();
                 }
+
 /////////////////////////////// AUDIO /////////////////////////////////////////
                 if (constObj.key.isPress('ESC')) {
 
@@ -120,6 +129,7 @@ const Game = function () {
 
                 }
 ///////////////////////////////////////////////////////////////////////////////
+
                 if (hero.content.isArrIntersect(girls)) {
                     hero.banned(1.5); // на сколько секунд обездвиживаем hero
                 }
@@ -165,7 +175,6 @@ const preLoadScreen = function () {
         hero.content.draw();
 
 //////////////// AUDIO ////////////////////////////////////
-
         if (constObj.pjs.keyControl.isPress('ESC')) {
 
             if(introTheme.state == 'play') {
@@ -177,7 +186,6 @@ const preLoadScreen = function () {
             }
 
         }
-
 /////////////////////////////////////////////////////////////
 
     };
