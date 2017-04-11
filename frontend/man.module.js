@@ -121,6 +121,7 @@ Man.prototype.reset = function () {
     this.content.delay = 10;
     this.content.scale = 1;
     this.died = false;
+    this.level = 1;
 };
 
 Man.prototype.getLevel = function() {
