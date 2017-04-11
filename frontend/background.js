@@ -42,6 +42,7 @@ const backgr1 = constObj.game.newImageObject({
     scale: 1,
     onload: function () {
         backgr2.x = backgr1.x + backgr1.w;
+        backgr3.x = backgr1.x - backgr1.w;
     }
 
 });
@@ -52,28 +53,44 @@ const backgr2 = constObj.game.newImageObject({
     scale: 1,
 
 });
+
+const backgr3 = constObj.game.newImageObject({
+    x: backgr1.x - backgr1.w,
+    y: bgPos,
+    file: 'img/main-bg.png',
+    scale: 1,
+
+});
+
 const endlessBackGround = function () { // аргумент s — это скорость движения фона
 
-    if (backgr1.x + backgr1.w < hero.content.getPosition().x - 320) { // если ушел
-        backgr1.x = backgr2.x + backgr2.w; // перемещаем его сразу за вторым
+    if (backgr1.x + backgr1.w < hero.content.getPosition().x    ) { // если ушел
+        backgr1.x = backgr3.x + backgr3.w; // перемещаем его сразу за вторым
     }
     // аналогично для второго
-    if (backgr2.x + backgr2.w < hero.content.getPosition().x - 320) {
+    if (backgr2.x + backgr2.w < hero.content.getPosition().x    ) {
         backgr2.x = backgr1.x + backgr1.w; // позиционируем за первым
     }
-
-    if (backgr1.x + backgr1.w < hero.content.getPosition().x - 320) { // если ушел
-        backgr1.x = backgr2.x + backgr2.w; // перемещаем его сразу за вторым
+    if (backgr3.x + backgr3.w < hero.content.getPosition().x    ) {
+        backgr3.x = backgr2.x + backgr2.w; // позиционируем за первым
+    }
+    
+    if (backgr1.x + backgr1.w > hero.content.getPosition().x + backgr1.w*2) { // если ушел
+        backgr1.x = backgr2.x - backgr2.w; // перемещаем его сразу за вторым
     }
     // аналогично для второго
-    if (backgr2.x + backgr2.w < hero.content.getPosition().x - 320) {
-        backgr2.x = backgr1.x + backgr1.w; // позиционируем за первым
+    if (backgr2.x + backgr2.w > hero.content.getPosition().x + backgr1.w*2) {
+        backgr2.x = backgr3.x - backgr3.w; // позиционируем за первым
+    }
+    if (backgr3.x + backgr3.w > hero.content.getPosition().x + backgr1.w*2) {
+        backgr3.x = backgr1.x - backgr1.w; // позиционируем за первым
     }
 };
 
 let drawBackground = function () {
     backgr1.draw();
     backgr2.draw();
+    backgr3.draw();
     endlessBackGround();
     counter.setPositionCS(constObj.point(150, 50));
     nextLevelText.setPositionCS(constObj.point(450, 100));
