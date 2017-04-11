@@ -130,7 +130,7 @@ const Game = function () {
                     hero.banned(1.5); // на сколько секунд обездвиживаем hero
                 }
             } else {
-                hero.content.drawFrames(0, 5);
+                hero.content.drawFrames(14, 14);
             }
 
             if (hero.content.isArrIntersect(zombies.filter(function (item) {
