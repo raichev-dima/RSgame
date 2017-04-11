@@ -60,9 +60,9 @@ const Game = function () {
         background.counter.reStyle({
             text: "Level" + hero.level + "     Score: " + background.score
         });
-        zombies.spawner.restart();
+        zombies.spawner.restart([5000 - 1000*hero.level]);
         zombies.logic();
-        girls.spawner.restart();
+        girls.spawner.restart([5000 - 1000*hero.level]);
         girls.logic();
         hero.drawManElements();
         hero.newtonLaw(1);
