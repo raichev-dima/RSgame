@@ -62,28 +62,28 @@ const backgr3 = constObj.game.newImageObject({
 
 });
 
-const endlessBackGround = function () { // аргумент s — это скорость движения фона
+const endlessBackGround = function () { 
 
-    if (backgr1.x + backgr1.w < hero.content.getPosition().x    ) { // если ушел
-        backgr1.x = backgr3.x + backgr3.w; // перемещаем его сразу за вторым
+    if (backgr1.x + backgr1.w < hero.content.getPosition().x    ) { 
+        backgr1.x = backgr3.x + backgr3.w; 
     }
     // аналогично для второго
     if (backgr2.x + backgr2.w < hero.content.getPosition().x    ) {
-        backgr2.x = backgr1.x + backgr1.w; // позиционируем за первым
+        backgr2.x = backgr1.x + backgr1.w; 
     }
     if (backgr3.x + backgr3.w < hero.content.getPosition().x    ) {
-        backgr3.x = backgr2.x + backgr2.w; // позиционируем за первым
+        backgr3.x = backgr2.x + backgr2.w; 
     }
     
-    if (backgr1.x + backgr1.w > hero.content.getPosition().x + backgr1.w*2) { // если ушел
-        backgr1.x = backgr2.x - backgr2.w; // перемещаем его сразу за вторым
+    if (backgr1.x + backgr1.w > hero.content.getPosition().x + backgr1.w*2) { 
+        backgr1.x = backgr2.x - backgr2.w; 
     }
     // аналогично для второго
     if (backgr2.x + backgr2.w > hero.content.getPosition().x + backgr1.w*2) {
-        backgr2.x = backgr3.x - backgr3.w; // позиционируем за первым
+        backgr2.x = backgr3.x - backgr3.w; 
     }
     if (backgr3.x + backgr3.w > hero.content.getPosition().x + backgr1.w*2) {
-        backgr3.x = backgr1.x - backgr1.w; // позиционируем за первым
+        backgr3.x = backgr1.x - backgr1.w; 
     }
 };
 
