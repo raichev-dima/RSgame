@@ -11,8 +11,8 @@ const zombiePos = constObj.height - (zombieH + constObj.persPos);
 
 ////////////////    AUDIO    /////////////////////////////////////////
 const loadAudio = require('./audio');
-const zombieAttack = loadAudio(['audio/zombie_attack.mp3'], 1, false);
-const zombieDeathCry = loadAudio(['audio/zombie_death_cry.mp3'], 1, false);
+const zombieAttackSound = loadAudio(['audio/zombie_attack.mp3'], 1, false);
+const zombieDeathCrySound = loadAudio(['audio/zombie_death_cry.mp3'], 1, false);
 //////////////////////////////////////////////////////////////////////
 
 const point = constObj.pjs.vector.point;
@@ -85,8 +85,10 @@ zombies.logic = function () {
             if (zombie.isIntersect(hero.content)) {
                 console.log('hit!'); // зомби жрет героя
 
-                zombieAttack.play(); //zombie attack sound
-
+                if (zombieAttackSound.dom.paused) {
+                    zombieAttackSound.play();
+                }
+                
                 zombie.move(point(0, 0));
                 zombie.setDelay(20);
                 zombie.drawFrames(10, 12);
@@ -110,8 +112,7 @@ zombies.logic = function () {
             zombie.frame = 0;
             background.score++;
 
-            zombieDeathCry.play(); //zombie death sound
-
+            zombieDeathCrySound.play();
 
             for (let i = 0; i < bullets.length; i++) {
                 let bullet = bullets[i];

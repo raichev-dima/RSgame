@@ -4,6 +4,13 @@ const constObj = require('./const').constObj;
 const manH = 140;
 const heroPos = constObj.height - (manH + constObj.persPos);
 
+/////////////////////////////////////////////////////////////////
+const loadAudio = require('./audio');
+const jumpSound = loadAudio(['audio/smb_jump-small.wav'], 1);
+const shotSound = loadAudio(['audio/shot.mp3'], 1);
+
+//////////////////////////////////////////////////////////////////
+
 function Man(path, width, height, count, name) {
     this.jumpFlag = 'STOP';
     this.name = name || "Bernadett";
@@ -43,6 +50,7 @@ Man.prototype.shooting = function () {
 
     if (!this.shootFlag) {
         this.shootFlag = true;
+        shotSound.play();
         console.log('shooting');
         let bullet = constObj.game.newRoundRectObject({
             x: this.content.x + this.content.w / 2 + 32,

@@ -16,10 +16,10 @@ const loadAudio = require('./audio');
 
 //////////////////////      AUDIO      /////////////////////////////////////////
 const jumpSound = loadAudio(['audio/smb_jump-small.wav'], 1);
-const mainTheme = loadAudio(['audio/hellraiser.mp3'], 0.05, true);
-const intro = loadAudio(['audio/hellraiser.mp3'], 0.1, true);
-const shot = loadAudio(['audio/shot.mp3'], 1);
-
+const mainTheme = loadAudio(['audio/main_theme.mp3'], 0.2, true);
+const introTheme = loadAudio(['audio/hellraiser.mp3'], 0.1, true);
+const shotSound = loadAudio(['audio/shot.mp3'], 1);
+const gameOverTheme = loadAudio(['audio/hellraiser.mp3'], 0.1, true);
 ///////////////////////////////////////////////////////////////////////////////
 
 constObj.pjs.system.setTitle('My mega game');
@@ -31,21 +31,8 @@ const Game = function () {
     let timer = 0;
     let i = 0;
 
-    intro.play();
-
-    (function loop() {
-        fn();
-        requestAnimationFrame(loop);
-    })();
-
-    function fn() {
-        if (constObj.key.isUp('ESC')) {
-            intro.stop();
-        }
-    }
-
-
     this.update = function () {
+
         constObj.game.clear();
         background.drawBackground();
         if (hero.getLevel()) {
@@ -118,14 +105,21 @@ const Game = function () {
                 }
 
                 if (constObj.key.isDown('SPACE')) {
-                    shot.play();
                     hero.shooting();
                 }
-
+/////////////////////////////// AUDIO /////////////////////////////////////////
                 if (constObj.key.isPress('ESC')) {
-                    mainTheme.stop();
-                }
 
+                    if(mainTheme.state == 'play') {
+                        mainTheme.stop();
+                        mainTheme.state = 'stop';
+                    } else {
+                        mainTheme.play();
+                        mainTheme.state = 'play';
+                    }
+
+                }
+///////////////////////////////////////////////////////////////////////////////
                 if (hero.content.isArrIntersect(girls)) {
                     hero.banned(1.5); // на сколько секунд обездвиживаем hero
                 }
@@ -156,11 +150,11 @@ const Game = function () {
     this.entry = function () {
         constObj.log(Man);
         constObj.log('start!');
-        intro.stop();
         mainTheme.play();
     }
     this.exit = function () {
         constObj.log('End!');
+        mainTheme.stop();
     }
 };
 
@@ -169,22 +163,46 @@ const preLoadScreen = function () {
         constObj.game.clear();
         background.first.draw();
         hero.content.draw();
+
+//////////////// AUDIO ////////////////////////////////////
+
+        if (constObj.pjs.keyControl.isPress('ESC')) {
+
+            if(introTheme.state == 'play') {
+                introTheme.stop();
+                introTheme.state = 'stop';
+            } else {
+                introTheme.play();
+                introTheme.state = 'play';
+            }
+
+        }
+
+/////////////////////////////////////////////////////////////
+
     };
     this.entry = function () {
         constObj.log('PreloadScreen loaded');
         startButtons.turnOnStartButton();
+        gameOverTheme.stop();
+        introTheme.play();
     };
     this.exit = function () {
         constObj.log('preloadScreen End!');
+        introTheme.stop();
+        mainTheme.play();
     }
 }
 
 const gameOverScreen = function () {
     this.update = function () {
         gameOverText.draw();
+
+
     };
     this.entry = function () {
         constObj.log('GameOverScreen loaded');
+        gameOverTheme.play();
         hero.reset();
         zombies.length = 0;
         girls.length = 0;
