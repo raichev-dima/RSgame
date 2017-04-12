@@ -28,7 +28,12 @@
         </ul>
         </p>
 
-        <iframe src="game.html" width="900px" height="500px"></iframe>
+        <div class="game-holder">
+            <iframe id="game" src="game.html" width="900px" height="500px"></iframe>
+            <button id="full">
+                <img src="img/resize.png">
+            </button>
+        </div>
         <h2>Release Notes</h2>
         <ul>
             <li>version</li>
@@ -41,5 +46,20 @@
             </li>
         </ul>
     </div>
+    <script>
+        var game = document.getElementById('game');
+        var full = document.getElementById('full');
+        function hasClass(el, cls) {
+          return el.className && new RegExp('(\\s|^)' + cls + '(\\s|$)').test(el.className);
+        }
+
+        full.onclick = function () {
+            if (hasClass(game, 'fullscreen')) {
+              game.className = '';
+            } else {
+              game.className = 'fullscreen';
+            }
+          };
+    </script>
 </body>
 </html>

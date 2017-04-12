@@ -22,6 +22,10 @@ const shotSound = loadAudio(['audio/shot.mp3'], 1);
 const gameOverTheme = loadAudio(['audio/hellraiser.mp3'], 0.1, true);
 ///////////////////////////////////////////////////////////////////////////////
 
+constObj.pjs.system.initFullScale();
+constObj.pjs.system.setStyle({
+    width: '100%'
+});
 constObj.pjs.system.setTitle('My mega game');
 
 const Game = function () {
