@@ -8,12 +8,12 @@ const background = require('./background').background;
 const zombieH = 110;
 const zombiePos = constObj.height - (zombieH + constObj.persPos);
 
-
-////////////////    AUDIO    /////////////////////////////////////////
+////////////////    AUDIO    ///////////////////////////////////////////////////
 const loadAudio = require('./audio');
 const zombieAttackSound = loadAudio(['audio/zombie_attack.mp3'], 1, false);
 const zombieDeathCrySound = loadAudio(['audio/zombie_death_cry.mp3'], 1, false);
-//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 
 const point = constObj.pjs.vector.point;
 
@@ -64,12 +64,12 @@ zombies.spawner = constObj.pjs.OOP.newTimer(2000, function () {
         health: zombieType().health,
     });
     zombies.push(zombie);
-});
+}
+);
 
 zombies.logic = function () {
 
     constObj.pjs.OOP.forArr(zombies, function (zombie, index) {
-        // zombie.drawStaticBox();
         if (!zombie.dead) {
             let heroPos = hero.content.getPosition().x;
             let zombiePos = zombie.getPosition().x;
@@ -83,12 +83,11 @@ zombies.logic = function () {
                 }
             }
             if (zombie.isIntersect(hero.content)) {
-                console.log('hit!'); // зомби жрет героя
+                console.log('hit!'); // zombie's eating hero
 
                 if (zombieAttackSound.dom.paused) {
                     zombieAttackSound.play();
                 }
-                
                 zombie.move(point(0, 0));
                 zombie.setDelay(20);
                 zombie.drawFrames(10, 12);
@@ -105,7 +104,6 @@ zombies.logic = function () {
             zombie.drawFrames(0, 14);
         }
 
-        // zombie.drawStaticBox();
         if (zombie.isArrIntersect(bullets) && !zombie.dead) {
             zombie.health--;
             zombie.health === 0 ? zombie.dead = true : null;

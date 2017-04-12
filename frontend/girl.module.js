@@ -53,8 +53,10 @@ girls.logic = function () {
         }
 
         //girl.drawStaticBox();
+        //console.log(bullets);
 
         if (girl.isArrIntersect(bullets) && !girl.dead) {
+            console.log('dima');
             girl.dead = 1;
             girl.frame = 0;
             background.score -= 10;
@@ -64,8 +66,8 @@ girls.logic = function () {
             girlDeathCry.play();
 
             for (let i = 0; i < bullets.length; i++) {
-                let bullet = bullets[i];
-                if (bullet.isArrIntersect(girls)) {
+                //let bullet = bullets[i];
+                if (bullets[i].isArrIntersect(girls)) {
                     bullets.splice(i, 1);
                 };
             }
