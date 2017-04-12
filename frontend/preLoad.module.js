@@ -128,6 +128,15 @@ let nextLevelText = constObj.game.newTextObject({
     color: "#000000",
 });
 
+let winText = constObj.game.newTextObject({
+    x: 300,
+    y: 100,
+    text: "YOU ARE WIN",
+    size: 50,
+    padding: 10,
+    color: "#000000",
+});
+
 exports.startButtons = {
     startButton: startButton,
     changeHeroButton: changeHeroButton,
@@ -149,3 +158,4 @@ exports.startButtons = {
 
 exports.gameOverText = gameOverText;
 exports.nextLevelText = nextLevelText;
+exports.winText = winText;
