@@ -62,6 +62,7 @@ const Game = function () {
 
         hero.drawManElements();
         hero.newtonLaw(1);
+        background.fog.draw();
 
 
         if (hero.died) {

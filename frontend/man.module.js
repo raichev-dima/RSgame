@@ -57,8 +57,8 @@ Man.prototype.shooting = function () {
         shotSound.play();
         console.log('shooting');
         bullet = constObj.game.newRoundRectObject ({
-            x: this.content.x + this.content.w / 2,
-            y: this.content.y + 82,
+            x: this.content.x + this.content.w / 2 + 30,
+            y: this.content.y + 78,
             w: 3,
             h: 3,
             radius: 1,

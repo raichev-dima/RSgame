@@ -8,8 +8,8 @@ const height = constObj.game.getWH().h;
 const hero = require('./man.module').hero;
 
 let skins = [
-    ["img/sprites/staying_by_Egor.png", 192, 358, 1, 'Tvoi-glaza-aa'],
-    ["img/sprites/human_90_110_8_staying.png", 90, 110, 8, 'Charlie'],
+    ["img/sprites/staying_by_Egor.png", 192, 358, 1, 'Howard'],
+    ["img/sprites/human_90_110_8_staying.png", 90, 110, 8, 'Leonard'],
     ["img/sprites/bernadett_test.png", 205, 236, 15, 'Bernadett'],
 ];
 
@@ -110,7 +110,7 @@ let restartButton = constObj.pjs.GUI.newButton({
 });
 
 let gameOverText = constObj.game.newTextObject({
-    x: 300,
+    x: 380,
     y: 100,
     text: "GAME OVER",
     size: 50,
@@ -126,7 +126,6 @@ let nextLevelText = constObj.game.newTextObject({
     size: 50,
     padding: 10,
     color: "#000000",
-    strokeWidth: 6,
 });
 
 exports.startButtons = {
