@@ -4,6 +4,7 @@ const constObj = require('./const').constObj;
 const manH = 140;
 const heroPos = constObj.height - (manH + constObj.persPos);
 
+
 ////////////////       AUDIO       ///////////////////////////////
 const loadAudio = require('./audio');
 const jumpSound = loadAudio(['audio/smb_jump-small.wav'], 1);
@@ -49,8 +50,10 @@ var bullet;
 
 Man.prototype.shooting = function () {
 
+
     // if (!this.shootFlag) {
         //this.shootFlag = true;
+
         shotSound.play();
         console.log('shooting');
         bullet = constObj.game.newRoundRectObject ({

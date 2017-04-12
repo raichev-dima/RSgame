@@ -34,7 +34,6 @@ const Game = function () {
 
     this.update = function () {
 
-
         constObj.game.clear();
         background.drawBackground();
 
@@ -112,12 +111,14 @@ const Game = function () {
                     hero.jumping();
                 }
 
-                if (constObj.key.isPress('SPACE')) {
+
+                if (constObj.key.isDown('SPACE')) {
                     hero.shooting();
                 }
-
+              
 /////////////////////////////// AUDIO /////////////////////////////////////////
                 if (constObj.key.isPress('ESC')) {
+
 
                     if(mainTheme.state == 'play') {
                         mainTheme.stop();
@@ -129,7 +130,6 @@ const Game = function () {
 
                 }
 ///////////////////////////////////////////////////////////////////////////////
-
                 if (hero.content.isArrIntersect(girls)) {
                     hero.banned(1.5); // на сколько секунд обездвиживаем hero
                 }
@@ -175,6 +175,7 @@ const preLoadScreen = function () {
         hero.content.draw();
 
 //////////////// AUDIO ////////////////////////////////////
+
         if (constObj.pjs.keyControl.isPress('ESC')) {
 
             if(introTheme.state == 'play') {
@@ -186,6 +187,7 @@ const preLoadScreen = function () {
             }
 
         }
+      
 /////////////////////////////////////////////////////////////
 
     };

@@ -14,6 +14,7 @@ const zombieAttackSound = loadAudio(['audio/zombie_attack.mp3'], 1, false);
 const zombieDeathCrySound = loadAudio(['audio/zombie_death_cry.mp3'], 1, false);
 ////////////////////////////////////////////////////////////////////////////////
 
+
 const point = constObj.pjs.vector.point;
 
 const zombieDead = constObj.pjs.tiles.newAnimation('img/sprites/zombie_dead_120_110_15.png', 120, zombieH, 15);
@@ -87,7 +88,6 @@ zombies.logic = function () {
                 if (zombieAttackSound.dom.paused) {
                     zombieAttackSound.play();
                 }
-
                 zombie.move(point(0, 0));
                 zombie.setDelay(20);
                 zombie.drawFrames(10, 12);
