@@ -112,10 +112,10 @@ const Game = function () {
                 }
 
 
-                if (constObj.key.isDown('SPACE')) {
+                if (constObj.key.isPress('SPACE')) {
                     hero.shooting();
                 }
-              
+
 /////////////////////////////// AUDIO /////////////////////////////////////////
                 if (constObj.key.isPress('ESC')) {
 
@@ -187,7 +187,7 @@ const preLoadScreen = function () {
             }
 
         }
-      
+
 /////////////////////////////////////////////////////////////
 
     };
