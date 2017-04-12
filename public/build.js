@@ -64,11 +64,396 @@ var app =
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 2);
+/******/ 	return __webpack_require__(__webpack_require__.s = 10);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+const PointJS = __webpack_require__(3).PointJS;
+const constObj = __webpack_require__(2).constObj;
+const manH = 140;
+const heroPos = constObj.height - (manH + constObj.persPos);
+
+
+////////////////       AUDIO       ///////////////////////////////
+const loadAudio = __webpack_require__(4);
+const jumpSound = loadAudio(['audio/smb_jump-small.wav'], 1);
+const shotSound = loadAudio(['audio/shot.mp3'], 1);
+//////////////////////////////////////////////////////////////////
+
+function Man(path, width, height, count, name) {
+    this.jumpFlag = 'STOP';
+    this.name = name || "Bernadett";
+    this.levelIsChanged = false;
+    this.level = 1;
+    this.timer = 0;
+    this.isWin = false;
+    this.content = constObj.game.newAnimationObject({
+        animation: constObj.pjs.tiles.newAnimation(path, width, height, count),
+        w: 100,
+        h: manH,
+        x: 120,
+        y: heroPos,
+        delay: 10,
+        scale: 1,
+    });
+}
+Man.prototype.changeSkin = function (path, width, height, count, name) {
+    let skin = constObj.pjs.tiles.newAnimation(path, width, height, count);
+    this.content.setAnimation(skin);
+    this.name = name;
+};
+
+Man.prototype.drawName = function () {
+    constObj.pjs.brush.drawText({
+        x: this.content.x + this.content.w / 2 + 10,
+        y: this.content.y - 20,
+        text: this.name,
+        color: '#FFF',
+        size: '20',
+        align: 'center',
+    });
+};
+
+const bullets = [];
+var bullet;
+
+
+Man.prototype.shooting = function () {
+        shotSound.play();
+        console.log('shooting');
+        bullet = constObj.game.newRoundRectObject ({
+            x: this.content.x + this.content.w / 2 + 30,
+            y: this.content.y + 78,
+            w: 3,
+            h: 3,
+            radius: 1,
+            fillColor: "#FBFE6F",
+            userData : {
+                direction: hero.content.flip.x == 0 ? 1 : -1,
+                life: 1
+            }
+        });
+        bullets.push(bullet);
+};
+
+
+
+Man.prototype.bulletFly = function () {
+
+    constObj.OOP.forArr(bullets, function (el) {
+        if(el) {
+            if (el.direction == 1) {
+                el.draw();
+                el.move(constObj.point(7, 0));
+            }
+            if (el.direction == -1) {
+                el.draw();
+                el.move(constObj.point(-7, 0));
+            }
+        }
+    });
+
+}
+
+Man.prototype.jumping = function () {
+    if (this.jumpFlag !== 'UP' && this.jumpFlag !== 'DOWN') {
+        this.jumpFlag = 'UP';
+    }
+}
+
+Man.prototype.newtonLaw = function (zeroOrOneOrTwo) {
+    let position = this.content.getPosition(zeroOrOneOrTwo);
+    if (this.jumpFlag === 'UP') {
+        this.content.move(constObj.point(0, -3.9));
+        this.content.drawFrames(9);
+    }
+
+    if (position.y < (heroPos - manH * 2 + 20) || this.jumpFlag === 'DOWN') {
+        this.jumpFlag = 'DOWN';
+        this.content.move(constObj.point(0, 3.9));
+        this.content.drawFrames(10);
+        if (position.y > (heroPos + manH / 2)) {
+            this.jumpFlag = 'STOP';
+        }
+    }
+}
+
+Man.prototype.banned = function (timerInSeconds) {
+    if (timerInSeconds) {
+        Man.prototype.bannedTime = Date.now();
+        Man.prototype.bannedForTime = timerInSeconds;
+    }
+    return (Date.now() - Man.prototype.bannedTime < Man.prototype.bannedForTime*1000);
+}
+
+Man.prototype.drawManElements = function () {
+    this.bulletFly();
+    this.drawName();
+    this.newtonLaw(1);
+}
+
+Man.prototype.reset = function () {
+    this.content.drawStaticBox();
+    this.content.w = 100;
+    this.content.h = manH;
+    this.content.x = 120;
+    this.content.y = heroPos;
+    this.content.delay = 10;
+    this.content.scale = 1;
+    this.died = false;
+    this.level = 1;
+};
+
+Man.prototype.getLevel = function() {
+    this.levelIsChange = false;
+    if (this.content.getPosition().x < 1000 && this.level == 1 ) {
+        this.level = 1;
+    }
+    if ((this.content.getPosition().x < 2000 && this.content.getPosition().x > 1000) && this.level != 3) {
+        if (this.level != 2) {
+            this.level = 2;
+            this.levelIsChange = true;
+        }
+    }
+    if ((this.content.getPosition().x < 3000 && this.content.getPosition().x > 2000) || this.level == 3) {
+        if (this.level != 3) {
+            this.level = 3;
+            this.levelIsChange = true;
+        }
+    }
+    if (this.content.getPosition().x > 3000) {
+        this.isWin = true;
+    }
+    return this.levelIsChange;
+}
+
+let hero = new Man("img/sprites/bernadett_test.png", 205, 236, 15);
+
+exports.Man = Man;
+exports.bullets = bullets;
+exports.hero = hero;
+exports.heroPos = heroPos;
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+const PointJS = __webpack_require__(3).PointJS;
+const constObj = __webpack_require__(2).constObj;
+
+const width = constObj.game.getWH().w;
+const height = constObj.game.getWH().h;
+
+const hero = __webpack_require__(0).hero;
+
+let skins = [
+    ["img/sprites/staying_by_Egor.png", 192, 358, 1, 'Howard'],
+    ["img/sprites/human_90_110_8_staying.png", 90, 110, 8, 'Leonard'],
+    ["img/sprites/bernadett_test.png", 205, 236, 15, 'Bernadett'],
+];
+
+skins.count = skins.length;
+
+let startButton = constObj.pjs.GUI.newButton({
+    x: 10,
+    y: 10,
+    w: 100,
+    h: 30,
+    text: "Start",
+    style: {
+        backgroundColor: 'rgba(76, 175, 80, 0.59)',
+        top: '25%',
+        left: '50%',
+        width: '200px',
+        height: '50px',
+        marginLeft: '-100px',
+        marginTop: '-75px',
+        borderRadius: '20px',
+        fontSize: '18px',
+        cursor: 'pointer'
+    },
+    events: {
+        click: function () {
+            constObj.game.setLoop('1');
+            startButton.setStyle({
+                display: 'none'
+            });
+            if (changeHeroButton) changeHeroButton.setStyle({
+                display: 'none'
+            });
+        }
+    }
+});
+
+let changeHeroButton = constObj.pjs.GUI.newButton({
+    x: 0,
+    y: 0,
+    w: 100,
+    h: 30,
+    text: "Change HERO!!!",
+    style: {
+        backgroundColor: 'rgba(176, 80, 176, 0.59)',
+        top: '25%',
+        left: '50%',
+        width: '200px',
+        height: '50px',
+        marginLeft: '-100px',
+        marginTop: '25px',
+        borderRadius: '20px',
+        fontSize: '18px',
+        cursor: 'pointer'
+    },
+    events: {
+        click: function () {
+            if (skins.count === skins.length) {
+                skins.count = 0;
+                skins.count++;
+                hero.changeSkin(...skins[0]);
+            } else {
+                skins.count++;
+                hero.changeSkin(...skins[skins.count - 1]);
+            }
+        }
+    }
+});
+
+let restartButton = constObj.pjs.GUI.newButton({
+    x: 10,
+    y: 10,
+    w: 100,
+    h: 30,
+    text: "PLAY AGAIN",
+    style: {
+        backgroundColor: 'rgba(76, 175, 80, 0.59)',
+        top: '75%',
+        left: '50%',
+        width: '200px',
+        height: '50px',
+        marginLeft: '-100px',
+        marginTop: '-75px',
+        borderRadius: '20px',
+        fontSize: '18px',
+        cursor: 'pointer',
+        display: 'none',
+    },
+    events: {
+        click: function () {
+            restartButton.setStyle({
+                display: 'none'
+            });
+            // constObj.game.newLoopFromClassObject('1', new Game());
+            // constObj.game.setLoop('1');
+            constObj.game.startLoop('preLoad');
+        }
+    }
+});
+
+let gameOverText = constObj.game.newTextObject({
+    x: 380,
+    y: 100,
+    text: "GAME OVER",
+    size: 50,
+    padding: 10,
+    color: "#000000",
+    strokeWidth: 6,
+});
+
+let nextLevelText = constObj.game.newTextObject({
+    x: 300,
+    y: 100,
+    text: "You have reached the next level!",
+    size: 50,
+    padding: 10,
+    color: "#000000",
+});
+
+let winText = constObj.game.newTextObject({
+    x: 300,
+    y: 100,
+    text: "YOU ARE WIN",
+    size: 50,
+    padding: 10,
+    color: "#000000",
+});
+
+exports.startButtons = {
+    startButton: startButton,
+    changeHeroButton: changeHeroButton,
+    restartButton: restartButton,
+    turnOnGameOverButton: function () {
+        restartButton.setStyle({
+            display: 'block'
+        });
+    },
+    turnOnStartButton: function () {
+        startButton.setStyle({
+            display: 'block'
+        });
+        changeHeroButton.setStyle({
+            display: 'block'
+        });
+    },
+};
+
+exports.gameOverText = gameOverText;
+exports.nextLevelText = nextLevelText;
+exports.winText = winText;
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
+const PointJS = __webpack_require__(3).PointJS;
+const pjs = new PointJS('2D', 1100, 500, {
+    backgroundColor: '#85a5cc',
+});
+const game = pjs.game;
+const log = pjs.system.log;
+const point = pjs.vector.point;
+const size = pjs.vector.size;
+const cam = pjs.camera;
+const brush = pjs.brush;
+const OOP = pjs.OOP;
+const math = pjs.math;
+// const mouse = pjs.mouseControl.initMouseControl();
+const key = pjs.keyControl.initKeyControl();
+// key.initKeyControl();
+const width = game.getWH().w;
+const height = game.getWH().h;
+const r = game.getResolution();
+const persPos = 20;
+const bulletPos = 100;
+
+exports.constObj = {
+    pjs: pjs,
+    game: game,
+    key: key,
+    log:log,
+    point:point,
+    size:size,
+    cam:cam,
+    brush:brush,
+    OOP:OOP,
+    math:math,
+    width:width,
+    height:height,
+    r:r,
+    persPos: persPos,
+    bulletPos: bulletPos,
+}
+
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports) {
 
 function PointJS(lc,ga,ha,za,Bc){this._logo="data:image/png;base64,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";
@@ -230,345 +615,683 @@ this.storage.setItem(a,c)},loadAsObject:function(a){return JSON.parse(this.stora
 module.exports.PointJS = PointJS;
 
 /***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
+/* 4 */
+/***/ (function(module, exports) {
 
-const PointJS = __webpack_require__(0).PointJS;
-const pjs = new PointJS('2D', 900, 390, {
-    backgroundColor: 'yellow',
-});
-const game = pjs.game;
-//pjs.system.initFullScreen();
-const log = pjs.system.log;
-const point = pjs.vector.point;
-const cam = pjs.camera;
-const brush = pjs.brush;
-const OOP = pjs.OOP;
-const math = pjs.math;
-// const mouse = pjs.mouseControl.initMouseControl();
-const key = pjs.keyControl.initKeyControl();
-// key.initKeyControl();
-const width = game.getWH().w;
-const height = game.getWH().h;
-const r = game.getResolution();
+function loadAudio(arr, vol, loop) {
 
+    var audio = window.document.createElement('audio');
+    audio.style.zIndex = -1000;
+    audio.controls = true;
+    for (var i = 0, len = arr.length; i < len; i++) {
+        var source = document.createElement('source');
+        source.src = arr[i];
+        audio.appendChild(source);
+    }
 
+    var o = {
+        dom : false,
+        state : 'stop',
 
-exports.constObj = {
-    pjs: pjs,
-    game: game
+        play : function () {
+            this.dom.currentTime = 0;
+            this.dom.play();
+            this.state = 'play';
+        },
+
+        pause: function () {
+            this.dom.pause();
+            this.state = 'pause';
+        },
+
+        stop : function () {
+            this.dom.pause();
+            this.dom.currentTime = 0;
+            this.state = 'stop';
+        },
+
+        setVolume : function (vol) {
+            this.dom.volume = vol;
+        }
+    };
+
+    o.dom = audio;
+    o.dom.volume = vol || 1;
+    o.dom.loop = loop || false;
+
+    return o;
 }
 
+module.exports = loadAudio;
+
+
 /***/ }),
-/* 2 */
+/* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
+const constObj = __webpack_require__(2).constObj;
+const hero = __webpack_require__(0).hero;
+let nextLevelText = __webpack_require__(1).nextLevelText;
+let winText = __webpack_require__(1).winText;
+const bgHeight = 280;
+const fogWidth = 475;
+const bgPos = constObj.height - bgHeight;
+const fogPosX = hero.content.getPosition().x + constObj.width - fogWidth - hero.content.x;
 
-
-const app = __webpack_require__(2);
-const man = __webpack_require__(3).man;
-
-const zombies = __webpack_require__(4).zombies;
-const constObj = __webpack_require__(1).constObj;
-const PointJS = __webpack_require__(0).PointJS;
-
-
-
-//pjs.system.initFullScreen();
-const log = constObj.pjs.system.log;
-
-const point = constObj.pjs.vector.point;
-const cam = constObj.pjs.camera;
-const brush = constObj.pjs.brush;
-const OOP = constObj.pjs.OOP;
-const math = constObj.pjs.math;
-// const mouse = pjs.mouseControl.initMouseControl();
-const key = constObj.pjs.keyControl.initKeyControl();
-// key.initKeyControl();
-
-const width = constObj.game.getWH().w;
-const height = constObj.game.getWH().h;
-const r = constObj.game.getResolution();
-
-constObj.pjs.system.setTitle('My mega game');
-
-
-// *** Objects like a man or zombie ***
-const backgr = constObj.game.newImageObject({
-    file: 'img/bg2_wide.jpg',
-    scale: 1.4,
+let score = 0;
+let counter = constObj.game.newTextObject({
+    text: '',
+    size: 30,
+    padding: 10,
+    color: "#000000",
 });
 
-// *** ***
 
-const Game = function () {
+function createCounterLife() {
+    let x = 5;
+    let life = [];
+    for (let i = 0; i < 5; i++) {
+        x += 50;
+        life.push(addPartOfLife(x));
+    }
 
-    this.update = function () {
-        constObj.game.clear();
-        backgr.draw();
-        man.drawManElements();
-        man.drawStaticBox();
-        zombies.spawner.restart();
-        zombies.logic();
+    function addPartOfLife(x) {
+        let partOfLife = constObj.game.newRectObject({
+            x: x,
+            y: 60,
+            w: 50,
+            h: 20,
+            fillColor: "green",
+        });
+        return partOfLife;
+    }
+    return life;
+}
+let counterLife = createCounterLife();
 
-        if (key.isDown('RIGHT')) {
-            cam.move(point(.5, 0));
-            man.move(point(.5, 0));
+var fog = constObj.game.newImageObject({
+    file: 'img/fog.png',
+    scale: 1,
 
-        };
-        if (key.isDown('SPACE')) {
-            man.shooting();
-        };
-    };
-    this.entry = function () {
-        log(man);
-        log('start!');
-    };
-    this.exit = function () {
-        log('End!');
+});
+const backgr1 = constObj.game.newImageObject({
+    x: 0,
+    y: bgPos,
+    file: 'img/main-bg.png',
+    scale: 1,
+    onload: function () {
+        backgr2.x = backgr1.x + backgr1.w;
+        backgr3.x = backgr1.x - backgr1.w;
+    }
+
+});
+const backgr2 = constObj.game.newImageObject({
+    x: backgr1.x + backgr1.w,
+    y: bgPos,
+    file: 'img/main-bg.png',
+    scale: 1,
+
+});
+
+const backgr3 = constObj.game.newImageObject({
+    x: backgr1.x - backgr1.w,
+    y: bgPos,
+    file: 'img/main-bg.png',
+    scale: 1,
+
+});
+
+const endlessBackGround = function () {
+
+    if (backgr1.x + backgr1.w < hero.content.getPosition().x    ) {
+        backgr1.x = backgr3.x + backgr3.w;
+    }
+    // аналогично для второго
+    if (backgr2.x + backgr2.w < hero.content.getPosition().x    ) {
+        backgr2.x = backgr1.x + backgr1.w;
+    }
+    if (backgr3.x + backgr3.w < hero.content.getPosition().x    ) {
+        backgr3.x = backgr2.x + backgr2.w;
+    }
+
+    if (backgr1.x + backgr1.w > hero.content.getPosition().x + backgr1.w*2) {
+        backgr1.x = backgr2.x - backgr2.w;
+    }
+    // аналогично для второго
+    if (backgr2.x + backgr2.w > hero.content.getPosition().x + backgr1.w*2) {
+        backgr2.x = backgr3.x - backgr3.w;
+    }
+    if (backgr3.x + backgr3.w > hero.content.getPosition().x + backgr1.w*2) {
+        backgr3.x = backgr1.x - backgr1.w;
     }
 };
 
-constObj.game.newLoopFromClassObject('1', new Game());
-constObj.game.startLoop('1');
-
-
-
-
-// game.newLoopFromConstructor('game_one', function () {
-//     let back = game.newImageObject({
-//         file: 'img/bg2_wide.jpg',
-//         scale: 1.4,
-//     });
-
-//     const man = game.newAnimationObject({
-//         animation: pjs.tiles.newAnimation('img/sprites/human_114_8.png', 114, 114, 8),
-//         w: 114,
-//         h: 114,
-//         x: 120,
-//         y: 220,
-//         delay: 10,
-//         scale: 1.2,
-//         onload: function () {
-//             console.log('hello i am a onload')
-//         }
-//     });
-
-
-//     man.drawName = function () {
-//         brush.drawText({
-//             x: this.x + this.w / 2 + 10,
-//             y: this.y - 20,
-//             text: this.name,
-//             color: '#FFF',
-//             size: '20',
-//             align: 'center',
-//         });
-//     };
-
-//     const zombies = [];
-
-//     let timer = OOP.newTimer(3000, function () {
-//         zombies.push(game.newAnimationObject({
-//             animation: pjs.tiles.newAnimation('img/sprites/zombie_75_115_10.png', 73.72, 115, 10),
-//             w: 73.65,
-//             h: 115,
-//             x: math.random(320, 1280),
-//             y: 220,
-//             delay: 10,
-//             scale: 1.2,
-//         }));
-//     });
-
-
-//     this.update = function () {
-//         game.clear();
-//         back.draw();
-//         man.draw();
-//         man.drawName();
-//         timer.restart();
-//         OOP.forArr(zombies, function (el) {
-//             el.draw();
-//             el.move(point(-1,0));
-//         });
-
-
-//         if (key.isDown('RIGHT')) {
-//             cam.move(point(.5, 0));
-//             man.move(point(.5, 0));
-
-//         }
-//     };
-
-//     this.entry = function () {
-//         log('lets start!');
-//         timer.start();
-//     };
-
-
-
-//     pjs.OOP.drawArr(arr);
-
-// if (mouse.isDown('LEFT')) {
-//     createRect()
-// }
-
-
-
-// if (mouse.isInObject(man)) {
-//     man.drawStaticBox('red');
-// }
-
-// if (man.isIntersect(zombies)) {
-//     man.drawStaticBox('blue');
-// }
-// });
-
-// game.startLoop('game_one');
-
-// const rect = game.newRectObject( {
-//     positionC: point(100,100),
-//     w: 50, h:50,
-//     fillColor: "red",
-// });
-
-// rect.control = function() {
-//     if (key.isDown('RIGHT')) {
-//         this.move(point(1,0));
-//     }
-//     if (key.isDown('LEFT')) {
-//         this.move(point(-1,0));
-//     }
-//     if (key.isDown('UP')) {
-//         this.y--;
-//     }
-//     if (key.isDown('DOWN')) {
-//         this.y++;
-//     }
-// };
-// console.log(key.getKeyList());
-
-
-
-
-//exports.app = app;
-
-
-/***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-const PointJS = __webpack_require__(0).PointJS;
-const constObj = __webpack_require__(1).constObj;
-
-const man = constObj.game.newAnimationObject({
-    animation: constObj.pjs.tiles.newAnimation('img/sprites/human_114_8.png', 114, 114, 8),
-    w: 114,
-    h: 114,
-    x: 120,
-    y: 240,
-    delay: 10,
-    scale: 1,
-    // onload: function () {
-    //     console.log('hello i am a onload');
-    // },
-});
-
-man.name = "Charlie";
-man.drawName = function () {
-    constObj.pjs.brush.drawText({
-        x: this.x + this.w / 2 + 10,
-        y: this.y - 20,
-        text: this.name,
-        color: '#FFF',
-        size: '20',
-        align: 'center',
-    });
-};
-
-man.drawGun = function () {
-    constObj.pjs.brush.drawImage({
-        file: "img/gun1.png",
-        x: this.x + this.w / 2 + 40,
-        y: this.y + 45,
-    });
-};
-
-const bullets = [];
-
-man.shooting = function () {
-    console.log('shooting');
-    constObj.pjs.brush.drawRect({
-        x: 200,
-        y: 200,
-        w: 240,
-        h: 200,
-        color: "black"
-    });
-};
-
-man.drawManElements = function () {
-    man.draw();
-    man.drawName();
-    man.drawGun();
+let drawBackground = function () {
+    backgr1.draw();
+    backgr2.draw();
+    backgr3.draw();
+    endlessBackGround();
+    fog.setPositionS(constObj.point(fogPosX, bgPos));
+    counter.setPositionCS(constObj.point(150, 50));
+    nextLevelText.setPositionCS(constObj.point(550, 100));
+    winText.setPositionCS(constObj.point(550, 100));
+    counter.draw();
+    counterLife.reduce(function (prevResult, item) {
+        item.setPositionCS(constObj.point(50 + prevResult, 50));
+        return 50 + prevResult;
+    }, 780);
+    constObj.pjs.OOP.drawArr(counterLife);
 }
 
-exports.man = man;
+exports.background = {
+    'first': backgr1,
+    'bgPos': bgPos,
+    'counter': counter,
+    'score': score,
+    'counterLife': counterLife,
+    'drawBackground': drawBackground,
+    'fog': fog,
+    resetBG: function () {
+        backgr1.x = 0;
+        backgr2.x = backgr1.x + backgr1.w;
+        score = 0;
+    }
+}
 
 
 /***/ }),
-/* 4 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-const PointJS = __webpack_require__(0).PointJS;
-const constObj = __webpack_require__(1).constObj;
-const man = __webpack_require__(3).man;
+const PointJS = __webpack_require__(3).PointJS;
+const constObj = __webpack_require__(2).constObj;
+const man = __webpack_require__(0).man;
+const bullets = __webpack_require__(0).bullets;
+const hero = __webpack_require__(0).hero;
+const background = __webpack_require__(5).background;
+const pennyH = 110;
+const pennyPos = constObj.height - (pennyH + constObj.persPos);
 
 const point = constObj.pjs.vector.point;
+const size = constObj.pjs.vector.size;
 
-const zombieDead = constObj.pjs.tiles.newAnimation('img/sprites/zombie_75_115_1_dead.png', 184, 115, 1);
+const loadAudio = __webpack_require__(4);
+const girlDeathCry = loadAudio(['audio/girl_death_cry.mp3'], 1, false);
 
-const zombies = [];
-zombies.spawner = constObj.pjs.OOP.newTimer(1000, function () {
-    zombies.push(constObj.game.newAnimationObject({
-        animation: constObj.pjs.tiles.newAnimation('img/sprites/zombie_75_115_10.png', 73.72, 115, 10),
-        w: 73.65,
-        h: 115,
-        x: constObj.pjs.math.random(man.getPosition().x + 320, man.getPosition().x + 850), // x 1280
-        y: 240,
-        delay: 10,
+const girlDead = constObj.pjs.tiles.newAnimation('img/sprites/penny_dead_120_110_15.png', 120, pennyH, 15);
+
+
+const girls = [];
+
+girls.spawner = constObj.pjs.OOP.newTimer(5000, function () {
+    girls.push(constObj.game.newAnimationObject({
+        animation: constObj.pjs.tiles.newAnimation('img/sprites/penny_70_110_12.png', 70, pennyH, 12),
+        w: 70,
+        h: pennyH,
+        x: constObj.pjs.math.random(hero.content.getPosition().x + 900, hero.content.getPosition().x + 1100), // x 1280
+        y: pennyPos,
+        delay: 3,
         scale: 1,
     }));
 });
 
-
-zombies.logic = function () {
-    return constObj.pjs.OOP.forArr(zombies, function (zombie) {
-
-        if (!zombie.flag) {
-            zombie.draw();
-            zombie.move(point(-1, 0));
+girls.logic = function () {
+    constObj.pjs.OOP.forArr(girls, function (girl, index) {
+        if (!girl.dead) {
+            // decrease the girl's box
+            girl.setBox({
+                offset: point(30, 50),
+                size: size(-60, -40)
+            });
+            girl.draw();
+            girl.move(point(-1.3, 0));
         } else {
-            zombie.setAnimation(zombieDead);
-            zombie.setFlip(1, 0);
-            zombie.move(point(0, 0));
-            zombie.y = 285;
-            zombie.draw();
+            girl.setBox({
+                offset: point(0, 150),
+            });
+            girl.setAnimation(girlDead);
+            girl.move(point(0, 0));
+            girl.w = 120;
+            girl.dead++;
+            girl.drawFrames(0, 14);
         }
-        zombie.drawStaticBox();
-        if (man.isStaticIntersect(zombie.getStaticBox())) {
-            zombie.flag = true;
+
+        //girl.drawStaticBox();
+        //console.log(bullets);
+
+        if (girl.isArrIntersect(bullets) && !girl.dead) {
+            console.log('dima');
+            girl.dead = 1;
+            girl.frame = 0;
+            background.score -= 10;
+            if (background.score < 0) {
+                background.score = 0;
+            }
+            girlDeathCry.play();
+
+            for (let i = 0; i < bullets.length; i++) {
+                //let bullet = bullets[i];
+                if (bullets[i].isArrIntersect(girls)) {
+                    bullets.splice(i, 1);
+                };
+            }
+        }
+        if (girl.dead > 70) {
+            girls.splice(index, 1);
         }
 
     });
 };
 
+exports.girls = girls;
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+const PointJS = __webpack_require__(3).PointJS;
+const constObj = __webpack_require__(2).constObj;
+const man = __webpack_require__(0).man;
+const bullets = __webpack_require__(0).bullets;
+const hero = __webpack_require__(0).hero;
+const background = __webpack_require__(5).background;
+const zombieH = 110;
+const zombiePos = constObj.height - (zombieH + constObj.persPos);
+
+////////////////    AUDIO    ///////////////////////////////////////////////////
+const loadAudio = __webpack_require__(4);
+const zombieAttackSound = loadAudio(['audio/zombie_attack.mp3'], 1, false);
+const zombieDeathCrySound = loadAudio(['audio/zombie_death_cry.mp3'], 1, false);
+////////////////////////////////////////////////////////////////////////////////
+
+
+const point = constObj.pjs.vector.point;
+
+const zombieDead = constObj.pjs.tiles.newAnimation('img/sprites/zombie_dead_120_110_15.png', 120, zombieH, 15);
+const zombieMedium = constObj.pjs.tiles.newAnimation('img/sprites/zombie_medium_70_110_13.png', 70, zombieH, 10);
+const zombieSimple = constObj.pjs.tiles.newAnimation('img/sprites/zombie_70_110_13.png', 70, zombieH, 10);
+
+let zombies = [];
+
+zombies.spawner = constObj.pjs.OOP.newTimer(2000, function () {
+    let zombie = constObj.game.newAnimationObject({
+        animation: zombieSimple,
+        w: 70,
+        h: zombieH,
+        x: constObj.pjs.math.random(hero.content.getPosition().x + 900, hero.content.getPosition().x + 1100), // x 1280
+        y: zombiePos,
+        delay: 10,
+        scale: 1,
+    });
+    let zombieType = function () {
+        let prop;
+        if (!prop) {
+            (function () {
+                prop = {};
+                let random = constObj.pjs.math.random(1, 2);
+                switch (random) {
+                    case 1:
+                        prop.type = 'simple';
+                        prop.health = 1;
+                        zombie.setAnimation(zombieSimple);
+                        break;
+                    case 2:
+                        prop.type = 'medium';
+                        prop.health = 2;
+                        zombie.setAnimation(zombieMedium);
+                        break;
+                    case 3:
+                        type = 'hard';
+                        break;
+                }
+            }());
+        }
+        return prop;
+    }
+
+    zombie.setUserData({
+        zomboType: zombieType().type,
+        health: zombieType().health,
+    });
+    zombies.push(zombie);
+}
+);
+
+zombies.logic = function () {
+
+    constObj.pjs.OOP.forArr(zombies, function (zombie, index) {
+        if (!zombie.dead) {
+            let heroPos = hero.content.getPosition().x;
+            let zombiePos = zombie.getPosition().x;
+            if (heroPos - zombiePos > 0) {
+                zombie.setFlip(true, false);
+                zombie.goTo = 'right';
+            } else {
+                if (zombie.goTo === 'right') {
+                    zombie.goTo = 'left';
+                    zombie.setFlip(false, false);
+                }
+            }
+            if (zombie.isIntersect(hero.content)) {
+                console.log('hit!'); // zombie's eating hero
+
+                if (zombieAttackSound.dom.paused) {
+                    zombieAttackSound.play();
+                }
+                zombie.move(point(0, 0));
+                zombie.setDelay(20);
+                zombie.drawFrames(10, 12);
+            } else {
+                zombie.moveTo(point(hero.content.getPosition().x, constObj.height - zombie.h - 20), .5);
+                zombie.draw();
+            }
+        } else {
+            zombie.setAnimation(zombieDead);
+            zombie.move(point(0, 0));
+            zombie.w = 120;
+            zombie.setDelay(3);
+            zombie.dead++;
+            zombie.drawFrames(0, 14);
+        }
+
+        if (zombie.isArrIntersect(bullets) && !zombie.dead) {
+            zombie.health--;
+            zombie.health === 0 ? zombie.dead = true : null;
+            zombie.frame = 0;
+            background.score++;
+
+            zombieDeathCrySound.play();
+
+            for (let i = 0; i < bullets.length; i++) {
+                let bullet = bullets[i];
+                if (bullet.isArrIntersect(zombies)) {
+                    bullets.splice(i, 1);
+                }
+            }
+        }
+
+        if (zombie.dead > 70) {
+            zombies.splice(index, 1);
+        }
+    });
+};
+
 exports.zombies = zombies;
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+__webpack_require__(8);
+__webpack_require__(9);
+const Man = __webpack_require__(0).Man;
+const startButtons = __webpack_require__(1).startButtons;
+let gameOverText = __webpack_require__(1).gameOverText;
+let nextLevelText = __webpack_require__(1).nextLevelText;
+let winText = __webpack_require__(1).winText;
+const background = __webpack_require__(5).background;
+let zombies = __webpack_require__(7).zombies;
+const constObj = __webpack_require__(2).constObj;
+const girls = __webpack_require__(6).girls;
+const bullets = __webpack_require__(0).bullets;
+const hero = __webpack_require__(0).hero;
+const heroPos = __webpack_require__(0).heroPos;
+const loadAudio = __webpack_require__(4);
+
+//////////////////////      AUDIO      /////////////////////////////////////////
+const jumpSound = loadAudio(['audio/smb_jump-small.wav'], 1);
+const mainTheme = loadAudio(['audio/main_theme.mp3'], 0.2, true);
+const introTheme = loadAudio(['audio/hellraiser.mp3'], 0.1, true);
+const shotSound = loadAudio(['audio/shot.mp3'], 1);
+const gameOverTheme = loadAudio(['audio/hellraiser.mp3'], 0.1, true);
+///////////////////////////////////////////////////////////////////////////////
+
+constObj.pjs.system.initFullScale();
+constObj.pjs.system.setStyle({
+    width: '100%'
+});
+constObj.pjs.system.setTitle('My mega game');
+
+const Game = function () {
+    constObj.log('pls push start!');
+    let dx = 2;
+    let dy = 0;
+    let timer = 0;
+    let i = 0;
+
+
+    this.update = function () {
+
+        constObj.game.clear();
+        background.drawBackground();
+
+
+        if (hero.getLevel()) {
+            hero.timer = constObj.pjs.game.getTime();
+        }
+        if (constObj.pjs.game.getTime() < hero.timer + 1000) {
+            nextLevelText.draw();
+        }
+        else {
+            hero.timer = 0;
+        }
+        background.counter.reStyle({
+            text: "Level" + hero.level + "     Score: " + background.score
+        });
+        zombies.spawner.restart([5000 - 1000*hero.level]);
+        zombies.logic();
+        girls.spawner.restart([5000 - 1000*hero.level]);
+        girls.logic();
+
+
+        hero.drawManElements();
+        hero.newtonLaw(1);
+        background.fog.draw();
+
+
+        if (hero.died) {
+            hero.content.drawFrame(13);
+            hero.content.drawFrame(14);
+            constObj.game.setLoop('gameOver');
+        }
+        else if (hero.isWin) {
+            console.log('win');
+            winText.draw();
+            constObj.game.setLoop('gameOver');
+
+
+
+
+        }
+        else  {
+            if (!hero.banned()) {
+
+                constObj.cam.move(constObj.point(dx, dy));
+                hero.content.move(constObj.point(dx, dy));
+
+                if (constObj.key.isDown('RIGHT')) {
+                    dx = 1.3;
+                    if (hero.content.getPosition().x <= 125) {
+                        constObj.cam.move(constObj.point(-dx, -dy));
+                    }
+                    if (hero.content.getPosition().x >= constObj.cam.getPosition().x + 125) {
+                        constObj.cam.move(constObj.point(dx * 2, dy * 2));
+                    }
+                    hero.content.setFlip(0, 0);
+                    if (hero.jumpFlag == 'STOP') {
+                        hero.content.drawFrames(0, 5);
+                    }
+                } else if (constObj.key.isDown('LEFT')) {
+                    if (hero.content.getPosition().x >= 0) {
+                        dx = -1.3;
+                        if (hero.content.getPosition().x - 125 <= 0) {
+                            constObj.cam.move(constObj.point(-dx, -dy));
+                        } else if (hero.content.getPosition().x <= constObj.cam.getPosition().x + 125) {
+                            constObj.cam.move(constObj.point(dx * 2, dy * 2));
+                        }
+                    } else if (hero.content.getPosition().x < 0) {
+                        dx = 0;
+                    }
+                    hero.content.setFlip(1, 0);
+                    if (hero.jumpFlag == 'STOP') {
+                        hero.content.drawFrames(0, 5);
+                    }
+
+                } else {
+                    dx = 0;
+                    if (hero.jumpFlag == 'STOP') {
+                        hero.content.drawFrames(6, 8);
+                    }
+
+                }
+
+                if (constObj.key.isPress('UP')) {
+                    jumpSound.play();
+                    hero.jumping();
+                }
+
+
+                if (constObj.key.isPress('SPACE')) {
+                    hero.shooting();
+                }
+
+/////////////////////////////// AUDIO /////////////////////////////////////////
+                if (constObj.key.isPress('ESC')) {
+
+
+                    if(mainTheme.state == 'play') {
+                        mainTheme.stop();
+                        mainTheme.state = 'stop';
+                    } else {
+                        mainTheme.play();
+                        mainTheme.state = 'play';
+                    }
+
+                }
+///////////////////////////////////////////////////////////////////////////////
+                if (hero.content.isArrIntersect(girls)) {
+                    hero.banned(1.5); // на сколько секунд обездвиживаем hero
+                }
+            } else {
+                hero.content.drawFrames(14, 14);
+            }
+
+            if (hero.content.isArrIntersect(zombies.filter(function (item) {
+                    return (item.dead) ? false : true;
+                }))) {
+                timer++;
+                if (timer >= 50) {
+                    timer = 0;
+                    if (i < 5) {
+                        background.counterLife[i].visible = false;
+                        i++;
+                    } else {
+                        hero.died = true;
+                        i = 0;
+                    }
+                }
+            }
+            if (!hero.content.isArrIntersect(zombies)) {
+                timer = 0;
+            }
+        }
+    }
+    this.entry = function () {
+        constObj.log(Man);
+        constObj.log('start!');
+        mainTheme.play();
+    }
+    this.exit = function () {
+        constObj.log('End!');
+        mainTheme.stop();
+    }
+};
+
+const preLoadScreen = function () {
+    this.update = function () {
+        constObj.game.clear();
+        background.first.draw();
+        hero.content.draw();
+
+//////////////// AUDIO ////////////////////////////////////
+
+        if (constObj.pjs.keyControl.isPress('ESC')) {
+
+            if(introTheme.state == 'play') {
+                introTheme.stop();
+                introTheme.state = 'stop';
+            } else {
+                introTheme.play();
+                introTheme.state = 'play';
+            }
+
+        }
+
+/////////////////////////////////////////////////////////////
+
+    };
+    this.entry = function () {
+        constObj.log('PreloadScreen loaded');
+        startButtons.turnOnStartButton();
+        gameOverTheme.stop();
+        introTheme.play();
+    };
+    this.exit = function () {
+        constObj.log('preloadScreen End!');
+        introTheme.stop();
+        mainTheme.play();
+    }
+}
+
+const gameOverScreen = function () {
+    this.update = function () {
+        if (!hero.isWin) {
+            gameOverText.draw();
+        }
+    };
+    this.entry = function () {
+        constObj.log('GameOverScreen loaded');
+        gameOverTheme.play();
+        hero.reset();
+        zombies.length = 0;
+        girls.length = 0;
+        background.counterLife.forEach(function (item) {
+            item.visible = true;
+        })
+        background.resetBG();
+        startButtons.turnOnGameOverButton();
+    };
+    this.exit = function () {
+        this.isWin = false;
+        constObj.log('GameOverScreen End!');
+    }
+
+}
+
+constObj.game.newLoopFromClassObject('preLoad', new preLoadScreen());
+constObj.game.newLoopFromClassObject('gameOver', new gameOverScreen());
+constObj.game.newLoopFromClassObject('1', new Game());
+constObj.game.startLoop('preLoad');
 
 
 /***/ })
