@@ -5,6 +5,7 @@ const Man = require('./man.module').Man;
 const startButtons = require('./preLoad.module').startButtons;
 let gameOverText = require('./preLoad.module').gameOverText;
 let nextLevelText = require('./preLoad.module').nextLevelText;
+let winText = require('./preLoad.module').winText;
 const background = require('./background').background;
 let zombies = require('./zombie.module').zombies;
 const constObj = require('./const').constObj;
@@ -69,7 +70,17 @@ const Game = function () {
             hero.content.drawFrame(13);
             hero.content.drawFrame(14);
             constObj.game.setLoop('gameOver');
-        } else {
+        }
+        else if (hero.isWin) {
+            console.log('win');
+            winText.draw();
+            constObj.game.setLoop('gameOver');
+
+
+
+
+        }
+        else  {
             if (!hero.banned()) {
 
                 constObj.cam.move(constObj.point(dx, dy));
@@ -211,9 +222,9 @@ const preLoadScreen = function () {
 
 const gameOverScreen = function () {
     this.update = function () {
-        gameOverText.draw();
-
-
+        if (!hero.isWin) {
+            gameOverText.draw();
+        }
     };
     this.entry = function () {
         constObj.log('GameOverScreen loaded');
@@ -228,6 +239,7 @@ const gameOverScreen = function () {
         startButtons.turnOnGameOverButton();
     };
     this.exit = function () {
+        this.isWin = false;
         constObj.log('GameOverScreen End!');
     }
 

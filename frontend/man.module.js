@@ -17,6 +17,7 @@ function Man(path, width, height, count, name) {
     this.levelIsChanged = false;
     this.level = 1;
     this.timer = 0;
+    this.isWin = false;
     this.content = constObj.game.newAnimationObject({
         animation: constObj.pjs.tiles.newAnimation(path, width, height, count),
         w: 100,
@@ -49,11 +50,6 @@ var bullet;
 
 
 Man.prototype.shooting = function () {
-
-
-    // if (!this.shootFlag) {
-        //this.shootFlag = true;
-
         shotSound.play();
         console.log('shooting');
         bullet = constObj.game.newRoundRectObject ({
@@ -69,8 +65,6 @@ Man.prototype.shooting = function () {
             }
         });
         bullets.push(bullet);
-    // }
-    // setTimeout(() => this.shootFlag = false, 50);
 };
 
 
@@ -101,10 +95,8 @@ Man.prototype.jumping = function () {
 Man.prototype.newtonLaw = function (zeroOrOneOrTwo) {
     let position = this.content.getPosition(zeroOrOneOrTwo);
     if (this.jumpFlag === 'UP') {
-        //console.log(this.jumpFlag, position, this.content);
         this.content.move(constObj.point(0, -3.9));
         this.content.drawFrames(9);
-        //console.log(position.y);
     }
 
     if (position.y < (heroPos - manH * 2 + 20) || this.jumpFlag === 'DOWN') {
@@ -160,8 +152,8 @@ Man.prototype.getLevel = function() {
             this.levelIsChange = true;
         }
     }
-    if (this.content.getPosition().x > 4000) {
-        console.log('FINAL PAGE');
+    if (this.content.getPosition().x > 3000) {
+        this.isWin = true;
     }
     return this.levelIsChange;
 }

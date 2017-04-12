@@ -1,6 +1,7 @@
 const constObj = require('./const').constObj;
 const hero = require('./man.module').hero;
 let nextLevelText = require('./preLoad.module').nextLevelText;
+let winText = require('./preLoad.module').winText;
 const bgHeight = 280;
 const fogWidth = 475;
 const bgPos = constObj.height - bgHeight;
@@ -102,6 +103,7 @@ let drawBackground = function () {
     fog.setPositionS(constObj.point(fogPosX, bgPos));
     counter.setPositionCS(constObj.point(150, 50));
     nextLevelText.setPositionCS(constObj.point(550, 100));
+    winText.setPositionCS(constObj.point(550, 100));
     counter.draw();
     counterLife.reduce(function (prevResult, item) {
         item.setPositionCS(constObj.point(50 + prevResult, 50));
