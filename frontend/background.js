@@ -1,13 +1,13 @@
 const constObj = require('./const').constObj;
 const hero = require('./man.module').hero;
 let nextLevelText = require('./preLoad.module').nextLevelText;
-let winText = require('./preLoad.module').winText;
+//let winText = require('./preLoad.module').winText;
 const bgHeight = 280;
 const fogWidth = 475;
 const bgPos = constObj.height - bgHeight;
 const fogPosX = hero.content.getPosition().x + constObj.width - fogWidth - hero.content.x;
 
-let score = 0;
+
 let counter = constObj.game.newTextObject({
     text: '',
     size: 30,
@@ -103,7 +103,7 @@ let drawBackground = function () {
     fog.setPositionS(constObj.point(fogPosX, bgPos));
     counter.setPositionCS(constObj.point(150, 50));
     nextLevelText.setPositionCS(constObj.point(550, 100));
-    winText.setPositionCS(constObj.point(550, 100));
+    //winText.setPositionCS(constObj.point(550, 100));
     counter.draw();
     counterLife.reduce(function (prevResult, item) {
         item.setPositionCS(constObj.point(50 + prevResult, 50));
@@ -116,13 +116,11 @@ exports.background = {
     'first': backgr1,
     'bgPos': bgPos,
     'counter': counter,
-    'score': score,
     'counterLife': counterLife,
     'drawBackground': drawBackground,
     'fog': fog,
     resetBG: function () {
         backgr1.x = 0;
         backgr2.x = backgr1.x + backgr1.w;
-        score = 0;
-    }
+    },
 }

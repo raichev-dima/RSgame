@@ -10,6 +10,7 @@ const background = require('./background').background;
 let zombies = require('./zombie.module').zombies;
 const constObj = require('./const').constObj;
 const girls = require('./girl.module').girls;
+const birds = require('./bird.module').birds;
 const bullets = require('./man.module').bullets;
 const hero = require('./man.module').hero;
 const heroPos = require('./man.module').heroPos;
@@ -30,62 +31,48 @@ constObj.pjs.system.setStyle({
 constObj.pjs.system.setTitle('My mega game');
 
 const Game = function () {
-    constObj.log('pls push start!');
     let dx = 2;
     let dy = 0;
     let timer = 0;
     let i = 0;
-
-
     this.update = function () {
-
         constObj.game.clear();
         background.drawBackground();
-
-
         if (hero.getLevel()) {
             hero.timer = constObj.pjs.game.getTime();
         }
         if (constObj.pjs.game.getTime() < hero.timer + 1000) {
             nextLevelText.draw();
-        }
-        else {
+        } else {
             hero.timer = 0;
         }
         background.counter.reStyle({
-            text: "Level" + hero.level + "     Score: " + background.score
+            // text: "Level: " + hero.level + "     Score: " + hero.score
+            text: "Score: " + hero.score
         });
-        zombies.spawner.restart([5000 - 1000*hero.level]);
+        zombies.spawner.restart([5000 - 900 * hero.level]);
         zombies.logic();
-        girls.spawner.restart([5000 - 1000*hero.level]);
+        girls.spawner.restart([5000 - 450 * hero.level]);
         girls.logic();
-
+        birds.spawner.restart([5000 - 450 * hero.level]);
+        birds.logic();
 
         hero.drawManElements();
         hero.newtonLaw(1);
         background.fog.draw();
-
-
         if (hero.died) {
             hero.content.drawFrame(13);
-            hero.content.drawFrame(14);
+            // hero.content.drawFrame(14);
             constObj.game.setLoop('gameOver');
         }
-        else if (hero.isWin) {
-            console.log('win');
-            winText.draw();
-            constObj.game.setLoop('gameOver');
-
-
-
-
-        }
-        else  {
+        // else if (hero.isWin) {
+        //     winText.draw();
+        //     constObj.game.setLoop('gameOver');
+        // }
+        else {
             if (!hero.banned()) {
-
                 constObj.cam.move(constObj.point(dx, dy));
                 hero.content.move(constObj.point(dx, dy));
-
                 if (constObj.key.isDown('RIGHT')) {
                     dx = 1.3;
                     if (hero.content.getPosition().x <= 125) {
@@ -117,7 +104,11 @@ const Game = function () {
                 } else {
                     dx = 0;
                     if (hero.jumpFlag == 'STOP') {
-                        hero.content.drawFrames(6, 8);
+                        if (constObj.key.isDown('SPACE')) {
+                            hero.content.drawFrame(1);
+                        } else {
+                            hero.content.drawFrames(6, 8);
+                        }
                     }
 
                 }
@@ -132,29 +123,26 @@ const Game = function () {
                     hero.shooting();
                 }
 
-/////////////////////////////// AUDIO /////////////////////////////////////////
+                /////////////////////////////// AUDIO /////////////////////////////////////////
                 if (constObj.key.isPress('ESC')) {
-
-
-                    if(mainTheme.state == 'play') {
+                    if (mainTheme.state == 'play') {
                         mainTheme.stop();
                         mainTheme.state = 'stop';
                     } else {
                         mainTheme.play();
                         mainTheme.state = 'play';
                     }
-
                 }
-///////////////////////////////////////////////////////////////////////////////
-                if (hero.content.isArrIntersect(girls)) {
+                ///////////////////////////////////////////////////////////////////////////////
+                if (hero.content.isArrIntersect(girls) || hero.content.isArrIntersect(birds.getFreezeBoxes())) {
                     hero.banned(1.5); // на сколько секунд обездвиживаем hero
                 }
             } else {
-                hero.content.drawFrames(14, 14);
+                hero.content.drawFrame(14);
             }
 
-            if (hero.content.isArrIntersect(zombies.filter(function (item) {
-                    return (item.dead) ? false : true;
+            if (hero.content.isArrIntersect(zombies.filter(function (zombie) {
+                    return (zombie.dead || zombie.banned()) ? false : true;
                 }))) {
                 timer++;
                 if (timer >= 50) {
@@ -174,12 +162,9 @@ const Game = function () {
         }
     }
     this.entry = function () {
-        constObj.log(Man);
-        constObj.log('start!');
         mainTheme.play();
     }
     this.exit = function () {
-        constObj.log('End!');
         mainTheme.stop();
     }
 };
@@ -188,13 +173,13 @@ const preLoadScreen = function () {
     this.update = function () {
         constObj.game.clear();
         background.first.draw();
-        hero.content.draw();
+        hero.content.drawFrames(6, 8);
 
-//////////////// AUDIO ////////////////////////////////////
+        //////////////// AUDIO ////////////////////////////////////
 
         if (constObj.pjs.keyControl.isPress('ESC')) {
 
-            if(introTheme.state == 'play') {
+            if (introTheme.state == 'play') {
                 introTheme.stop();
                 introTheme.state = 'stop';
             } else {
@@ -204,17 +189,15 @@ const preLoadScreen = function () {
 
         }
 
-/////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////
 
     };
     this.entry = function () {
-        constObj.log('PreloadScreen loaded');
         startButtons.turnOnStartButton();
         gameOverTheme.stop();
         introTheme.play();
     };
     this.exit = function () {
-        constObj.log('preloadScreen End!');
         introTheme.stop();
         mainTheme.play();
     }
@@ -222,16 +205,17 @@ const preLoadScreen = function () {
 
 const gameOverScreen = function () {
     this.update = function () {
-        if (!hero.isWin) {
-            gameOverText.draw();
-        }
+        //if (!hero.isWin) {
+        gameOverText.draw();
+        //}
     };
     this.entry = function () {
-        constObj.log('GameOverScreen loaded');
+        console.log('preload entry')
         gameOverTheme.play();
         hero.reset();
         zombies.length = 0;
         girls.length = 0;
+        birds.length = 0;
         background.counterLife.forEach(function (item) {
             item.visible = true;
         })
@@ -240,7 +224,6 @@ const gameOverScreen = function () {
     };
     this.exit = function () {
         this.isWin = false;
-        constObj.log('GameOverScreen End!');
     }
 
 }

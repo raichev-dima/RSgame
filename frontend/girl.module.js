@@ -59,9 +59,9 @@ girls.logic = function () {
             console.log('dima');
             girl.dead = 1;
             girl.frame = 0;
-            background.score -= 10;
-            if (background.score < 0) {
-                background.score = 0;
+            hero.score -= hero.level*5;
+            if (hero.score < 0) {
+                hero.score = 0;
             }
             girlDeathCry.play();
 

@@ -8,7 +8,6 @@ const heroPos = constObj.height - (manH + constObj.persPos);
 ////////////////       AUDIO       ///////////////////////////////
 const loadAudio = require('./audio');
 const jumpSound = loadAudio(['audio/smb_jump-small.wav'], 1);
-const shotSound = loadAudio(['audio/shot.mp3'], 1);
 //////////////////////////////////////////////////////////////////
 
 function Man(path, width, height, count, name) {
@@ -16,8 +15,9 @@ function Man(path, width, height, count, name) {
     this.name = name || "Bernadett";
     this.levelIsChanged = false;
     this.level = 1;
+    this.score = 0;
     this.timer = 0;
-    this.isWin = false;
+    //this.isWin = false;
     this.content = constObj.game.newAnimationObject({
         animation: constObj.pjs.tiles.newAnimation(path, width, height, count),
         w: 100,
@@ -39,40 +39,43 @@ Man.prototype.drawName = function () {
         x: this.content.x + this.content.w / 2 + 10,
         y: this.content.y - 20,
         text: this.name,
-        color: '#FFF',
-        size: '20',
+        color: 'black',
+        size: '26',
         align: 'center',
     });
 };
 
 const bullets = [];
-var bullet;
-
+let bullet;
+let shot;
 
 Man.prototype.shooting = function () {
-        shotSound.play();
-        console.log('shooting');
-        bullet = constObj.game.newRoundRectObject ({
-            x: this.content.x + this.content.w / 2 + 30,
-            y: this.content.y + 78,
-            w: 3,
-            h: 3,
-            radius: 1,
-            fillColor: "#FBFE6F",
-            userData : {
-                direction: hero.content.flip.x == 0 ? 1 : -1,
-                life: 1
-            }
-        });
-        bullets.push(bullet);
+    let start = performance.now();
+    // if(!bullet.start || start - bullet.start>= 200) {
+    const CONTENT = this.content.x + this.content.w / 2;
+    const FLIP = hero.content.flip.x;
+    bullet = constObj.game.newRoundRectObject({
+        x: FLIP ? CONTENT - 30 : CONTENT + 30,
+        y: this.content.y + 78,
+        w: 3,
+        h: 3,
+        radius: 1,
+        fillColor: "#FBFE6F",
+        userData: {
+            direction: FLIP ? -1 : 1,
+            life: 1000,
+            start: start
+        }
+    });
+    bullets.push(bullet);
+    shot = loadAudio(['audio/shot.mp3'], 1);
+    shot.play();
+    // }
 };
 
-
-
 Man.prototype.bulletFly = function () {
-
     constObj.OOP.forArr(bullets, function (el) {
-        if(el) {
+        if (el) {
             if (el.direction == 1) {
                 el.draw();
                 el.move(constObj.point(7, 0));
@@ -83,7 +86,6 @@ Man.prototype.bulletFly = function () {
             }
         }
     });
-
 }
 
 Man.prototype.jumping = function () {
@@ -96,13 +98,24 @@ Man.prototype.newtonLaw = function (zeroOrOneOrTwo) {
     let position = this.content.getPosition(zeroOrOneOrTwo);
     if (this.jumpFlag === 'UP') {
         this.content.move(constObj.point(0, -3.9));
-        this.content.drawFrames(9);
+        // this.content.drawFrames(9);
+        if (!this.banned()) {
+            this.content.drawFrames(9);
+        }
     }
 
     if (position.y < (heroPos - manH * 2 + 20) || this.jumpFlag === 'DOWN') {
         this.jumpFlag = 'DOWN';
         this.content.move(constObj.point(0, 3.9));
-        this.content.drawFrames(10);
+        if (constObj.key.isDown('SPACE')) {
+            if (!this.banned()) {
+                hero.content.drawFrame(1);
+            };
+        } else {
+            if (!this.banned()) {
+                this.content.drawFrames(10);
+            }
+        }
         if (position.y > (heroPos + manH / 2)) {
             this.jumpFlag = 'STOP';
         }
@@ -114,7 +127,7 @@ Man.prototype.banned = function (timerInSeconds) {
         Man.prototype.bannedTime = Date.now();
         Man.prototype.bannedForTime = timerInSeconds;
     }
-    return (Date.now() - Man.prototype.bannedTime < Man.prototype.bannedForTime*1000);
+    return (Date.now() - Man.prototype.bannedTime < Man.prototype.bannedForTime * 1000);
 }
 
 Man.prototype.drawManElements = function () {
@@ -124,7 +137,6 @@ Man.prototype.drawManElements = function () {
 }
 
 Man.prototype.reset = function () {
-    this.content.drawStaticBox();
     this.content.w = 100;
     this.content.h = manH;
     this.content.x = 120;
@@ -133,28 +145,43 @@ Man.prototype.reset = function () {
     this.content.scale = 1;
     this.died = false;
     this.level = 1;
+    hero.score = 0;
 };
 
-Man.prototype.getLevel = function() {
+Man.prototype.getLevel = function () {
     this.levelIsChange = false;
-    if (this.content.getPosition().x < 1000 && this.level == 1 ) {
+    if (this.score < 20 && this.level == 1) {
         this.level = 1;
     }
-    if ((this.content.getPosition().x < 2000 && this.content.getPosition().x > 1000) && this.level != 3) {
+    if ((this.score < 40 && this.score > 20) && (this.level != 3 && this.level != 4 && this.level != 5)) {
         if (this.level != 2) {
             this.level = 2;
             this.levelIsChange = true;
         }
     }
-    if ((this.content.getPosition().x < 3000 && this.content.getPosition().x > 2000) || this.level == 3) {
+    if ((this.score < 60 && this.score > 40) && (this.level != 4 && this.level != 5)) {
         if (this.level != 3) {
             this.level = 3;
             this.levelIsChange = true;
         }
     }
-    if (this.content.getPosition().x > 3000) {
+    if ((this.score < 80 && this.score > 60) && this.level != 5) {
+        if (this.level != 4) {
+            this.level = 4;
+            this.levelIsChange = true;
+        }
+    }
+    if ((this.score > 80) || this.level == 5) {
+        if (this.level != 3) {
+            this.level = 3;
+            this.levelIsChange = true;
+        }
+    }
+    /*
+    if (this.content.getPosition().x > 6000) {
         this.isWin = true;
     }
+    */
     return this.levelIsChange;
 }
 

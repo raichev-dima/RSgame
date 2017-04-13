@@ -2,6 +2,7 @@
 const PointJS = require('./point').PointJS;
 const constObj = require('./const').constObj;
 
+
 const width = constObj.game.getWH().w;
 const height = constObj.game.getWH().h;
 
@@ -16,26 +17,23 @@ let skins = [
 skins.count = skins.length;
 
 let startButton = constObj.pjs.GUI.newButton({
-    x: 10,
-    y: 10,
-    w: 100,
-    h: 30,
-    text: "Start",
+    text: "START",
     style: {
-        backgroundColor: 'rgba(76, 175, 80, 0.59)',
+        backgroundColor: 'rgba(93, 93, 93, 0.59',
         top: '25%',
         left: '50%',
-        width: '200px',
-        height: '50px',
-        marginLeft: '-100px',
+        width: '400px',
+        height: '80px',
+        marginLeft: '-200px',
         marginTop: '-75px',
         borderRadius: '20px',
-        fontSize: '18px',
+        fontSize: '28px',
         cursor: 'pointer'
     },
     events: {
         click: function () {
             constObj.game.setLoop('1');
+
             startButton.setStyle({
                 display: 'none'
             });
@@ -47,21 +45,17 @@ let startButton = constObj.pjs.GUI.newButton({
 });
 
 let changeHeroButton = constObj.pjs.GUI.newButton({
-    x: 0,
-    y: 0,
-    w: 100,
-    h: 30,
-    text: "Change HERO!!!",
+    text: "CHANGE HERO",
     style: {
-        backgroundColor: 'rgba(176, 80, 176, 0.59)',
+        backgroundColor: 'rgba(93, 93, 93, 0.59)',
         top: '25%',
         left: '50%',
-        width: '200px',
-        height: '50px',
-        marginLeft: '-100px',
+        width: '400px',
+        height: '80px',
+        marginLeft: '-200px',
         marginTop: '25px',
         borderRadius: '20px',
-        fontSize: '18px',
+        fontSize: '26px',
         cursor: 'pointer'
     },
     events: {
@@ -79,21 +73,17 @@ let changeHeroButton = constObj.pjs.GUI.newButton({
 });
 
 let restartButton = constObj.pjs.GUI.newButton({
-    x: 10,
-    y: 10,
-    w: 100,
-    h: 30,
     text: "PLAY AGAIN",
     style: {
-        backgroundColor: 'rgba(76, 175, 80, 0.59)',
+        backgroundColor: 'rgba(93, 93, 93, 0.59)',
         top: '75%',
         left: '50%',
-        width: '200px',
+        width: '400px',
         height: '50px',
-        marginLeft: '-100px',
+        marginLeft: '-200px',
         marginTop: '-75px',
         borderRadius: '20px',
-        fontSize: '18px',
+        fontSize: '26px',
         cursor: 'pointer',
         display: 'none',
     },
@@ -102,8 +92,6 @@ let restartButton = constObj.pjs.GUI.newButton({
             restartButton.setStyle({
                 display: 'none'
             });
-            // constObj.game.newLoopFromClassObject('1', new Game());
-            // constObj.game.setLoop('1');
             constObj.game.startLoop('preLoad');
         }
     }
@@ -131,7 +119,7 @@ let nextLevelText = constObj.game.newTextObject({
 let winText = constObj.game.newTextObject({
     x: 300,
     y: 100,
-    text: "YOU ARE WIN",
+    text: "YOU ARE WIN!",
     size: 50,
     padding: 10,
     color: "#000000",
