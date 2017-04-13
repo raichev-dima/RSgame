@@ -1,14 +1,21 @@
 body {
-    background: darkslateblue;
+    background: 'ligthgreen';
+    text-align: center;
+}
+
+p, ul {
+    text-align: justify;
 }
 
 header {
     text-align: center;
 }
 
+
+
 h1 {
     font-weight: bold;
-    font-size: 36px;
+    font-size: 46px;
 }
 
 .wrapper {

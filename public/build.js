@@ -64,7 +64,7 @@ var app =
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 10);
+/******/ 	return __webpack_require__(__webpack_require__.s = 11);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -82,7 +82,6 @@ const heroPos = constObj.height - (manH + constObj.persPos);
 ////////////////       AUDIO       ///////////////////////////////
 const loadAudio = __webpack_require__(4);
 const jumpSound = loadAudio(['audio/smb_jump-small.wav'], 1);
-const shotSound = loadAudio(['audio/shot.mp3'], 1);
 //////////////////////////////////////////////////////////////////
 
 function Man(path, width, height, count, name) {
@@ -90,8 +89,9 @@ function Man(path, width, height, count, name) {
     this.name = name || "Bernadett";
     this.levelIsChanged = false;
     this.level = 1;
+    this.score = 0;
     this.timer = 0;
-    this.isWin = false;
+    //this.isWin = false;
     this.content = constObj.game.newAnimationObject({
         animation: constObj.pjs.tiles.newAnimation(path, width, height, count),
         w: 100,
@@ -113,40 +113,43 @@ Man.prototype.drawName = function () {
         x: this.content.x + this.content.w / 2 + 10,
         y: this.content.y - 20,
         text: this.name,
-        color: '#FFF',
-        size: '20',
+        color: 'black',
+        size: '26',
         align: 'center',
     });
 };
 
 const bullets = [];
-var bullet;
-
+let bullet;
+let shot;
 
 Man.prototype.shooting = function () {
-        shotSound.play();
-        console.log('shooting');
-        bullet = constObj.game.newRoundRectObject ({
-            x: this.content.x + this.content.w / 2 + 30,
-            y: this.content.y + 78,
-            w: 3,
-            h: 3,
-            radius: 1,
-            fillColor: "#FBFE6F",
-            userData : {
-                direction: hero.content.flip.x == 0 ? 1 : -1,
-                life: 1
-            }
-        });
-        bullets.push(bullet);
+    let start = performance.now();
+    // if(!bullet.start || start - bullet.start>= 200) {
+    const CONTENT = this.content.x + this.content.w / 2;
+    const FLIP = hero.content.flip.x;
+    bullet = constObj.game.newRoundRectObject({
+        x: FLIP ? CONTENT - 30 : CONTENT + 30,
+        y: this.content.y + 78,
+        w: 3,
+        h: 3,
+        radius: 1,
+        fillColor: "#FBFE6F",
+        userData: {
+            direction: FLIP ? -1 : 1,
+            life: 1000,
+            start: start
+        }
+    });
+    bullets.push(bullet);
+    shot = loadAudio(['audio/shot.mp3'], 1);
+    shot.play();
+    // }
 };
 
-
-
 Man.prototype.bulletFly = function () {
-
     constObj.OOP.forArr(bullets, function (el) {
-        if(el) {
+        if (el) {
             if (el.direction == 1) {
                 el.draw();
                 el.move(constObj.point(7, 0));
@@ -157,7 +160,6 @@ Man.prototype.bulletFly = function () {
             }
         }
     });
-
 }
 
 Man.prototype.jumping = function () {
@@ -170,13 +172,24 @@ Man.prototype.newtonLaw = function (zeroOrOneOrTwo) {
     let position = this.content.getPosition(zeroOrOneOrTwo);
     if (this.jumpFlag === 'UP') {
         this.content.move(constObj.point(0, -3.9));
-        this.content.drawFrames(9);
+        // this.content.drawFrames(9);
+        if (!this.banned()) {
+            this.content.drawFrames(9);
+        }
     }
 
     if (position.y < (heroPos - manH * 2 + 20) || this.jumpFlag === 'DOWN') {
         this.jumpFlag = 'DOWN';
         this.content.move(constObj.point(0, 3.9));
-        this.content.drawFrames(10);
+        if (constObj.key.isDown('SPACE')) {
+            if (!this.banned()) {
+                hero.content.drawFrame(1);
+            };
+        } else {
+            if (!this.banned()) {
+                this.content.drawFrames(10);
+            }
+        }
         if (position.y > (heroPos + manH / 2)) {
             this.jumpFlag = 'STOP';
         }
@@ -188,7 +201,7 @@ Man.prototype.banned = function (timerInSeconds) {
         Man.prototype.bannedTime = Date.now();
         Man.prototype.bannedForTime = timerInSeconds;
     }
-    return (Date.now() - Man.prototype.bannedTime < Man.prototype.bannedForTime*1000);
+    return (Date.now() - Man.prototype.bannedTime < Man.prototype.bannedForTime * 1000);
 }
 
 Man.prototype.drawManElements = function () {
@@ -198,7 +211,6 @@ Man.prototype.drawManElements = function () {
 }
 
 Man.prototype.reset = function () {
-    this.content.drawStaticBox();
     this.content.w = 100;
     this.content.h = manH;
     this.content.x = 120;
@@ -207,28 +219,43 @@ Man.prototype.reset = function () {
     this.content.scale = 1;
     this.died = false;
     this.level = 1;
+    hero.score = 0;
 };
 
-Man.prototype.getLevel = function() {
+Man.prototype.getLevel = function () {
     this.levelIsChange = false;
-    if (this.content.getPosition().x < 1000 && this.level == 1 ) {
+    if (this.score < 20 && this.level == 1) {
         this.level = 1;
     }
-    if ((this.content.getPosition().x < 2000 && this.content.getPosition().x > 1000) && this.level != 3) {
+    if ((this.score < 40 && this.score > 20) && (this.level != 3 && this.level != 4 && this.level != 5)) {
         if (this.level != 2) {
             this.level = 2;
             this.levelIsChange = true;
         }
     }
-    if ((this.content.getPosition().x < 3000 && this.content.getPosition().x > 2000) || this.level == 3) {
+    if ((this.score < 60 && this.score > 40) && (this.level != 4 && this.level != 5)) {
         if (this.level != 3) {
             this.level = 3;
             this.levelIsChange = true;
         }
     }
-    if (this.content.getPosition().x > 3000) {
+    if ((this.score < 80 && this.score > 60) && this.level != 5) {
+        if (this.level != 4) {
+            this.level = 4;
+            this.levelIsChange = true;
+        }
+    }
+    if ((this.score > 80) || this.level == 5) {
+        if (this.level != 3) {
+            this.level = 3;
+            this.levelIsChange = true;
+        }
+    }
+    /*
+    if (this.content.getPosition().x > 6000) {
         this.isWin = true;
     }
+    */
     return this.levelIsChange;
 }
 
@@ -249,6 +276,7 @@ exports.heroPos = heroPos;
 const PointJS = __webpack_require__(3).PointJS;
 const constObj = __webpack_require__(2).constObj;
 
+
 const width = constObj.game.getWH().w;
 const height = constObj.game.getWH().h;
 
@@ -263,26 +291,23 @@ let skins = [
 skins.count = skins.length;
 
 let startButton = constObj.pjs.GUI.newButton({
-    x: 10,
-    y: 10,
-    w: 100,
-    h: 30,
-    text: "Start",
+    text: "START",
     style: {
-        backgroundColor: 'rgba(76, 175, 80, 0.59)',
+        backgroundColor: 'rgba(93, 93, 93, 0.59',
         top: '25%',
         left: '50%',
-        width: '200px',
-        height: '50px',
-        marginLeft: '-100px',
+        width: '400px',
+        height: '80px',
+        marginLeft: '-200px',
         marginTop: '-75px',
         borderRadius: '20px',
-        fontSize: '18px',
+        fontSize: '28px',
         cursor: 'pointer'
     },
     events: {
         click: function () {
             constObj.game.setLoop('1');
+
             startButton.setStyle({
                 display: 'none'
             });
@@ -294,21 +319,17 @@ let startButton = constObj.pjs.GUI.newButton({
 });
 
 let changeHeroButton = constObj.pjs.GUI.newButton({
-    x: 0,
-    y: 0,
-    w: 100,
-    h: 30,
-    text: "Change HERO!!!",
+    text: "CHANGE HERO",
     style: {
-        backgroundColor: 'rgba(176, 80, 176, 0.59)',
+        backgroundColor: 'rgba(93, 93, 93, 0.59)',
         top: '25%',
         left: '50%',
-        width: '200px',
-        height: '50px',
-        marginLeft: '-100px',
+        width: '400px',
+        height: '80px',
+        marginLeft: '-200px',
         marginTop: '25px',
         borderRadius: '20px',
-        fontSize: '18px',
+        fontSize: '26px',
         cursor: 'pointer'
     },
     events: {
@@ -326,21 +347,17 @@ let changeHeroButton = constObj.pjs.GUI.newButton({
 });
 
 let restartButton = constObj.pjs.GUI.newButton({
-    x: 10,
-    y: 10,
-    w: 100,
-    h: 30,
     text: "PLAY AGAIN",
     style: {
-        backgroundColor: 'rgba(76, 175, 80, 0.59)',
+        backgroundColor: 'rgba(93, 93, 93, 0.59)',
         top: '75%',
         left: '50%',
-        width: '200px',
+        width: '400px',
         height: '50px',
-        marginLeft: '-100px',
+        marginLeft: '-200px',
         marginTop: '-75px',
         borderRadius: '20px',
-        fontSize: '18px',
+        fontSize: '26px',
         cursor: 'pointer',
         display: 'none',
     },
@@ -349,8 +366,6 @@ let restartButton = constObj.pjs.GUI.newButton({
             restartButton.setStyle({
                 display: 'none'
             });
-            // constObj.game.newLoopFromClassObject('1', new Game());
-            // constObj.game.setLoop('1');
             constObj.game.startLoop('preLoad');
         }
     }
@@ -378,7 +393,7 @@ let nextLevelText = constObj.game.newTextObject({
 let winText = constObj.game.newTextObject({
     x: 300,
     y: 100,
-    text: "YOU ARE WIN",
+    text: "YOU ARE WIN!",
     size: 50,
     padding: 10,
     color: "#000000",
@@ -672,13 +687,13 @@ module.exports = loadAudio;
 const constObj = __webpack_require__(2).constObj;
 const hero = __webpack_require__(0).hero;
 let nextLevelText = __webpack_require__(1).nextLevelText;
-let winText = __webpack_require__(1).winText;
+//let winText = require('./preLoad.module').winText;
 const bgHeight = 280;
 const fogWidth = 475;
 const bgPos = constObj.height - bgHeight;
 const fogPosX = hero.content.getPosition().x + constObj.width - fogWidth - hero.content.x;
 
-let score = 0;
+
 let counter = constObj.game.newTextObject({
     text: '',
     size: 30,
@@ -774,7 +789,7 @@ let drawBackground = function () {
     fog.setPositionS(constObj.point(fogPosX, bgPos));
     counter.setPositionCS(constObj.point(150, 50));
     nextLevelText.setPositionCS(constObj.point(550, 100));
-    winText.setPositionCS(constObj.point(550, 100));
+    //winText.setPositionCS(constObj.point(550, 100));
     counter.draw();
     counterLife.reduce(function (prevResult, item) {
         item.setPositionCS(constObj.point(50 + prevResult, 50));
@@ -787,20 +802,155 @@ exports.background = {
     'first': backgr1,
     'bgPos': bgPos,
     'counter': counter,
-    'score': score,
     'counterLife': counterLife,
     'drawBackground': drawBackground,
     'fog': fog,
     resetBG: function () {
         backgr1.x = 0;
         backgr2.x = backgr1.x + backgr1.w;
-        score = 0;
-    }
+    },
 }
 
 
 /***/ }),
 /* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+const PointJS = __webpack_require__(3).PointJS;
+const constObj = __webpack_require__(2).constObj;
+const man = __webpack_require__(0).man;
+const bullets = __webpack_require__(0).bullets;
+const hero = __webpack_require__(0).hero;
+const background = __webpack_require__(5).background;
+const birdH = 182;
+const birdPos = constObj.height - (birdH + constObj.persPos);
+
+const point = constObj.pjs.vector.point;
+const size = constObj.pjs.vector.size;
+
+const loadAudio = __webpack_require__(4);
+//const birdDeathCry = loadAudio(['audio/bird_death_cry.mp3'], 1, false);
+
+const birdAlive = constObj.pjs.tiles.newAnimation('img/sprites/bird_with_box_186_182_14.png', 187.5, birdH, 14);
+const birdDead = constObj.pjs.tiles.newAnimation('img/sprites/bird_test_186_182_14.png', 187.5, birdH, 14);
+const box = constObj.pjs.tiles.newAnimation('img/sprites/box_63_66_1.png', 63, 66, 1);
+const boxDead = constObj.pjs.tiles.newAnimation('img/sprites/ice_nova_180_140_13.png', 180, 140, 13);
+
+
+const birds = [];
+const boxes = [];
+
+birds.getBoxes = function () {
+    return boxes;
+};
+birds.getFreezeBoxes = function () {
+    return boxes.filter((box) => box.freeze);
+};
+
+birds.spawner = constObj.pjs.OOP.newTimer(1000, function () {
+    birds.push(constObj.game.newAnimationObject({
+        animation: birdAlive,
+        w: 187.5,
+        h: birdH,
+        x: constObj.pjs.math.random(hero.content.getPosition().x + 900, hero.content.getPosition().x + 1100), // x 1280
+        y: constObj.pjs.math.random(50, constObj.height - 200),
+        delay: 3,
+        scale: 0.35,
+    }));
+});
+
+birds.logic = function () {
+    boxes.logic();
+    constObj.pjs.OOP.forArr(birds, function (bird, index) {
+        if (!bird.dead) {
+            // decrease the bird's box
+            bird.setBox({
+                offset: point(25, 25),
+                size: size(-25, -30)
+            });
+            bird.draw();
+            bird.move(point(-2.5, 0));
+
+            // let randomFly = constObj.pjs.math.random(0, 100); Experemental
+            // if (randomFly < 10) {
+            //     bird.move(point(-2.5, 1));
+            // } else if (randomFly > 90) {
+            //     bird.move(point(-2.5, -1));
+            // }
+        } else {
+            bird.setBox({
+                offset: point(-1000, -1000),
+                size: size(1, 1)
+            });
+            bird.setAnimation(birdDead);
+            bird.move(point(-5, -1));
+            bird.dead++;
+            bird.drawFrames(0, 13);
+        }
+
+        //bird.drawStaticBox();
+        //console.log(bullets);
+
+        if ((bird.isArrIntersect(bullets) && !bird.dead) || !bird.dead && hero.content.getPosition().x >= bird.getPosition().x) {
+            console.log('Eto vam ne dimon! Eto fusion!');
+            bird.dead = 1;
+            bird.frame = 0;
+
+            //birdDeathCry.play();
+
+            for (let i = 0; i < bullets.length; i++) {
+                //let bullet = bullets[i];
+                if (bullets[i].isArrIntersect(birds)) {
+                    bullets.splice(i, 1);
+                };
+            }
+
+            boxes.push(constObj.game.newAnimationObject({
+                animation: box,
+                w: 180,
+                h: 140,
+                x: bird.getPosition().x,
+                y: bird.getPosition().y,
+                delay: 3,
+                scale: 0.35,
+            }));
+
+        }
+        if (bird.dead > 150) {
+            birds.splice(index, 1);
+        }
+
+    });
+};
+
+boxes.logic = function () {
+    constObj.pjs.OOP.forArr(boxes, function (box, index) {
+        if (box.getPosition().y > constObj.height - constObj.persPos - 25) {
+            box.freeze = true;
+            box.setBox({
+                offset: point(-25, 0),
+                size: size(50, 0),
+            });
+            box.setAnimation(boxDead);
+            box.drawToFrame(13);
+            box.move(point(0, -5));
+            if (box.frame === 12) {
+                boxes.splice(index, 1);
+            };
+        } else {
+            box.draw();
+            box.move(point(0, 5));
+        }
+    });
+};
+
+exports.birds = birds;
+
+
+/***/ }),
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -865,9 +1015,9 @@ girls.logic = function () {
             console.log('dima');
             girl.dead = 1;
             girl.frame = 0;
-            background.score -= 10;
-            if (background.score < 0) {
-                background.score = 0;
+            hero.score -= hero.level*5;
+            if (hero.score < 0) {
+                hero.score = 0;
             }
             girlDeathCry.play();
 
@@ -889,7 +1039,7 @@ exports.girls = girls;
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -897,6 +1047,7 @@ exports.girls = girls;
 const PointJS = __webpack_require__(3).PointJS;
 const constObj = __webpack_require__(2).constObj;
 const man = __webpack_require__(0).man;
+const birds = __webpack_require__(6).birds;
 const bullets = __webpack_require__(0).bullets;
 const hero = __webpack_require__(0).hero;
 const background = __webpack_require__(5).background;
@@ -913,8 +1064,8 @@ const zombieDeathCrySound = loadAudio(['audio/zombie_death_cry.mp3'], 1, false);
 const point = constObj.pjs.vector.point;
 
 const zombieDead = constObj.pjs.tiles.newAnimation('img/sprites/zombie_dead_120_110_15.png', 120, zombieH, 15);
-const zombieMedium = constObj.pjs.tiles.newAnimation('img/sprites/zombie_medium_70_110_13.png', 70, zombieH, 10);
-const zombieSimple = constObj.pjs.tiles.newAnimation('img/sprites/zombie_70_110_13.png', 70, zombieH, 10);
+const zombieMedium = constObj.pjs.tiles.newAnimation('img/sprites/zombie_medium_70_110_14.png', 70, zombieH, 10);
+const zombieSimple = constObj.pjs.tiles.newAnimation('img/sprites/zombie_70_110_14.png', 70, zombieH, 10);
 
 let zombies = [];
 
@@ -957,15 +1108,21 @@ zombies.spawner = constObj.pjs.OOP.newTimer(2000, function () {
     zombie.setUserData({
         zomboType: zombieType().type,
         health: zombieType().health,
+        banned: function (timerInSeconds) {
+            if (timerInSeconds) {
+                zombie.bannedTime = Date.now();
+                zombie.bannedForTime = timerInSeconds;
+            }
+            return (Date.now() - zombie.bannedTime < zombie.bannedForTime * 1000);
+        }
     });
     zombies.push(zombie);
-}
-);
+});
 
 zombies.logic = function () {
 
     constObj.pjs.OOP.forArr(zombies, function (zombie, index) {
-        if (!zombie.dead) {
+        if (!zombie.dead && !zombie.banned()) {
             let heroPos = hero.content.getPosition().x;
             let zombiePos = zombie.getPosition().x;
             if (heroPos - zombiePos > 0) {
@@ -978,8 +1135,6 @@ zombies.logic = function () {
                 }
             }
             if (zombie.isIntersect(hero.content)) {
-                console.log('hit!'); // zombie's eating hero
-
                 if (zombieAttackSound.dom.paused) {
                     zombieAttackSound.play();
                 }
@@ -990,6 +1145,9 @@ zombies.logic = function () {
                 zombie.moveTo(point(hero.content.getPosition().x, constObj.height - zombie.h - 20), .5);
                 zombie.draw();
             }
+        } else if(zombie.banned() && !zombie.dead) {
+            zombie.move(point(0, 0));
+            zombie.drawFrames(13, 13);
         } else {
             zombie.setAnimation(zombieDead);
             zombie.move(point(0, 0));
@@ -1003,7 +1161,7 @@ zombies.logic = function () {
             zombie.health--;
             zombie.health === 0 ? zombie.dead = true : null;
             zombie.frame = 0;
-            background.score++;
+            hero.score += hero.level;
 
             zombieDeathCrySound.play();
 
@@ -1013,6 +1171,10 @@ zombies.logic = function () {
                     bullets.splice(i, 1);
                 }
             }
+        }
+
+        if (zombie.isArrIntersect(birds.getFreezeBoxes()) && !zombie.dead) {
+            zombie.banned(2);
         }
 
         if (zombie.dead > 70) {
@@ -1025,12 +1187,6 @@ exports.zombies = zombies;
 
 
 /***/ }),
-/* 8 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
 /* 9 */
 /***/ (function(module, exports) {
 
@@ -1038,21 +1194,28 @@ exports.zombies = zombies;
 
 /***/ }),
 /* 10 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-__webpack_require__(8);
 __webpack_require__(9);
+__webpack_require__(10);
 const Man = __webpack_require__(0).Man;
 const startButtons = __webpack_require__(1).startButtons;
 let gameOverText = __webpack_require__(1).gameOverText;
 let nextLevelText = __webpack_require__(1).nextLevelText;
 let winText = __webpack_require__(1).winText;
 const background = __webpack_require__(5).background;
-let zombies = __webpack_require__(7).zombies;
+let zombies = __webpack_require__(8).zombies;
 const constObj = __webpack_require__(2).constObj;
-const girls = __webpack_require__(6).girls;
+const girls = __webpack_require__(7).girls;
+const birds = __webpack_require__(6).birds;
 const bullets = __webpack_require__(0).bullets;
 const hero = __webpack_require__(0).hero;
 const heroPos = __webpack_require__(0).heroPos;
@@ -1073,62 +1236,48 @@ constObj.pjs.system.setStyle({
 constObj.pjs.system.setTitle('My mega game');
 
 const Game = function () {
-    constObj.log('pls push start!');
     let dx = 2;
     let dy = 0;
     let timer = 0;
     let i = 0;
-
-
     this.update = function () {
-
         constObj.game.clear();
         background.drawBackground();
-
-
         if (hero.getLevel()) {
             hero.timer = constObj.pjs.game.getTime();
         }
         if (constObj.pjs.game.getTime() < hero.timer + 1000) {
             nextLevelText.draw();
-        }
-        else {
+        } else {
             hero.timer = 0;
         }
         background.counter.reStyle({
-            text: "Level" + hero.level + "     Score: " + background.score
+            // text: "Level: " + hero.level + "     Score: " + hero.score
+            text: "Score: " + hero.score
         });
-        zombies.spawner.restart([5000 - 1000*hero.level]);
+        zombies.spawner.restart([5000 - 900 * hero.level]);
         zombies.logic();
-        girls.spawner.restart([5000 - 1000*hero.level]);
+        girls.spawner.restart([5000 - 450 * hero.level]);
         girls.logic();
-
+        birds.spawner.restart([5000 - 450 * hero.level]);
+        birds.logic();
 
         hero.drawManElements();
         hero.newtonLaw(1);
         background.fog.draw();
-
-
         if (hero.died) {
             hero.content.drawFrame(13);
-            hero.content.drawFrame(14);
+            // hero.content.drawFrame(14);
             constObj.game.setLoop('gameOver');
         }
-        else if (hero.isWin) {
-            console.log('win');
-            winText.draw();
-            constObj.game.setLoop('gameOver');
-
-
-
-
-        }
-        else  {
+        // else if (hero.isWin) {
+        //     winText.draw();
+        //     constObj.game.setLoop('gameOver');
+        // }
+        else {
             if (!hero.banned()) {
-
                 constObj.cam.move(constObj.point(dx, dy));
                 hero.content.move(constObj.point(dx, dy));
-
                 if (constObj.key.isDown('RIGHT')) {
                     dx = 1.3;
                     if (hero.content.getPosition().x <= 125) {
@@ -1160,7 +1309,11 @@ const Game = function () {
                 } else {
                     dx = 0;
                     if (hero.jumpFlag == 'STOP') {
-                        hero.content.drawFrames(6, 8);
+                        if (constObj.key.isDown('SPACE')) {
+                            hero.content.drawFrame(1);
+                        } else {
+                            hero.content.drawFrames(6, 8);
+                        }
                     }
 
                 }
@@ -1175,29 +1328,26 @@ const Game = function () {
                     hero.shooting();
                 }
 
-/////////////////////////////// AUDIO /////////////////////////////////////////
+                /////////////////////////////// AUDIO /////////////////////////////////////////
                 if (constObj.key.isPress('ESC')) {
-
-
-                    if(mainTheme.state == 'play') {
+                    if (mainTheme.state == 'play') {
                         mainTheme.stop();
                         mainTheme.state = 'stop';
                     } else {
                         mainTheme.play();
                         mainTheme.state = 'play';
                     }
-
                 }
-///////////////////////////////////////////////////////////////////////////////
-                if (hero.content.isArrIntersect(girls)) {
+                ///////////////////////////////////////////////////////////////////////////////
+                if (hero.content.isArrIntersect(girls) || hero.content.isArrIntersect(birds.getFreezeBoxes())) {
                     hero.banned(1.5); // на сколько секунд обездвиживаем hero
                 }
             } else {
-                hero.content.drawFrames(14, 14);
+                hero.content.drawFrame(14);
             }
 
-            if (hero.content.isArrIntersect(zombies.filter(function (item) {
-                    return (item.dead) ? false : true;
+            if (hero.content.isArrIntersect(zombies.filter(function (zombie) {
+                    return (zombie.dead || zombie.banned()) ? false : true;
                 }))) {
                 timer++;
                 if (timer >= 50) {
@@ -1217,12 +1367,9 @@ const Game = function () {
         }
     }
     this.entry = function () {
-        constObj.log(Man);
-        constObj.log('start!');
         mainTheme.play();
     }
     this.exit = function () {
-        constObj.log('End!');
         mainTheme.stop();
     }
 };
@@ -1231,13 +1378,13 @@ const preLoadScreen = function () {
     this.update = function () {
         constObj.game.clear();
         background.first.draw();
-        hero.content.draw();
+        hero.content.drawFrames(6, 8);
 
-//////////////// AUDIO ////////////////////////////////////
+        //////////////// AUDIO ////////////////////////////////////
 
         if (constObj.pjs.keyControl.isPress('ESC')) {
 
-            if(introTheme.state == 'play') {
+            if (introTheme.state == 'play') {
                 introTheme.stop();
                 introTheme.state = 'stop';
             } else {
@@ -1247,17 +1394,15 @@ const preLoadScreen = function () {
 
         }
 
-/////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////
 
     };
     this.entry = function () {
-        constObj.log('PreloadScreen loaded');
         startButtons.turnOnStartButton();
         gameOverTheme.stop();
         introTheme.play();
     };
     this.exit = function () {
-        constObj.log('preloadScreen End!');
         introTheme.stop();
         mainTheme.play();
     }
@@ -1265,16 +1410,17 @@ const preLoadScreen = function () {
 
 const gameOverScreen = function () {
     this.update = function () {
-        if (!hero.isWin) {
-            gameOverText.draw();
-        }
+        //if (!hero.isWin) {
+        gameOverText.draw();
+        //}
     };
     this.entry = function () {
-        constObj.log('GameOverScreen loaded');
+        console.log('preload entry')
         gameOverTheme.play();
         hero.reset();
         zombies.length = 0;
         girls.length = 0;
+        birds.length = 0;
         background.counterLife.forEach(function (item) {
             item.visible = true;
         })
@@ -1283,7 +1429,6 @@ const gameOverScreen = function () {
     };
     this.exit = function () {
         this.isWin = false;
-        constObj.log('GameOverScreen End!');
     }
 
 }
