@@ -11,7 +11,7 @@ const hero = require('./man.module').hero;
 
 let skins = [
     ["img/sprites/newhero.png", 205, 236, 15, 'Howard'],
-    ["img/sprites/human_90_110_8_staying.png", 90, 110, 8, 'Leonard'],
+    ["img/sprites/hero3.png", 205, 220, 15, 'Leonard'],
     ["img/sprites/bernadett_test.png", 205, 236, 15, 'Bernadett'],
 ];
 
