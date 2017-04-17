@@ -5,14 +5,14 @@ const man = require('./man.module').man;
 const birds = require('./bird.module').birds;
 const bullets = require('./man.module').bullets;
 const hero = require('./man.module').hero;
-const background = require('./background').background;
+//const background = require('./background').background;
 const zombieH = 110;
 const zombiePos = constObj.height - (zombieH + constObj.persPos);
 
 ////////////////    AUDIO    ///////////////////////////////////////////////////
 const loadAudio = require('./audio');
-const zombieAttackSound = loadAudio(['audio/zombie_attack.mp3'], 1, false);
-const zombieDeathCrySound = loadAudio(['audio/zombie_death_cry.mp3'], 1, false);
+const zombieAttackSound = loadAudio(['audio/zombie_attack.mp3'], 0.5, false);
+const zombieDeathCrySound = loadAudio(['audio/zombie_death_cry.mp3'], 0.5, false);
 ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -97,7 +97,7 @@ zombies.logic = function () {
                 zombie.setDelay(20);
                 zombie.drawFrames(10, 12);
             } else {
-                zombie.moveTo(point(hero.content.getPosition().x, constObj.height - zombie.h - 20), .5);
+                zombie.moveTo(point(hero.content.getPosition().x, constObj.height - zombie.h - constObj.persPos), .5);
                 zombie.draw();
             }
         } else if(zombie.banned() && !zombie.dead) {
@@ -116,7 +116,7 @@ zombies.logic = function () {
             zombie.health--;
             zombie.health === 0 ? zombie.dead = true : null;
             zombie.frame = 0;
-            hero.score += hero.level;
+            hero.setScore(hero.level);
 
             zombieDeathCrySound.play();
 

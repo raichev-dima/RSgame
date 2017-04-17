@@ -4,7 +4,7 @@ const constObj = require('./const').constObj;
 const man = require('./man.module').man;
 const bullets = require('./man.module').bullets;
 const hero = require('./man.module').hero;
-const background = require('./background').background;
+//const background = require('./background').background;
 const birdH = 182;
 const birdPos = constObj.height - (birdH + constObj.persPos);
 
@@ -16,7 +16,10 @@ const loadAudio = require('./audio');
 
 const birdAlive = constObj.pjs.tiles.newAnimation('img/sprites/bird_with_box_186_182_14.png', 187.5, birdH, 14);
 const birdDead = constObj.pjs.tiles.newAnimation('img/sprites/bird_test_186_182_14.png', 187.5, birdH, 14);
-const box = constObj.pjs.tiles.newAnimation('img/sprites/box_63_66_1.png', 63, 66, 1);
+let box = constObj.pjs.tiles.newAnimation('img/sprites/box_63_66_1.png', 63, 66, 1);
+const bomb = constObj.pjs.tiles.newAnimation('img/sprites/box_63_66_1.png', 63, 66, 1);
+const heart = constObj.pjs.tiles.newAnimation('img/sprites/heart_63_66_1.png', 63, 66, 1);
+
 const boxDead = constObj.pjs.tiles.newAnimation('img/sprites/ice_nova_180_140_13.png', 180, 140, 13);
 
 
@@ -29,6 +32,9 @@ birds.getBoxes = function () {
 birds.getFreezeBoxes = function () {
     return boxes.filter((box) => box.freeze);
 };
+birds.getHeartBoxes = function () {
+    return boxes.filter((box) => box.heart);
+};
 
 birds.spawner = constObj.pjs.OOP.newTimer(1000, function () {
     birds.push(constObj.game.newAnimationObject({
@@ -36,7 +42,7 @@ birds.spawner = constObj.pjs.OOP.newTimer(1000, function () {
         w: 187.5,
         h: birdH,
         x: constObj.pjs.math.random(hero.content.getPosition().x + 900, hero.content.getPosition().x + 1100), // x 1280
-        y: constObj.pjs.math.random(50, constObj.height - 200),
+        y: constObj.pjs.math.random(50, constObj.height - 374),
         delay: 3,
         scale: 0.35,
     }));
@@ -75,7 +81,6 @@ birds.logic = function () {
         //console.log(bullets);
 
         if ((bird.isArrIntersect(bullets) && !bird.dead) || !bird.dead && hero.content.getPosition().x >= bird.getPosition().x) {
-            console.log('Eto vam ne dimon! Eto fusion!');
             bird.dead = 1;
             bird.frame = 0;
 
@@ -87,7 +92,12 @@ birds.logic = function () {
                     bullets.splice(i, 1);
                 };
             }
-
+            if (Math.random() > 0.2) {
+                box = bomb;
+            }
+            else {
+                box = heart;
+            }
             boxes.push(constObj.game.newAnimationObject({
                 animation: box,
                 w: 180,
@@ -109,7 +119,12 @@ birds.logic = function () {
 boxes.logic = function () {
     constObj.pjs.OOP.forArr(boxes, function (box, index) {
         if (box.getPosition().y > constObj.height - constObj.persPos - 25) {
-            box.freeze = true;
+            if (box.anim.image.file == 'img/sprites/box_63_66_1.png') {
+                box.freeze = true;
+            }
+            else {
+                box.heart = true;
+            }
             box.setBox({
                 offset: point(-25, 0),
                 size: size(50, 0),

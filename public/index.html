@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="style.css" rel="stylesheet">
+    <title>zombie-game</title>
+</head>
+<body id="body">
+    <img id="decor" src="img/sun.gif">
+    <div class="wrapper">
+        <header>
+            <h1>ZOMBIE GAME</h1>
+        </header>
+
+        <div class="game-holder">
+            <iframe id="game" name="game" src="game.html" width="1100px" height="674px"></iframe>
+            <div id="full">
+                <img src="img/resize.png">
+            </div>
+        </div>
+
+        <h2>Описание игры</h2>
+        <p>ZOMBE GAME - это двухмерная компьютерная игра в жанре экшен-раннер, разработанная командой PKGOD в 2017 году.
+            Действие разворачивается на улицах заброшенного города, вы играете за единственного оставшегося человека в трезвом уме и твердой памяти,
+            который из всех сил пытается выжить и бежит к финишу.
+            Ваша задача - добежать до финиша раньше, чем зомби съедят вас.
+            Убивайте зомби и зарабатывайте очки!
+            Остерегайтесь девушек, они могут быть опасны. И не в коем случае не убивайте их, потому что это не гуманно.</p>
+        <p>
+            Цель игры - добежать до финиша.
+            Герой может бегать вперед и назад, девушек нужно перепрыгивать.
+            При столкновении с зомби - уменьшается полоса здоровья, при столкновении с девушкой герой "замораживается" (не может двигаться)
+            в течении 1,5 секунд.
+            За каждого убитого зомби - прибавляется одно очко, за каждую убитую девушку отнимается 10 очков.
+            Чтобы убить зомби в шлеме,  в него необходимо выстрелить 2 раза.
+        </p>
+
+        <h2>Управление</h2>
+        <ul>
+            <li>Используйте клавиши RIGHT и LEFT, чтобы бежать вперед или назад</li>
+            <li>Нажмите SPACE, чтобы выстрелить</li>
+            <li>Для прыжка используйте кнопку "UP"</li>
+            <li>Кнопка "ESC" отключает звук</li>
+        </ul>
+    </div>
+    <script>
+        var game = document.getElementById('game');
+        var body = document.getElementById('body');
+        var decor = document.getElementById('decor');
+        var full = document.getElementById('full');
+        function hasClass(el, cls) {
+          return el.className && new RegExp('(\\s|^)' + cls + '(\\s|$)').test(el.className);
+        }
+
+        function makeFullScreen() {
+          if (hasClass(game, 'fullscreen')) {
+            game.className = '';
+            body.className = '';
+            decor.className = '';
+          } else {
+            game.className = 'fullscreen';
+            body.className = 'fullscreen';
+            decor.className = 'fullscreen';
+          }
+
+          document.getElementsByName('game')[0].contentWindow.focus();
+        }
+
+        full.addEventListener('click', function () {
+            makeFullScreen();
+            return false;
+          });
+
+        document.addEventListener('keydown', keyDownTextField, false);
+        function keyDownTextField(e) {
+          var keyCode = e.keyCode;
+          if (keyCode == 70) {
+            makeFullScreen();
+          }
+        }
+    </script>
+</body>
+</html>

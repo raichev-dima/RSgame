@@ -7,7 +7,6 @@ const heroPos = constObj.height - (manH + constObj.persPos);
 
 ////////////////       AUDIO       ///////////////////////////////
 const loadAudio = require('./audio');
-const jumpSound = loadAudio(['audio/smb_jump-small.wav'], 1);
 //////////////////////////////////////////////////////////////////
 
 function Man(path, width, height, count, name) {
@@ -17,12 +16,13 @@ function Man(path, width, height, count, name) {
     this.level = 1;
     this.score = 0;
     this.timer = 0;
-    //this.isWin = false;
+    this.counterLife = createCounterLife();
+    this.counterLife.lastVisiblePartOfLife = 0;
     this.content = constObj.game.newAnimationObject({
         animation: constObj.pjs.tiles.newAnimation(path, width, height, count),
         w: 100,
         h: manH,
-        x: 120,
+        x: constObj.heroPosX,
         y: heroPos,
         delay: 10,
         scale: 1,
@@ -63,19 +63,19 @@ Man.prototype.shooting = function () {
         fillColor: "#FBFE6F",
         userData: {
             direction: FLIP ? -1 : 1,
-            life: 1000,
+            life: 2000,
             start: start
         }
     });
     bullets.push(bullet);
-    shot = loadAudio(['audio/shot.mp3'], 1);
+    shot = loadAudio(['audio/shot.mp3'], 0.5);
     shot.play();
     // }
 };
 
 Man.prototype.bulletFly = function () {
     constObj.OOP.forArr(bullets, function (el) {
-        if (el) {
+        if (performance.now() - el.start <= el.life) {
             if (el.direction == 1) {
                 el.draw();
                 el.move(constObj.point(7, 0));
@@ -84,6 +84,8 @@ Man.prototype.bulletFly = function () {
                 el.draw();
                 el.move(constObj.point(-7, 0));
             }
+        } else {
+            bullets.splice(el, 1);
         }
     });
 }
@@ -139,39 +141,39 @@ Man.prototype.drawManElements = function () {
 Man.prototype.reset = function () {
     this.content.w = 100;
     this.content.h = manH;
-    this.content.x = 120;
+    this.content.x = constObj.heroPosX;
     this.content.y = heroPos;
     this.content.delay = 10;
     this.content.scale = 1;
     this.died = false;
     this.level = 1;
-    hero.score = 0;
+    heroScore = 0;
 };
 
 Man.prototype.getLevel = function () {
     this.levelIsChange = false;
-    if (this.score < 20 && this.level == 1) {
+    if (this.getScore() < 10 && this.level == 1 ) {
         this.level = 1;
     }
-    if ((this.score < 40 && this.score > 20) && (this.level != 3 && this.level != 4 && this.level != 5)) {
+    if ((this.getScore() < 30 && this.getScore()  > 10) && (this.level != 3 && this.level != 4 && this.level != 5 ) ) {
         if (this.level != 2) {
             this.level = 2;
             this.levelIsChange = true;
         }
     }
-    if ((this.score < 60 && this.score > 40) && (this.level != 4 && this.level != 5)) {
+    if ((this.getScore() < 70 && this.getScore()  > 30) && (this.level != 4 && this.level != 5 )) {
         if (this.level != 3) {
             this.level = 3;
             this.levelIsChange = true;
         }
     }
-    if ((this.score < 80 && this.score > 60) && this.level != 5) {
+    if ((this.getScore()  < 150 && this.getScore()  > 70)  && this.level != 5 ) {
         if (this.level != 4) {
             this.level = 4;
             this.levelIsChange = true;
         }
     }
-    if ((this.score > 80) || this.level == 5) {
+    if ((this.getScore() > 150) || this.level == 5) {
         if (this.level != 3) {
             this.level = 3;
             this.levelIsChange = true;
@@ -184,6 +186,49 @@ Man.prototype.getLevel = function () {
     */
     return this.levelIsChange;
 }
+
+let heroScore = 0;
+
+Man.prototype.getScore = function() {
+    return heroScore;
+}
+
+Man.prototype.setScore = function(value) {
+    heroScore += value;
+    if (heroScore < 0) {
+        heroScore = 0;
+    }
+}
+
+let counter = constObj.game.newTextObject({
+    text: '',
+    size: 30,
+    padding: 10,
+    color: "#000000",
+});
+
+
+function createCounterLife() {
+    let x = 5;
+    let life = [];
+    for (let i = 0; i < 5; i++) {
+        x += 50;
+        life.push(addPartOfLife(x));
+    }
+
+    function addPartOfLife(x) {
+        let partOfLife = constObj.game.newRectObject({
+            x: x,
+            y: 60,
+            w: 50,
+            h: 20,
+            fillColor: "darkred",
+        });
+        return partOfLife;
+    }
+    return life;
+}
+
 
 let hero = new Man("img/sprites/bernadett_test.png", 205, 236, 15);
 

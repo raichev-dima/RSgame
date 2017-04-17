@@ -4,7 +4,7 @@ const constObj = require('./const').constObj;
 const man = require('./man.module').man;
 const bullets = require('./man.module').bullets;
 const hero = require('./man.module').hero;
-const background = require('./background').background;
+//const background = require('./background.module').background;
 const pennyH = 110;
 const pennyPos = constObj.height - (pennyH + constObj.persPos);
 
@@ -12,7 +12,7 @@ const point = constObj.pjs.vector.point;
 const size = constObj.pjs.vector.size;
 
 const loadAudio = require('./audio');
-const girlDeathCry = loadAudio(['audio/girl_death_cry.mp3'], 1, false);
+const girlDeathCry = loadAudio(['audio/girl_death_cry.mp3'], 0.2, false);
 
 const girlDead = constObj.pjs.tiles.newAnimation('img/sprites/penny_dead_120_110_15.png', 120, pennyH, 15);
 
@@ -56,13 +56,9 @@ girls.logic = function () {
         //console.log(bullets);
 
         if (girl.isArrIntersect(bullets) && !girl.dead) {
-            console.log('dima');
             girl.dead = 1;
             girl.frame = 0;
-            hero.score -= hero.level*5;
-            if (hero.score < 0) {
-                hero.score = 0;
-            }
+            hero.setScore(-hero.level*5);
             girlDeathCry.play();
 
             for (let i = 0; i < bullets.length; i++) {

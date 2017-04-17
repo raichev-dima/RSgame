@@ -1,6 +1,12 @@
 body {
-    background: 'ligthgreen';
+    background: #85a5cc url('/img/landing_back.jpg') repeat-x 50% 100%;
+    background-size: auto 90%;
+    background-attachment: fixed;
     text-align: center;
+    margin: 20px 0;
+}
+body.fullscreen {
+    overflow: hidden;
 }
 
 p, ul {
@@ -17,24 +23,42 @@ h1 {
     font-weight: bold;
     font-size: 46px;
 }
-
+.decor {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1;
+    width: 200px;
+    height: auto;
+    filter: blur(2px);
+}
+.decor.fullscreen {
+    filter: none;
+    max-width: 200px;
+    min-width: 100px;
+    width: 20%;
+    z-index: 1000;
+}
 .wrapper {
-    background-color: honeydew;
+    background-color: rgba(0,0,0,.5);
     margin: 0 auto;
     width: 1100px;
     padding: 20px;
     font-size: 28px;
+    color: #fff;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 0 50px 10px #85a5cc;
 }
 .game-holder {
     position: relative;
     left: auto;
     top: auto;
     width: 1100px;
-    height: 500px;
+    height: 674px;
+    overflow: hidden;
 }
 #game{
-    width: 100%;
-    height: 100%;
     border: none;
 }
 #game.fullscreen {

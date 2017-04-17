@@ -6,7 +6,9 @@ const startButtons = require('./preLoad.module').startButtons;
 let gameOverText = require('./preLoad.module').gameOverText;
 let nextLevelText = require('./preLoad.module').nextLevelText;
 let winText = require('./preLoad.module').winText;
-const background = require('./background').background;
+let showScore = require('./preLoad.module').score;
+const background = require('./background.module');
+const counters = require('./counters').counters;
 let zombies = require('./zombie.module').zombies;
 const constObj = require('./const').constObj;
 const girls = require('./girl.module').girls;
@@ -15,18 +17,20 @@ const bullets = require('./man.module').bullets;
 const hero = require('./man.module').hero;
 const heroPos = require('./man.module').heroPos;
 const loadAudio = require('./audio');
+const backendless = require('./backendless.service').backendless;
 
 //////////////////////      AUDIO      /////////////////////////////////////////
-const jumpSound = loadAudio(['audio/smb_jump-small.wav'], 1);
-const mainTheme = loadAudio(['audio/main_theme.mp3'], 0.2, true);
-const introTheme = loadAudio(['audio/hellraiser.mp3'], 0.1, true);
-const shotSound = loadAudio(['audio/shot.mp3'], 1);
-const gameOverTheme = loadAudio(['audio/hellraiser.mp3'], 0.1, true);
+const jumpSound = loadAudio(['audio/smb_jump-small.wav'], 0.4);
+const mainTheme = loadAudio(['audio/main_theme.mp3'], 0.7, true);
+const introTheme = loadAudio(['audio/hellraiser.mp3'], 0.2, true);
+const gameOverTheme = loadAudio(['audio/hellraiser.mp3'], 0.2, true);
 ///////////////////////////////////////////////////////////////////////////////
 
-constObj.pjs.system.initFullScale();
 constObj.pjs.system.setStyle({
-    width: '100%'
+    width: '100%',
+    height: 'auto',
+    top: '50%',
+    transform: 'translateY(-50%)'
 });
 constObj.pjs.system.setTitle('My mega game');
 
@@ -36,8 +40,10 @@ const Game = function () {
     let timer = 0;
     let i = 0;
     this.update = function () {
+
         constObj.game.clear();
         background.drawBackground();
+        counters.drawCounters();
         if (hero.getLevel()) {
             hero.timer = constObj.pjs.game.getTime();
         }
@@ -46,9 +52,8 @@ const Game = function () {
         } else {
             hero.timer = 0;
         }
-        background.counter.reStyle({
-            // text: "Level: " + hero.level + "     Score: " + hero.score
-            text: "Score: " + hero.score
+        counters.counter.reStyle({
+            text: "Score: " + hero.getScore()
         });
         zombies.spawner.restart([5000 - 900 * hero.level]);
         zombies.logic();
@@ -59,26 +64,25 @@ const Game = function () {
 
         hero.drawManElements();
         hero.newtonLaw(1);
+
         background.fog.draw();
+
         if (hero.died) {
             hero.content.drawFrame(13);
-            // hero.content.drawFrame(14);
             constObj.game.setLoop('gameOver');
         }
-        // else if (hero.isWin) {
-        //     winText.draw();
-        //     constObj.game.setLoop('gameOver');
-        // }
         else {
             if (!hero.banned()) {
                 constObj.cam.move(constObj.point(dx, dy));
                 hero.content.move(constObj.point(dx, dy));
+                background.moveBG(1, dx);
                 if (constObj.key.isDown('RIGHT')) {
                     dx = 1.3;
-                    if (hero.content.getPosition().x <= 125) {
+                    if (hero.content.getPosition().x <= constObj.heroPosX) {
                         constObj.cam.move(constObj.point(-dx, -dy));
+                        background.moveBG(-1, dx);
                     }
-                    if (hero.content.getPosition().x >= constObj.cam.getPosition().x + 125) {
+                    if (hero.content.getPosition().x >= constObj.cam.getPosition().x + constObj.heroPosX) {
                         constObj.cam.move(constObj.point(dx * 2, dy * 2));
                     }
                     hero.content.setFlip(0, 0);
@@ -88,9 +92,10 @@ const Game = function () {
                 } else if (constObj.key.isDown('LEFT')) {
                     if (hero.content.getPosition().x >= 0) {
                         dx = -1.3;
-                        if (hero.content.getPosition().x - 125 <= 0) {
+                        if (hero.content.getPosition().x - constObj.heroPosX <= 0) {
                             constObj.cam.move(constObj.point(-dx, -dy));
-                        } else if (hero.content.getPosition().x <= constObj.cam.getPosition().x + 125) {
+                            background.moveBG(-1, dx);
+                        } else if (hero.content.getPosition().x <= constObj.cam.getPosition().x + constObj.heroPosX) {
                             constObj.cam.move(constObj.point(dx * 2, dy * 2));
                         }
                     } else if (hero.content.getPosition().x < 0) {
@@ -118,7 +123,6 @@ const Game = function () {
                     hero.jumping();
                 }
 
-
                 if (constObj.key.isPress('SPACE')) {
                     hero.shooting();
                 }
@@ -137,6 +141,12 @@ const Game = function () {
                 if (hero.content.isArrIntersect(girls) || hero.content.isArrIntersect(birds.getFreezeBoxes())) {
                     hero.banned(1.5); // на сколько секунд обездвиживаем hero
                 }
+                if (hero.content.isArrIntersect(birds.getHeartBoxes())) {
+                    if (hero.counterLife.lastVisiblePartOfLife - 1 >= 0) {
+                        hero.counterLife[hero.counterLife.lastVisiblePartOfLife - 1].visible  = true;
+                        hero.counterLife.lastVisiblePartOfLife--;
+                    }
+                }
             } else {
                 hero.content.drawFrame(14);
             }
@@ -147,12 +157,12 @@ const Game = function () {
                 timer++;
                 if (timer >= 50) {
                     timer = 0;
-                    if (i < 5) {
-                        background.counterLife[i].visible = false;
-                        i++;
+                    if (hero.counterLife.lastVisiblePartOfLife < 5) {
+                        hero.counterLife[hero.counterLife.lastVisiblePartOfLife].visible = false;
+                        hero.counterLife.lastVisiblePartOfLife++;
                     } else {
                         hero.died = true;
-                        i = 0;
+                        hero.counterLife.lastVisiblePartOfLife = 0;
                     }
                 }
             }
@@ -172,7 +182,7 @@ const Game = function () {
 const preLoadScreen = function () {
     this.update = function () {
         constObj.game.clear();
-        background.first.draw();
+        background.drawPreLoadBG();
         hero.content.drawFrames(6, 8);
 
         //////////////// AUDIO ////////////////////////////////////
@@ -193,6 +203,7 @@ const preLoadScreen = function () {
 
     };
     this.entry = function () {
+        hero.reset();
         startButtons.turnOnStartButton();
         gameOverTheme.stop();
         introTheme.play();
@@ -205,22 +216,26 @@ const preLoadScreen = function () {
 
 const gameOverScreen = function () {
     this.update = function () {
-        //if (!hero.isWin) {
-        gameOverText.draw();
+        gameOverText.setStyle({
+            display: 'block'
+        });
+
         //}
     };
     this.entry = function () {
-        console.log('preload entry')
+        showScore();
         gameOverTheme.play();
-        hero.reset();
         zombies.length = 0;
         girls.length = 0;
         birds.length = 0;
-        background.counterLife.forEach(function (item) {
+        hero.counterLife.forEach(function (item) {
             item.visible = true;
         })
         background.resetBG();
         startButtons.turnOnGameOverButton();
+        startButtons.inpt.setStyle({
+            display: 'block'
+        });
     };
     this.exit = function () {
         this.isWin = false;
