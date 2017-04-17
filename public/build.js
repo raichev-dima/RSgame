@@ -505,7 +505,7 @@ let gameOverText = constObj.pjs.GUI.newButton({
         background: '#000000',
     },
 });
-let name = '';
+let name = 'Unknown';
 var inpt = constObj.pjs.GUI.newInput({
     text : "ENTER YOUR NAME",
     style: {
@@ -559,7 +559,7 @@ function sendData() {
 ).then(() => backendless.useData('GET'))
 .then(new_data => {
         let data = new_data;
-    data.sort((a,b) => a.Score < b.Score);
+        data.sort((a,b) => b.Score - a.Score);
 
     for (let i = 0; i < data.length; i++) {
         let li = document.createElement('li');
