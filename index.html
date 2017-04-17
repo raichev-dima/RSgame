@@ -7,11 +7,20 @@
     <link href="public/style.css" rel="stylesheet">
     <title>zombie-game</title>
 </head>
-<body>
+<body id="body">
+    <img id="decor" src="public/img/sun.gif">
     <div class="wrapper">
         <header>
             <h1>ZOMBIE GAME</h1>
         </header>
+
+        <div class="game-holder">
+            <iframe id="game" name="game" src="public/game.html" width="1100px" height="674px"></iframe>
+            <div id="full">
+                <img src="public/img/resize.png">
+            </div>
+        </div>
+
         <h2>Описание игры</h2>
         <p>ZOMBE GAME - это двухмерная компьютерная игра в жанре экшен-раннер, разработанная командой PKGOD в 2017 году.
             Действие разворачивается на улицах заброшенного города, вы играете за единственного оставшегося человека в трезвом уме и твердой памяти,
@@ -28,13 +37,6 @@
             Чтобы убить зомби в шлеме,  в него необходимо выстрелить 2 раза.
         </p>
 
-        <div class="game-holder">
-            <iframe id="game" src="public/game.html" width="900px" height="500px"></iframe>
-            <button id="full">
-                <img src="public/img/resize.png">
-            </button>
-        </div>
-
         <h2>Управление</h2>
         <ul>
             <li>Используйте клавиши RIGHT и LEFT, чтобы бежать вперед или назад</li>
@@ -45,18 +47,39 @@
     </div>
     <script>
         var game = document.getElementById('game');
+        var body = document.getElementById('body');
+        var decor = document.getElementById('decor');
         var full = document.getElementById('full');
         function hasClass(el, cls) {
           return el.className && new RegExp('(\\s|^)' + cls + '(\\s|$)').test(el.className);
         }
 
-        full.onclick = function () {
-            if (hasClass(game, 'fullscreen')) {
-              game.className = '';
-            } else {
-              game.className = 'fullscreen';
-            }
-          };
+        function makeFullScreen() {
+          if (hasClass(game, 'fullscreen')) {
+            game.className = '';
+            body.className = '';
+            decor.className = '';
+          } else {
+            game.className = 'fullscreen';
+            body.className = 'fullscreen';
+            decor.className = 'fullscreen';
+          }
+
+          document.getElementsByName('game')[0].contentWindow.focus();
+        }
+
+        full.addEventListener('click', function () {
+            makeFullScreen();
+            return false;
+          });
+
+        document.addEventListener('keydown', keyDownTextField, false);
+        function keyDownTextField(e) {
+          var keyCode = e.keyCode;
+          if (keyCode == 70) {
+            makeFullScreen();
+          }
+        }
     </script>
 </body>
 </html>
