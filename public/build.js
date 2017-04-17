@@ -64,7 +64,7 @@ var app =
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 12);
+/******/ 	return __webpack_require__(__webpack_require__.s = 13);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -81,7 +81,6 @@ const heroPos = constObj.height - (manH + constObj.persPos);
 
 ////////////////       AUDIO       ///////////////////////////////
 const loadAudio = __webpack_require__(4);
-const jumpSound = loadAudio(['audio/smb_jump-small.wav'], 1);
 //////////////////////////////////////////////////////////////////
 
 function Man(path, width, height, count, name) {
@@ -138,19 +137,19 @@ Man.prototype.shooting = function () {
         fillColor: "#FBFE6F",
         userData: {
             direction: FLIP ? -1 : 1,
-            life: 1000,
+            life: 2000,
             start: start
         }
     });
     bullets.push(bullet);
-    shot = loadAudio(['audio/shot.mp3'], 1);
+    shot = loadAudio(['audio/shot.mp3'], 0.5);
     shot.play();
     // }
 };
 
 Man.prototype.bulletFly = function () {
     constObj.OOP.forArr(bullets, function (el) {
-        if (el) {
+        if (performance.now() - el.start <= el.life) {
             if (el.direction == 1) {
                 el.draw();
                 el.move(constObj.point(7, 0));
@@ -159,6 +158,8 @@ Man.prototype.bulletFly = function () {
                 el.draw();
                 el.move(constObj.point(-7, 0));
             }
+        } else {
+            bullets.splice(el, 1);
         }
     });
 }
@@ -295,7 +296,7 @@ function createCounterLife() {
             y: 60,
             w: 50,
             h: 20,
-            fillColor: "#ff0000",
+            fillColor: "darkred",
         });
         return partOfLife;
     }
@@ -319,7 +320,7 @@ exports.heroPos = heroPos;
 
 const PointJS = __webpack_require__(3).PointJS;
 const constObj = __webpack_require__(2).constObj;
-const backendless = __webpack_require__(6).backendless;
+const backendless = __webpack_require__(5).backendless;
 
 const width = constObj.game.getWH().w;
 const height = constObj.game.getWH().h;
@@ -328,7 +329,7 @@ const hero = __webpack_require__(0).hero;
 
 
 let skins = [
-    ["img/sprites/newhero.png", 220, 220, 15, 'Howard'],
+    ["img/sprites/newhero.png", 205, 236, 15, 'Howard'],
     ["img/sprites/human_90_110_8_staying.png", 90, 110, 8, 'Leonard'],
     ["img/sprites/bernadett_test.png", 205, 236, 15, 'Bernadett'],
 ];
@@ -440,8 +441,52 @@ let restartButton = constObj.pjs.GUI.newButton({
             });
             constObj.game.startLoop('preLoad');
             document.body.removeChild(SCORE_TABLE);
+            SCORE_TABLE = document.createElement('ul');
         }
 
+    }
+});
+
+let submitButton = constObj.pjs.GUI.newButton({
+    text: "SUBMIT",
+    style: {
+        backgroundColor: 'rgba(93, 93, 93, 0.59)',
+        top: '50%',
+        left: '50%',
+        width: '400px',
+        height: '80px',
+        marginLeft: '-200px',
+        marginTop: '30px',
+        borderRadius: '20px',
+        fontSize: '28px',
+        cursor: 'pointer',
+        boxShadow: '0 0 15px 5px #fff',
+        display: 'none',
+    },
+    events: {
+        mouseOver: function () {
+            submitButton.setStyle({
+                boxShadow: '0 0 15px 5px #f00'
+            });
+        },
+        mouseOut: function () {
+            submitButton.setStyle({
+                boxShadow: '0 0 15px 5px #fff'
+            });
+        },
+        click: function () {
+            sendData();
+            submitButton.setStyle({
+                display: 'none'
+            });
+            inpt.setStyle({
+                display: 'none'
+            });
+            inpt.el.value = '';
+            restartButton.setStyle({
+                display: 'block'
+            });
+        }
     }
 });
 
@@ -460,6 +505,31 @@ let gameOverText = constObj.pjs.GUI.newButton({
         background: '#000000',
     },
 });
+let name = '';
+var inpt = constObj.pjs.GUI.newInput({
+    text : "ENTER YOUR NAME",
+    style: {
+        backgroundColor: 'rgba(93, 93, 93, 0.59)',
+        top: '50%',
+        left: '50%',
+        width: '400px',
+        height: '80px',
+        marginLeft: '-200px',
+        marginTop: '-100px',
+        borderRadius: '20px',
+        fontSize: '26px',
+        display: 'none',
+        padding: '15px',
+        boxSizing: 'border-box'
+    },
+    events : {
+        mouseOut: function () {
+            name = inpt.el.value;
+        }
+    }
+});
+
+
 
 let nextLevelText = constObj.game.newTextObject({
     x: 300,
@@ -470,15 +540,38 @@ let nextLevelText = constObj.game.newTextObject({
     color: "#000000",
 });
 
-let winText = constObj.game.newTextObject({
-    x: 300,
-    y: 100,
-    text: "YOU ARE WIN!",
-    size: 50,
-    padding: 10,
-    color: "#000000",
+function sendData() {
+    backendless.useData('GET').then(
+        (data) => {
+        let result = data.find((elem) => name === elem.Name);
+    let score;
+    if (result) {
+        score = result.Score > hero.getScore() ? result.Score : hero.getScore();
+    } else {
+        score = hero.getScore();
+    }
+
+    return backendless.useData('PUT', {
+        Name: name,
+        Score: score,
+    }, result ? result.objectId : null);
+}
+).then(() => backendless.useData('GET'))
+.then(new_data => {
+        let data = new_data;
+    data.sort((a,b) => a.Score < b.Score);
+
+    for (let i = 0; i < data.length; i++) {
+        let li = document.createElement('li');
+        li.innerHTML = i + 1 + ' ' + data[i].Name + ' -- ' + data[i].Score;
+        SCORE_TABLE.appendChild(li);
+    }
+
 });
-const SCORE_TABLE = document.createElement('ul');
+}
+
+
+let SCORE_TABLE = document.createElement('ul');
 const score = function () {
     let elements = document.querySelectorAll('canvas');
             SCORE_TABLE.setAttribute('id', 'score');
@@ -502,35 +595,10 @@ const score = function () {
                     document.body.appendChild(SCORE_TABLE);
 
 
-    let name = prompt('Введите ваше имя', 'Фёдор').trim().slice(0,20);
 
-    backendless.useData('GET').then(
-            (data) => {
-                let result = data.find((elem) => name === elem.Name);
-                let score;
-                if (result) {
-                    score = result.Score > hero.getScore() ? result.Score : hero.getScore();
-                } else {
-                    score = hero.getScore();
-                }
 
-                return backendless.useData('PUT', {
-                    Name: name,
-                    Score: score,
-                }, result ? result.objectId : null);
-            }
-        ).then(() => backendless.useData('GET'))
-        .then(new_data => {
-            let data = new_data;
-            data.sort((a,b) => a.Score < b.Score);
 
-            for (let i = 0; i < data.length; i++) {
-                let li = document.createElement('li');
-                li.innerHTML = i + 1 + ' ' + data[i].Name + ' -- ' + data[i].Score;
-                SCORE_TABLE.appendChild(li);
-            }
 
-        });
 
 };
 
@@ -538,11 +606,13 @@ exports.startButtons = {
     startButton: startButton,
     changeHeroButton: changeHeroButton,
     restartButton: restartButton,
+    submitButton:submitButton,
+    inpt:inpt,
     turnOnGameOverButton: function () {
-        restartButton.setStyle({
+        gameOverText.setStyle({
             display: 'block'
         });
-        gameOverText.setStyle({
+        submitButton.setStyle({
             display: 'block'
         });
     },
@@ -553,12 +623,12 @@ exports.startButtons = {
         changeHeroButton.setStyle({
             display: 'block'
         });
+
     },
 };
 
 exports.gameOverText = gameOverText;
 exports.nextLevelText = nextLevelText;
-exports.winText = winText;
 exports.score = score;
 
 
@@ -823,127 +893,22 @@ module.exports = loadAudio;
 
 /***/ }),
 /* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-const constObj = __webpack_require__(2).constObj;
-const hero = __webpack_require__(0).hero;
-let nextLevelText = __webpack_require__(1).nextLevelText;
-//let winText = require('./preLoad.module').winText;
-const bgHeight = 454;
-const fogWidth = 642;
-const fogHeight = 628;
-const bgPos = constObj.height - bgHeight;
-const fogPosX = hero.content.getPosition().x + constObj.width - fogWidth - hero.content.x;
-
-let counter = constObj.game.newTextObject({
-    text: '',
-    size: 30,
-    padding: 10,
-    color: "#ff0000",
-});
-
-var fog = constObj.game.newImageObject({
-    file: 'img/fog.png',
-    scale: 1,
-
-});
-
-const backgr1 = constObj.game.newImageObject({
-    x: 0,
-    y: bgPos,
-    file: 'img/main-bg.png',
-    scale: 1,
-    onload: function () {
-        backgr2.x = backgr1.x + backgr1.w;
-        backgr3.x = backgr1.x - backgr1.w;
-    }
-
-});
-const backgr2 = constObj.game.newImageObject({
-    x: backgr1.x + backgr1.w,
-    y: bgPos,
-    file: 'img/main-bg2.png',
-    scale: 1,
-
-});
-const backgr3 = constObj.game.newImageObject({
-    x: backgr1.x - backgr1.w,
-    y: bgPos,
-    file: 'img/main-bg3.png',
-    scale: 1,
-
-});
-const endlessBackGround = function () {
-
-    if (backgr1.x + backgr1.w < hero.content.getPosition().x    ) {
-        backgr1.x = backgr3.x + backgr3.w;
-    }
-    // аналогично для второго
-    if (backgr2.x + backgr2.w < hero.content.getPosition().x    ) {
-        backgr2.x = backgr1.x + backgr1.w;
-    }
-    if (backgr3.x + backgr3.w < hero.content.getPosition().x    ) {
-        backgr3.x = backgr2.x + backgr2.w;
-    }
-
-    if (backgr1.x + backgr1.w > hero.content.getPosition().x + backgr1.w*2) {
-        backgr1.x = backgr2.x - backgr2.w;
-    }
-    // аналогично для второго
-    if (backgr2.x + backgr2.w > hero.content.getPosition().x + backgr1.w*2) {
-        backgr2.x = backgr3.x - backgr3.w;
-    }
-    if (backgr3.x + backgr3.w > hero.content.getPosition().x + backgr1.w*2) {
-        backgr3.x = backgr1.x - backgr1.w;
-    }
-};
-
-let drawBackground = function () {
-    backgr1.draw();
-    backgr2.draw();
-    backgr3.draw();
-    endlessBackGround();
-    fog.setPositionS(constObj.point(fogPosX, 0));
-    counter.setPositionCS(constObj.point(80, constObj.height - 130));
-    nextLevelText.setPositionCS(constObj.point(550, 150));
-    counter.draw();
-    hero.counterLife.reduce(function (prevResult, item) {
-        item.setPositionCS(constObj.point(50 + prevResult, constObj.height - 130));
-        return 50 + prevResult;
-    }, 800);
-    constObj.pjs.OOP.drawArr(hero.counterLife);
-}
-
-exports.background = {
-    'first': backgr1,
-    'bgPos': bgPos,
-    'counter': counter,
-    //'counterLife': counterLife,
-    'drawBackground': drawBackground,
-    'fog': fog,
-    resetBG: function () {
-        backgr1.x = 0;
-        backgr2.x = backgr1.x + backgr1.w;
-    },
-}
-
-
-/***/ }),
-/* 6 */
 /***/ (function(module, exports) {
 
 function useData(respType, value, id) {
 
     let promise = new Promise(function (resolve, reject) {
+        let pageSize = '?pageSize=100';
         let itemId;
         if (!id) {
             itemId = '';
         } else {
             itemId = '/'+id;
         }
+
         let xhr = new XMLHttpRequest();
         let type = respType;
-        let url = 'https://api.backendless.com/v1/data/Score' + itemId;
+        let url = 'https://api.backendless.com/v1/data/Score' + itemId + pageSize;
 
         xhr.onload = function () {
             if (xhr.readyState == 4 && xhr.status == 200) {
@@ -977,7 +942,7 @@ exports.backendless = {
 
 
 /***/ }),
-/* 7 */
+/* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -987,7 +952,7 @@ const constObj = __webpack_require__(2).constObj;
 const man = __webpack_require__(0).man;
 const bullets = __webpack_require__(0).bullets;
 const hero = __webpack_require__(0).hero;
-const background = __webpack_require__(5).background;
+//const background = require('./background').background;
 const birdH = 182;
 const birdPos = constObj.height - (birdH + constObj.persPos);
 
@@ -1129,7 +1094,241 @@ exports.birds = birds;
 
 
 /***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+const constObj = __webpack_require__(2).constObj;
+const hero = __webpack_require__(0).hero;
+const bgHeight = 454;
+const fogWidth = 642;
+const fogHeight = 628;
+const bgPos = constObj.height - bgHeight;
+const fogPosX = hero.content.getPosition().x + constObj.width - fogWidth - hero.content.x;
+
+const clouds = returnBG('img/background/clouds-bg.png');
+const trees = returnBG('img/background/trees-bg.png');
+const further = returnBG('img/background/further-bg.png');
+const road = returnBG('img/background/road-bg.png');
+const houses = returnBG('img/background/houses-bg.png');
+const grass = returnBG('img/background/grass-bg.png');
+
+const fog = constObj.game.newImageObject({
+    file: 'img/fog.png',
+    scale: 1,
+});
+
+const K1 = 0.5;
+const K2 = 0.2;
+const K3 = 0.8;
+const K4 = 1;
+
+var moveBG = function (k, dx) { // k = 1 OR -1
+
+    for (let i = 0; i <= 2; i++) {
+
+        houses[i].move(constObj.point(k*K1*dx, 0));
+        trees[i].move(constObj.point(k*K2*dx, 0));
+        clouds[i].move(constObj.point(k*K3*dx, 0));
+        further[i].move(constObj.point(k*K4*dx, 0));
+
+    }
+
+};
+
+function returnBG (path) {
+
+    const backgr1 = constObj.game.newImageObject({
+        x: 0,
+        y: bgPos,
+        file: path,
+        scale: 1,
+        onload: function () {
+            backgr2.x = backgr1.x + backgr1.w;
+            backgr3.x = backgr1.x - backgr1.w;
+        }
+
+    });
+
+    const backgr2 = constObj.game.newImageObject({
+        x: backgr1.x + backgr1.w,
+        y: bgPos,
+        file: path,
+        scale: 1,
+
+    });
+
+    const backgr3 = constObj.game.newImageObject({
+        x: backgr1.x - backgr1.w,
+        y: bgPos,
+        file: path,
+        scale: 1,
+
+    });
+
+    return arr = [backgr1, backgr2, backgr3];
+    console.log(arr);
+}
+
+
+ function endlessBackGround (arr) {
+
+     let backgr1 = arr[0];
+     let backgr2 = arr[1];
+     let backgr3 = arr[2];
+
+    if (backgr1.x + backgr1.w < hero.content.getPosition().x    ) {
+        backgr1.x = backgr3.x + backgr3.w;
+    }
+    // аналогично для второго
+    if (backgr2.x + backgr2.w < hero.content.getPosition().x    ) {
+        backgr2.x = backgr1.x + backgr1.w;
+    }
+    if (backgr3.x + backgr3.w < hero.content.getPosition().x    ) {
+        backgr3.x = backgr2.x + backgr2.w;
+    }
+
+    if (backgr1.x + backgr1.w > hero.content.getPosition().x + backgr1.w*2) {
+        backgr1.x = backgr2.x - backgr2.w;
+    }
+    // аналогично для второго
+    if (backgr2.x + backgr2.w > hero.content.getPosition().x + backgr1.w*2) {
+        backgr2.x = backgr3.x - backgr3.w;
+    }
+    if (backgr3.x + backgr3.w > hero.content.getPosition().x + backgr1.w*2) {
+        backgr3.x = backgr1.x - backgr1.w;
+    }
+};
+
+function drawBackground (arr) {
+
+    let backgr1 = arr[0];
+    let backgr2 = arr[1];
+    let backgr3 = arr[2];
+
+    backgr1.draw();
+    backgr2.draw();
+    backgr3.draw();
+
+    endlessBackGround(arr);
+}
+
+
+function resetBG (arr) {
+
+    let backgr1 = arr[0];
+    let backgr2 = arr[1];
+
+    backgr1.x = 0;
+    backgr2.x = backgr1.x + backgr1.w;
+}
+
+
+background = {
+    drawPreLoadBG : function () {
+
+
+        drawBackground(houses);
+        drawBackground(road);
+        drawBackground(grass);
+
+    },
+
+    drawBackground : function () {
+
+        drawBackground(further);
+        drawBackground(houses);
+        drawBackground(clouds);
+
+        for (let i = 0; i <= 2; i++) {
+            clouds[i].move(constObj.point(0.1, 0));
+        }
+
+        drawBackground(trees);
+        drawBackground(road);
+        drawBackground(grass);
+        fog.setPositionS(constObj.point(fogPosX, 0));
+    },
+
+    resetBG: function () {
+
+        resetBG(further);
+        resetBG(houses);
+        resetBG(clouds);
+        resetBG(trees);
+        resetBG(road);
+        resetBG(grass);
+    },
+
+    'moveBG' : moveBG,
+    'fog' : fog
+
+}
+
+module.exports = background;
+
+
+/***/ }),
 /* 8 */
+/***/ (function(module, exports, __webpack_require__) {
+
+const constObj = __webpack_require__(2).constObj;
+const hero = __webpack_require__(0).hero;
+let nextLevelText = __webpack_require__(1).nextLevelText;
+const bgHeight = 280;
+const bgPos = constObj.height - bgHeight;
+
+let counter = constObj.game.newTextObject({
+    text: '',
+    size: 36,
+    padding: 15,
+    color: "darkred",
+});
+
+let counterLife = createCounterLife();
+
+let drawCounters = function () {
+    counter.setPositionCS(constObj.point(80, constObj.height - 130));
+    nextLevelText.setPositionCS(constObj.point(550, 150));
+    counter.draw();
+    hero.counterLife.reduce(function (prevResult, item) {
+        item.setPositionCS(constObj.point(50 + prevResult, constObj.height - 130));
+        return 50 + prevResult;
+    }, 800);
+    constObj.pjs.OOP.drawArr(hero.counterLife);
+}
+
+function createCounterLife() {
+    let x = 5;
+    let life = [];
+    for (let i = 0; i < 5; i++) {
+        x += 50;
+        life.push(addPartOfLife(x));
+    }
+
+    function addPartOfLife(x) {
+        let partOfLife = constObj.game.newRectObject({
+            x: x,
+            y: 60,
+            w: 50,
+            h: 20,
+            fillColor: "green",
+        });
+        return partOfLife;
+    }
+    return life;
+}
+
+
+exports.counters = {
+    'counter': counter,
+    'counterLife': counterLife,
+    'drawCounters': drawCounters,
+
+}
+
+
+/***/ }),
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1139,7 +1338,7 @@ const constObj = __webpack_require__(2).constObj;
 const man = __webpack_require__(0).man;
 const bullets = __webpack_require__(0).bullets;
 const hero = __webpack_require__(0).hero;
-const background = __webpack_require__(5).background;
+//const background = require('./background.module').background;
 const pennyH = 110;
 const pennyPos = constObj.height - (pennyH + constObj.persPos);
 
@@ -1147,7 +1346,7 @@ const point = constObj.pjs.vector.point;
 const size = constObj.pjs.vector.size;
 
 const loadAudio = __webpack_require__(4);
-const girlDeathCry = loadAudio(['audio/girl_death_cry.mp3'], 1, false);
+const girlDeathCry = loadAudio(['audio/girl_death_cry.mp3'], 0.2, false);
 
 const girlDead = constObj.pjs.tiles.newAnimation('img/sprites/penny_dead_120_110_15.png', 120, pennyH, 15);
 
@@ -1191,7 +1390,6 @@ girls.logic = function () {
         //console.log(bullets);
 
         if (girl.isArrIntersect(bullets) && !girl.dead) {
-            console.log('dima');
             girl.dead = 1;
             girl.frame = 0;
             hero.setScore(-hero.level*5);
@@ -1215,7 +1413,7 @@ exports.girls = girls;
 
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1223,17 +1421,17 @@ exports.girls = girls;
 const PointJS = __webpack_require__(3).PointJS;
 const constObj = __webpack_require__(2).constObj;
 const man = __webpack_require__(0).man;
-const birds = __webpack_require__(7).birds;
+const birds = __webpack_require__(6).birds;
 const bullets = __webpack_require__(0).bullets;
 const hero = __webpack_require__(0).hero;
-const background = __webpack_require__(5).background;
+//const background = require('./background').background;
 const zombieH = 110;
 const zombiePos = constObj.height - (zombieH + constObj.persPos);
 
 ////////////////    AUDIO    ///////////////////////////////////////////////////
 const loadAudio = __webpack_require__(4);
-const zombieAttackSound = loadAudio(['audio/zombie_attack.mp3'], 1, false);
-const zombieDeathCrySound = loadAudio(['audio/zombie_death_cry.mp3'], 1, false);
+const zombieAttackSound = loadAudio(['audio/zombie_attack.mp3'], 0.5, false);
+const zombieDeathCrySound = loadAudio(['audio/zombie_death_cry.mp3'], 0.5, false);
 ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -1363,12 +1561,6 @@ exports.zombies = zombies;
 
 
 /***/ }),
-/* 10 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
-
-/***/ }),
 /* 11 */
 /***/ (function(module, exports) {
 
@@ -1376,34 +1568,40 @@ exports.zombies = zombies;
 
 /***/ }),
 /* 12 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 13 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-__webpack_require__(10);
 __webpack_require__(11);
+__webpack_require__(12);
 const Man = __webpack_require__(0).Man;
 const startButtons = __webpack_require__(1).startButtons;
 let gameOverText = __webpack_require__(1).gameOverText;
 let nextLevelText = __webpack_require__(1).nextLevelText;
 let winText = __webpack_require__(1).winText;
 let showScore = __webpack_require__(1).score;
-const background = __webpack_require__(5).background;
-let zombies = __webpack_require__(9).zombies;
+const background = __webpack_require__(7);
+const counters = __webpack_require__(8).counters;
+let zombies = __webpack_require__(10).zombies;
 const constObj = __webpack_require__(2).constObj;
-const girls = __webpack_require__(8).girls;
-const birds = __webpack_require__(7).birds;
+const girls = __webpack_require__(9).girls;
+const birds = __webpack_require__(6).birds;
 const bullets = __webpack_require__(0).bullets;
 const hero = __webpack_require__(0).hero;
 const heroPos = __webpack_require__(0).heroPos;
 const loadAudio = __webpack_require__(4);
-const backendless = __webpack_require__(6).backendless;
+const backendless = __webpack_require__(5).backendless;
 
 //////////////////////      AUDIO      /////////////////////////////////////////
-const jumpSound = loadAudio(['audio/smb_jump-small.wav'], 0.3);
-const mainTheme = loadAudio(['audio/main_theme.mp3'], 0.5, true);
+const jumpSound = loadAudio(['audio/smb_jump-small.wav'], 0.4);
+const mainTheme = loadAudio(['audio/main_theme.mp3'], 0.7, true);
 const introTheme = loadAudio(['audio/hellraiser.mp3'], 0.2, true);
-// const shotSound = loadAudio(['audio/shot.mp3'], 0.05, false);
 const gameOverTheme = loadAudio(['audio/hellraiser.mp3'], 0.2, true);
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -1424,6 +1622,7 @@ const Game = function () {
 
         constObj.game.clear();
         background.drawBackground();
+        counters.drawCounters();
         if (hero.getLevel()) {
             hero.timer = constObj.pjs.game.getTime();
         }
@@ -1432,7 +1631,7 @@ const Game = function () {
         } else {
             hero.timer = 0;
         }
-        background.counter.reStyle({
+        counters.counter.reStyle({
             text: "Score: " + hero.getScore()
         });
         zombies.spawner.restart([5000 - 900 * hero.level]);
@@ -1444,20 +1643,23 @@ const Game = function () {
 
         hero.drawManElements();
         hero.newtonLaw(1);
+
         background.fog.draw();
+
         if (hero.died) {
             hero.content.drawFrame(13);
-            // hero.content.drawFrame(14);
             constObj.game.setLoop('gameOver');
         }
         else {
             if (!hero.banned()) {
                 constObj.cam.move(constObj.point(dx, dy));
                 hero.content.move(constObj.point(dx, dy));
+                background.moveBG(1, dx);
                 if (constObj.key.isDown('RIGHT')) {
                     dx = 1.3;
                     if (hero.content.getPosition().x <= constObj.heroPosX) {
                         constObj.cam.move(constObj.point(-dx, -dy));
+                        background.moveBG(-1, dx);
                     }
                     if (hero.content.getPosition().x >= constObj.cam.getPosition().x + constObj.heroPosX) {
                         constObj.cam.move(constObj.point(dx * 2, dy * 2));
@@ -1471,6 +1673,7 @@ const Game = function () {
                         dx = -1.3;
                         if (hero.content.getPosition().x - constObj.heroPosX <= 0) {
                             constObj.cam.move(constObj.point(-dx, -dy));
+                            background.moveBG(-1, dx);
                         } else if (hero.content.getPosition().x <= constObj.cam.getPosition().x + constObj.heroPosX) {
                             constObj.cam.move(constObj.point(dx * 2, dy * 2));
                         }
@@ -1558,7 +1761,7 @@ const Game = function () {
 const preLoadScreen = function () {
     this.update = function () {
         constObj.game.clear();
-        background.first.draw();
+        background.drawPreLoadBG();
         hero.content.drawFrames(6, 8);
 
         //////////////// AUDIO ////////////////////////////////////
@@ -1579,9 +1782,7 @@ const preLoadScreen = function () {
 
     };
     this.entry = function () {
-        //backendless.useData('GET'); // Прнимает 2 аргумента: Тип (GET,POST), второй аргумент для POST - это данные в виде {}
-        //backendless.useData('POST', {name:'newName'}); // 2 аргумента
-        //backendless.useData('PUT', {name:'test-put-response'}, "A19BFD36-DE68-3586-FF22-0D677FC57200"); // 3 аргумента
+        hero.reset();
         startButtons.turnOnStartButton();
         gameOverTheme.stop();
         introTheme.play();
@@ -1594,16 +1795,15 @@ const preLoadScreen = function () {
 
 const gameOverScreen = function () {
     this.update = function () {
-        //if (!hero.isWin) {
         gameOverText.setStyle({
             display: 'block'
         });
+
         //}
     };
     this.entry = function () {
         showScore();
         gameOverTheme.play();
-        hero.reset();
         zombies.length = 0;
         girls.length = 0;
         birds.length = 0;
@@ -1612,6 +1812,9 @@ const gameOverScreen = function () {
         })
         background.resetBG();
         startButtons.turnOnGameOverButton();
+        startButtons.inpt.setStyle({
+            display: 'block'
+        });
     };
     this.exit = function () {
         this.isWin = false;

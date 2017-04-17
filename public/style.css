@@ -23,7 +23,7 @@ h1 {
     font-weight: bold;
     font-size: 46px;
 }
-.decor {
+#decor {
     position: fixed;
     left: 0;
     top: 0;
@@ -32,11 +32,11 @@ h1 {
     height: auto;
     filter: blur(2px);
 }
-.decor.fullscreen {
+#decor.fullscreen {
     filter: none;
     max-width: 200px;
     min-width: 100px;
-    width: 20%;
+    width: 15%;
     z-index: 1000;
 }
 .wrapper {
