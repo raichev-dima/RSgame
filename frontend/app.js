@@ -5,7 +5,6 @@ const Man = require('./man.module').Man;
 const startButtons = require('./preLoad.module').startButtons;
 let gameOverText = require('./preLoad.module').gameOverText;
 let nextLevelText = require('./preLoad.module').nextLevelText;
-let winText = require('./preLoad.module').winText;
 let showScore = require('./preLoad.module').score;
 const background = require('./background.module');
 const counters = require('./counters').counters;
@@ -15,9 +14,11 @@ const girls = require('./girl.module').girls;
 const birds = require('./bird.module').birds;
 const bullets = require('./man.module').bullets;
 const hero = require('./man.module').hero;
-const heroPos = require('./man.module').heroPos;
 const loadAudio = require('./audio');
-const backendless = require('./backendless.service').backendless;
+const controllers = require('./gamepad').controllers;
+const scangamepads = require('./gamepad').scangamepads;
+
+scangamepads();
 
 //////////////////////      AUDIO      /////////////////////////////////////////
 const jumpSound = loadAudio(['audio/smb_jump-small.wav'], 0.4);
@@ -25,6 +26,7 @@ const mainTheme = loadAudio(['audio/main_theme.mp3'], 0.7, true);
 const introTheme = loadAudio(['audio/hellraiser.mp3'], 0.2, true);
 const gameOverTheme = loadAudio(['audio/hellraiser.mp3'], 0.2, true);
 ///////////////////////////////////////////////////////////////////////////////
+
 
 constObj.pjs.system.setStyle({
     width: '100%',
@@ -76,7 +78,7 @@ const Game = function () {
                 constObj.cam.move(constObj.point(dx, dy));
                 hero.content.move(constObj.point(dx, dy));
                 background.moveBG(1, dx);
-                if (constObj.key.isDown('RIGHT')) {
+                if (constObj.key.isDown('RIGHT') || (controllers[0] && controllers[0].axes[0] === 1)) {
                     dx = 1.3;
                     if (hero.content.getPosition().x <= constObj.heroPosX) {
                         constObj.cam.move(constObj.point(-dx, -dy));
@@ -89,7 +91,7 @@ const Game = function () {
                     if (hero.jumpFlag == 'STOP') {
                         hero.content.drawFrames(0, 5);
                     }
-                } else if (constObj.key.isDown('LEFT')) {
+                } else if (constObj.key.isDown('LEFT') || (controllers[0] && controllers[0].axes[0] === -1)) {
                     if (hero.content.getPosition().x >= 0) {
                         dx = -1.3;
                         if (hero.content.getPosition().x - constObj.heroPosX <= 0) {
@@ -123,7 +125,16 @@ const Game = function () {
                     hero.jumping();
                 }
 
+                if (controllers[0] && controllers[0].buttons[0].pressed) {
+                  jumpSound.play();
+                  hero.jumping();
+                }
+
                 if (constObj.key.isPress('SPACE')) {
+                    hero.shooting();
+                }
+
+                if (controllers[0] && controllers[0].buttons[7].pressed) {
                     hero.shooting();
                 }
 
@@ -180,6 +191,7 @@ const Game = function () {
 };
 
 const preLoadScreen = function () {
+    
     this.update = function () {
         constObj.game.clear();
         background.drawPreLoadBG();

@@ -1,5 +1,5 @@
 body {
-    background: #85a5cc url('img/landing_back.jpg') repeat-x 50% 100%;
+    background: #85a5cc url('/img/landing_back.jpg') repeat-x 50% 100%;
     background-size: auto 90%;
     background-attachment: fixed;
     text-align: center;
@@ -88,24 +88,6 @@ h1 {
 }
 #game.fullscreen + #full {
     position: fixed;
-}
-
-.screenshots {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-}
-
-.screenshots li {
-    margin: 5px;
-    width: 48%;
-}
-.screenshots li img {
-    max-width: 100%;
-    height: auto;
 }
 /*
 html, body, div, span, applet, object, iframe,

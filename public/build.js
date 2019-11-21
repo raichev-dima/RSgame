@@ -74,7 +74,7 @@ var app =
 "use strict";
 
 const PointJS = __webpack_require__(3).PointJS;
-const constObj = __webpack_require__(2).constObj;
+const constObj = __webpack_require__(1).constObj;
 const manH = 140;
 const heroPos = constObj.height - (manH + constObj.persPos);
 
@@ -316,11 +316,57 @@ exports.heroPos = heroPos;
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
+const PointJS = __webpack_require__(3).PointJS;
+const pjs = new PointJS('2D', 1100, 674, {
+    backgroundColor: '#85a5cc',
+});
+const game = pjs.game;
+const log = pjs.system.log;
+const point = pjs.vector.point;
+const size = pjs.vector.size;
+const cam = pjs.camera;
+const brush = pjs.brush;
+const OOP = pjs.OOP;
+const math = pjs.math;
+// const mouse = pjs.mouseControl.initMouseControl();
+const key = pjs.keyControl.initKeyControl();
+// key.initKeyControl();
+const width = game.getWH().w;
+const height = game.getWH().h;
+const r = game.getResolution();
+const heroPosX = 170;
+const persPos = 194;
+const bulletPos = 100;
+
+exports.constObj = {
+    pjs: pjs,
+    game: game,
+    key: key,
+    log:log,
+    point:point,
+    size:size,
+    cam:cam,
+    brush:brush,
+    OOP:OOP,
+    math:math,
+    width:width,
+    height:height,
+    r:r,
+    heroPosX: heroPosX,
+    persPos: persPos,
+    bulletPos: bulletPos,
+}
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports, __webpack_require__) {
+
 "use strict";
 
 const PointJS = __webpack_require__(3).PointJS;
-const constObj = __webpack_require__(2).constObj;
-const backendless = __webpack_require__(5).backendless;
+const constObj = __webpack_require__(1).constObj;
+const backendless = __webpack_require__(14).backendless;
 
 const width = constObj.game.getWH().w;
 const height = constObj.game.getWH().h;
@@ -505,7 +551,7 @@ let gameOverText = constObj.pjs.GUI.newButton({
         background: '#000000',
     },
 });
-let name = 'Unknown';
+let name = '';
 var inpt = constObj.pjs.GUI.newInput({
     text : "ENTER YOUR NAME",
     style: {
@@ -559,7 +605,7 @@ function sendData() {
 ).then(() => backendless.useData('GET'))
 .then(new_data => {
         let data = new_data;
-        data.sort((a,b) => b.Score - a.Score);
+    data.sort((a,b) => a.Score < b.Score);
 
     for (let i = 0; i < data.length; i++) {
         let li = document.createElement('li');
@@ -630,52 +676,6 @@ exports.startButtons = {
 exports.gameOverText = gameOverText;
 exports.nextLevelText = nextLevelText;
 exports.score = score;
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-const PointJS = __webpack_require__(3).PointJS;
-const pjs = new PointJS('2D', 1100, 674, {
-    backgroundColor: '#85a5cc',
-});
-const game = pjs.game;
-const log = pjs.system.log;
-const point = pjs.vector.point;
-const size = pjs.vector.size;
-const cam = pjs.camera;
-const brush = pjs.brush;
-const OOP = pjs.OOP;
-const math = pjs.math;
-// const mouse = pjs.mouseControl.initMouseControl();
-const key = pjs.keyControl.initKeyControl();
-// key.initKeyControl();
-const width = game.getWH().w;
-const height = game.getWH().h;
-const r = game.getResolution();
-const heroPosX = 170;
-const persPos = 194;
-const bulletPos = 100;
-
-exports.constObj = {
-    pjs: pjs,
-    game: game,
-    key: key,
-    log:log,
-    point:point,
-    size:size,
-    cam:cam,
-    brush:brush,
-    OOP:OOP,
-    math:math,
-    width:width,
-    height:height,
-    r:r,
-    heroPosX: heroPosX,
-    persPos: persPos,
-    bulletPos: bulletPos,
-}
 
 
 /***/ }),
@@ -893,53 +893,133 @@ module.exports = loadAudio;
 
 /***/ }),
 /* 5 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-function useData(respType, value, id) {
+"use strict";
 
-    let promise = new Promise(function (resolve, reject) {
-        let pageSize = '?pageSize=100';
-        let itemId;
-        if (!id) {
-            itemId = '';
-        } else {
-            itemId = '/'+id;
+const PointJS = __webpack_require__(3).PointJS;
+const constObj = __webpack_require__(1).constObj;
+const startButtons = __webpack_require__(2).startButtons;
+  /*
+  * Gamepad API Test
+  * Written in 2013 by Ted Mielczarek <ted@mielczarek.org>
+  *
+  * To the extent possible under law, the author(s) have dedicated all copyright and related and neighboring rights to this software to the public domain worldwide. This software is distributed without any warranty.
+  *
+  * You should have received a copy of the CC0 Public Domain Dedication along with this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
+  */
+  var haveEvents = 'GamepadEvent' in window;
+  var controllers = {};
+  var rAF = window.mozRequestAnimationFrame ||
+    window.requestAnimationFrame;
+
+  function connecthandler(e) {
+    addgamepad(e.gamepad);
+  }
+  function addgamepad(gamepad) {
+    controllers[gamepad.index] = gamepad; var d = document.createElement("div");
+    d.setAttribute("id", "controller" + gamepad.index);
+    var b = document.createElement("div");
+    b.className = "buttons";
+    for (var i=0; i<gamepad.buttons.length; i++) {
+      var e = document.createElement("span");
+      e.className = "button";
+      //e.id = "b" + i;
+      e.innerHTML = i;
+      b.appendChild(e);
+    }
+    d.appendChild(b);
+    var a = document.createElement("div");
+    a.className = "axes";
+    for (i=0; i<gamepad.axes.length; i++) {
+      e = document.createElement("meter");
+      e.className = "axis";
+      //e.id = "a" + i;
+      e.setAttribute("min", "-1");
+      e.setAttribute("max", "1");
+      e.setAttribute("value", "0");
+      e.innerHTML = i;
+      a.appendChild(e);
+    }
+    d.appendChild(a);
+    document.body.appendChild(d);
+    rAF(updateStatus);
+  }
+
+  function disconnecthandler(e) {
+    removegamepad(e.gamepad);
+  }
+
+  function removegamepad(gamepad) {
+    var d = document.getElementById("controller" + gamepad.index);
+    document.body.removeChild(d);
+    delete controllers[gamepad.index];
+  }
+
+  function updateStatus() {
+    scangamepads();
+    for (var j in controllers) {
+      var controller = controllers[j];
+      var d = document.getElementById("controller" + j);
+      var buttons = d.getElementsByClassName("button");
+      for (var i=0; i<controller.buttons.length; i++) {
+        var b = buttons[i];
+        var val = controller.buttons[i];
+        var pressed = val == 1.0;
+        if (typeof(val) == "object") {
+          pressed = val.pressed;
+          val = val.value;
         }
-
-        let xhr = new XMLHttpRequest();
-        let type = respType;
-        let url = 'https://api.backendless.com/v1/data/Score' + itemId + pageSize;
-
-        xhr.onload = function () {
-            if (xhr.readyState == 4 && xhr.status == 200) {
-                resolve(JSON.parse(this.response).data);
-            } else {
-                let error = new Error('Sorry, try again :(');
-                error.code = this.status;
-                reject(error);
-            }
-        };
-        xhr.open(type, url, true);
-
-        xhr.setRequestHeader('application-id', '15806DE0-F818-2F9B-FF8F-E485444F6C00');
-        xhr.setRequestHeader('secret-key', 'BE675023-B742-E6D4-FFEF-FEF78A2E2500');
-        xhr.setRequestHeader("Content-Type", "application/json; charset=utf-8");
-
-        if (value) {
-            xhr.setRequestHeader("Content-Type", "application/json; charset=utf-8");
-            xhr.send(JSON.stringify(value));
+        var pct = Math.round(val * 100) + "%";
+        b.style.backgroundSize = pct + " " + pct;
+        if (pressed) {
+          b.className = "button pressed";
         } else {
-            xhr.send(null);
+          b.className = "button";
         }
-    });
+      }
+      if (controllers[0].buttons[8].pressed) {
+        console.log('pressed')
+        constObj.game.setLoop('1');
+      
+        startButtons.startButton.setStyle({
+            display: 'none'
+        });
+        if (startButtons.changeHeroButton) startButtons.changeHeroButton.setStyle({
+            display: 'none'
+        });
+      }
 
-    return promise;
-};
+      // var axes = d.getElementsByClassName("axis");
+      // for (var i=0; i<controller.axes.length; i++) {
+      //   console.log(controller.axes[i])
+      // }
+    }
+    rAF(updateStatus);
+  }
 
-exports.backendless = {
-    useData: useData,
-};
+  function scangamepads() {
+    var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads() : []);
+    for (var i = 0; i < gamepads.length; i++) {
+      if (gamepads[i]) {
+        if (!(gamepads[i].index in controllers)) {
+          addgamepad(gamepads[i]);
+        } else {
+          controllers[gamepads[i].index] = gamepads[i];
+        }
+      }
+    }
+  }
 
+  if (haveEvents) {
+    window.addEventListener("gamepadconnected", connecthandler);
+    window.addEventListener("gamepaddisconnected", disconnecthandler);
+  } else {
+    setInterval(scangamepads, 10000);
+  }
+
+module.exports.controllers = controllers;
+module.exports.scangamepads = scangamepads;
 
 /***/ }),
 /* 6 */
@@ -948,7 +1028,7 @@ exports.backendless = {
 "use strict";
 
 const PointJS = __webpack_require__(3).PointJS;
-const constObj = __webpack_require__(2).constObj;
+const constObj = __webpack_require__(1).constObj;
 const man = __webpack_require__(0).man;
 const bullets = __webpack_require__(0).bullets;
 const hero = __webpack_require__(0).hero;
@@ -1097,7 +1177,7 @@ exports.birds = birds;
 /* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const constObj = __webpack_require__(2).constObj;
+const constObj = __webpack_require__(1).constObj;
 const hero = __webpack_require__(0).hero;
 const bgHeight = 454;
 const fogWidth = 642;
@@ -1271,9 +1351,9 @@ module.exports = background;
 /* 8 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const constObj = __webpack_require__(2).constObj;
+const constObj = __webpack_require__(1).constObj;
 const hero = __webpack_require__(0).hero;
-let nextLevelText = __webpack_require__(1).nextLevelText;
+let nextLevelText = __webpack_require__(2).nextLevelText;
 const bgHeight = 280;
 const bgPos = constObj.height - bgHeight;
 
@@ -1334,7 +1414,7 @@ exports.counters = {
 "use strict";
 
 const PointJS = __webpack_require__(3).PointJS;
-const constObj = __webpack_require__(2).constObj;
+const constObj = __webpack_require__(1).constObj;
 const man = __webpack_require__(0).man;
 const bullets = __webpack_require__(0).bullets;
 const hero = __webpack_require__(0).hero;
@@ -1419,7 +1499,7 @@ exports.girls = girls;
 "use strict";
 
 const PointJS = __webpack_require__(3).PointJS;
-const constObj = __webpack_require__(2).constObj;
+const constObj = __webpack_require__(1).constObj;
 const man = __webpack_require__(0).man;
 const birds = __webpack_require__(6).birds;
 const bullets = __webpack_require__(0).bullets;
@@ -1581,22 +1661,23 @@ exports.zombies = zombies;
 __webpack_require__(11);
 __webpack_require__(12);
 const Man = __webpack_require__(0).Man;
-const startButtons = __webpack_require__(1).startButtons;
-let gameOverText = __webpack_require__(1).gameOverText;
-let nextLevelText = __webpack_require__(1).nextLevelText;
-let winText = __webpack_require__(1).winText;
-let showScore = __webpack_require__(1).score;
+const startButtons = __webpack_require__(2).startButtons;
+let gameOverText = __webpack_require__(2).gameOverText;
+let nextLevelText = __webpack_require__(2).nextLevelText;
+let showScore = __webpack_require__(2).score;
 const background = __webpack_require__(7);
 const counters = __webpack_require__(8).counters;
 let zombies = __webpack_require__(10).zombies;
-const constObj = __webpack_require__(2).constObj;
+const constObj = __webpack_require__(1).constObj;
 const girls = __webpack_require__(9).girls;
 const birds = __webpack_require__(6).birds;
 const bullets = __webpack_require__(0).bullets;
 const hero = __webpack_require__(0).hero;
-const heroPos = __webpack_require__(0).heroPos;
 const loadAudio = __webpack_require__(4);
-const backendless = __webpack_require__(5).backendless;
+const controllers = __webpack_require__(5).controllers;
+const scangamepads = __webpack_require__(5).scangamepads;
+
+scangamepads();
 
 //////////////////////      AUDIO      /////////////////////////////////////////
 const jumpSound = loadAudio(['audio/smb_jump-small.wav'], 0.4);
@@ -1604,6 +1685,7 @@ const mainTheme = loadAudio(['audio/main_theme.mp3'], 0.7, true);
 const introTheme = loadAudio(['audio/hellraiser.mp3'], 0.2, true);
 const gameOverTheme = loadAudio(['audio/hellraiser.mp3'], 0.2, true);
 ///////////////////////////////////////////////////////////////////////////////
+
 
 constObj.pjs.system.setStyle({
     width: '100%',
@@ -1655,7 +1737,7 @@ const Game = function () {
                 constObj.cam.move(constObj.point(dx, dy));
                 hero.content.move(constObj.point(dx, dy));
                 background.moveBG(1, dx);
-                if (constObj.key.isDown('RIGHT')) {
+                if (constObj.key.isDown('RIGHT') || (controllers[0] && controllers[0].axes[0] === 1)) {
                     dx = 1.3;
                     if (hero.content.getPosition().x <= constObj.heroPosX) {
                         constObj.cam.move(constObj.point(-dx, -dy));
@@ -1668,7 +1750,7 @@ const Game = function () {
                     if (hero.jumpFlag == 'STOP') {
                         hero.content.drawFrames(0, 5);
                     }
-                } else if (constObj.key.isDown('LEFT')) {
+                } else if (constObj.key.isDown('LEFT') || (controllers[0] && controllers[0].axes[0] === -1)) {
                     if (hero.content.getPosition().x >= 0) {
                         dx = -1.3;
                         if (hero.content.getPosition().x - constObj.heroPosX <= 0) {
@@ -1702,7 +1784,16 @@ const Game = function () {
                     hero.jumping();
                 }
 
+                if (controllers[0] && controllers[0].buttons[0].pressed) {
+                  jumpSound.play();
+                  hero.jumping();
+                }
+
                 if (constObj.key.isPress('SPACE')) {
+                    hero.shooting();
+                }
+
+                if (controllers[0] && controllers[0].buttons[7].pressed) {
                     hero.shooting();
                 }
 
@@ -1759,6 +1850,7 @@ const Game = function () {
 };
 
 const preLoadScreen = function () {
+    
     this.update = function () {
         constObj.game.clear();
         background.drawPreLoadBG();
@@ -1826,6 +1918,56 @@ constObj.game.newLoopFromClassObject('preLoad', new preLoadScreen());
 constObj.game.newLoopFromClassObject('gameOver', new gameOverScreen());
 constObj.game.newLoopFromClassObject('1', new Game());
 constObj.game.startLoop('preLoad');
+
+
+/***/ }),
+/* 14 */
+/***/ (function(module, exports) {
+
+function useData(respType, value, id) {
+
+    let promise = new Promise(function (resolve, reject) {
+        let pageSize = '?pageSize=100';
+        let itemId;
+        if (!id) {
+            itemId = '';
+        } else {
+            itemId = '/'+id;
+        }
+
+        let xhr = new XMLHttpRequest();
+        let type = respType;
+        let url = 'https://api.backendless.com/v1/data/Score' + itemId + pageSize;
+
+        xhr.onload = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                resolve(JSON.parse(this.response).data);
+            } else {
+                let error = new Error('Sorry, try again :(');
+                error.code = this.status;
+                reject(error);
+            }
+        };
+        xhr.open(type, url, true);
+
+        xhr.setRequestHeader('application-id', '15806DE0-F818-2F9B-FF8F-E485444F6C00');
+        xhr.setRequestHeader('secret-key', 'BE675023-B742-E6D4-FFEF-FEF78A2E2500');
+        xhr.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+
+        if (value) {
+            xhr.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+            xhr.send(JSON.stringify(value));
+        } else {
+            xhr.send(null);
+        }
+    });
+
+    return promise;
+};
+
+exports.backendless = {
+    useData: useData,
+};
 
 
 /***/ })
